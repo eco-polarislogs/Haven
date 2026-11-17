@@ -64,6 +64,8 @@ android {
             } else {
                 signingConfigs.getByName("debug")
             }
+            // R8 koruma kuralları: olmadan sürüm paketi açılışta çöker (dosyadaki açıklamaya bak).
+            proguardFiles("proguard-rules.pro")
         }
     }
 }
