@@ -2138,4 +2138,46 @@ const kTxUi = <String, List<String>>{
     "举报",
     "शिकायतें",
   ],
+  "Çıkış yapılıyor…": [
+    "Signing out…",
+    "Cerrando sesión…",
+    "正在退出登录…",
+    "साइन आउट हो रहा है…",
+  ],
+  "Deneme bildirimi gönder": [
+    "Send a test notification",
+    "Enviar una notificación de prueba",
+    "发送测试通知",
+    "टेस्ट सूचना भेजें",
+  ],
+  "Uygulamayı kapat; birkaç saniye içinde telefonuna bir bildirim gelir.": [
+    "Close the app; a notification will arrive on your phone within a few seconds.",
+    "Cierra la app; en unos segundos te llegará una notificación al teléfono.",
+    "关闭应用；几秒钟内你的手机就会收到一条通知。",
+    "ऐप बंद करें; कुछ ही सेकंड में आपके फ़ोन पर एक सूचना आएगी।",
+  ],
+  "Deneme bildirimi 10 saniye içinde gelecek. Şimdi uygulamayı kapatabilirsin.": [
+    "The test notification will arrive within 10 seconds. You can close the app now.",
+    "La notificación de prueba llegará en 10 segundos. Ya puedes cerrar la app.",
+    "测试通知将在 10 秒内到达。现在可以关闭应用了。",
+    "टेस्ट सूचना 10 सेकंड में आएगी। अब आप ऐप बंद कर सकते हैं।",
+  ],
+  "Bildirim izni kapalı. Telefonun Ayarlar → Uygulamalar → Haven → Bildirimler bölümünden açabilirsin.": [
+    "Notifications are turned off. You can turn them on in your phone's Settings → Apps → Haven → Notifications.",
+    "Las notificaciones están desactivadas. Puedes activarlas en Ajustes → Aplicaciones → Haven → Notificaciones.",
+    "通知已关闭。你可以在手机的“设置 → 应用 → Haven → 通知”中开启。",
+    "सूचनाएँ बंद हैं। आप इन्हें फ़ोन की सेटिंग → ऐप्स → Haven → सूचनाएँ में चालू कर सकते हैं।",
+  ],
+  "Haven bildirimleri çalışıyor ✨": [
+    "Haven notifications are working ✨",
+    "Las notificaciones de Haven funcionan ✨",
+    "Haven 通知运行正常 ✨",
+    "Haven की सूचनाएँ काम कर रही हैं ✨",
+  ],
+  "Bu bir deneme bildirimi. Hatırlatmaların ve topluluk bildirimlerin böyle gelecek.": [
+    "This is a test notification. Your reminders and community notifications will arrive like this.",
+    "Esta es una notificación de prueba. Tus recordatorios y notificaciones de la comunidad llegarán así.",
+    "这是一条测试通知。你的提醒和社区通知都会这样送达。",
+    "यह एक टेस्ट सूचना है। आपके रिमाइंडर और कम्युनिटी सूचनाएँ ऐसे ही आएँगी।",
+  ],
 };

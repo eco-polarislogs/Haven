@@ -33,11 +33,13 @@ class _WelcomeScreenState extends ConsumerState<WelcomeScreen> {
     // sonrasında `ref` kullanmak hata verir (Riverpod 3).
     final repo = ref.read(repositoryProvider);
     final language = ref.read(localeProvider).languageCode;
+    final container = ProviderScope.containerOf(context, listen: false);
     try {
       final user = (await signIn())?.user;
       if (user != null) {
         await repo.ensureUserDoc(user, language: language);
         repo.addInbox(user.uid, InboxType.login);
+        syncAuthState(container); // karşılama ekranında takılı kalmasın
       }
     } on AuthFailure catch (e) {
       _snack(e.message);

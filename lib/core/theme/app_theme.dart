@@ -131,9 +131,22 @@ ThemeData _base(ColorScheme scheme, HavenPalette palette) {
       showDragHandle: true,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(radius))),
     ),
+    // Alttan gelen kısa bildirimler: varsayılan koyu gri yerine temanın kendi
+    // derin rengi (Bugün'deki seri kartıyla aynı), kum rengi yazı, sıcak vurgu.
     snackBarTheme: SnackBarThemeData(
       behavior: SnackBarBehavior.floating,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      backgroundColor: scheme.brightness == Brightness.dark ? scheme.primaryContainer : palette.deep,
+      contentTextStyle: TextStyle(
+        color: scheme.brightness == Brightness.dark ? scheme.onPrimaryContainer : HavenColors.sand,
+        fontSize: 15,
+        height: 1.35,
+        fontWeight: FontWeight.w500,
+      ),
+      actionTextColor: palette.accent,
+      closeIconColor: HavenColors.sand,
+      elevation: 6,
+      insetPadding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
     ),
     dialogTheme: DialogThemeData(shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(radius))),
     inputDecorationTheme: InputDecorationTheme(

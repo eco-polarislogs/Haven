@@ -85,6 +85,30 @@ class LocalNotifier {
   static const greetingTitle = 'Selam {name} 👋';
   static const _dailyIds = [120, 121, 122, 123, 124, 125, 126];
 
+  /// Profil → "Deneme bildirimi gönder" (test sürecinde bildirimin uygulama
+  /// kapalıyken de geldiğini görmek için).
+  static const testTitle = 'Haven bildirimleri çalışıyor ✨';
+  static const testBody = 'Bu bir deneme bildirimi. Hatırlatmaların ve topluluk bildirimlerin böyle gelecek.';
+  static const _testId = 130;
+
+  /// Birkaç saniye sonrasına tek bir deneme bildirimi kurar; uygulama kapatılsa
+  /// da gelir. Bildirim izni yoksa ister; izin verilmezse `false`.
+  static Future<bool> sendTest({Duration after = const Duration(seconds: 10)}) async {
+    if (!_ready) return false;
+    try {
+      final android = _plugin.resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>();
+      if (android != null && !(await android.areNotificationsEnabled() ?? true)) {
+        if (!(await android.requestNotificationsPermission() ?? false)) return false;
+      }
+      await _refreshChannels();
+      await _schedule(_testId, DateTime.now().add(after), testTitle, testBody, 'test');
+      return true;
+    } catch (e) {
+      debugPrint('Deneme bildirimi kurulamadı: $e');
+      return false;
+    }
+  }
+
   /// Saf plan (testli): hangi gün, hangi saatte, hangi mesaj.
   ///
   /// Kişiye göre: seçtiği alanların sözleri genel sözlerle gün aşırı

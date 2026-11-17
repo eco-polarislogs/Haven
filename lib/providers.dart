@@ -49,6 +49,18 @@ final authStateProvider = StreamProvider<User?>((ref) => ref.watch(authServicePr
 
 final uidProvider = Provider<String?>((ref) => ref.watch(authStateProvider).value?.uid);
 
+/// Giriş, çıkış ve hesap silmeden sonra çağrılır. Firebase'in oturum akışı bu
+/// olayı uygulamaya her zaman iletmiyor (telefonda görüldü: çıkıştan sonra
+/// Firebase'de oturum kapalı, uygulamada açık kaldı ve ekran ana sayfada takıldı).
+/// Uygulamanın bildiği oturum Firebase'dekinden farklıysa akış yeniden dinlenir;
+/// yeni dinleyici güncel oturumu hemen alır.
+void syncAuthState(ProviderContainer container) {
+  final actual = container.read(authServiceProvider).currentUser?.uid;
+  if (container.read(authStateProvider).value?.uid != actual) {
+    container.invalidate(authStateProvider);
+  }
+}
+
 // ------------------------------------------------------------ kişisel veri
 final appUserProvider = StreamProvider<AppUser?>((ref) {
   final uid = ref.watch(uidProvider);

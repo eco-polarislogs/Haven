@@ -14,6 +14,7 @@ import '../../core/widgets/gentle_states.dart';
 import '../../data/models/app_user.dart';
 import '../../data/models/community.dart';
 import '../../data/services/auth_service.dart';
+import '../../data/services/local_notifier.dart';
 import '../../providers.dart';
 import '../notifications/notification_bell.dart';
 import '../onboarding/struggle_picker_screen.dart';
@@ -34,14 +35,47 @@ class ProfileScreen extends ConsumerWidget {
   Future<void> _signOut(BuildContext context, WidgetRef ref) async {
     // Servisleri await'lerden ÖNCE al (Riverpod 3: ekran kalkınca ref kullanılamaz).
     final navigator = Navigator.of(context);
+    final container = ProviderScope.containerOf(context, listen: false);
     final uid = ref.read(uidProvider);
     final repo = ref.read(repositoryProvider);
     final notifications = ref.read(notificationServiceProvider);
     final auth = ref.read(authServiceProvider);
-    ref.read(shellIndexProvider.notifier).select(0);
-    if (uid != null) await repo.addInboxAndWait(uid, InboxType.logout);
-    await notifications.stop();
+    // Çıkış birkaç saniye sürer (bu cihazın bildirim kaydı sunucudan silinir).
+    // Bu arada ekran kilitlenir: tekrar basılmaz, kullanıcı ne olduğunu görür.
+    unawaited(
+      showDialog<void>(
+        context: context,
+        barrierDismissible: false,
+        builder: (_) => PopScope(
+          canPop: false,
+          child: AlertDialog(
+            content: Row(
+              children: [
+                const SizedBox.square(dimension: 24, child: CircularProgressIndicator(strokeWidth: 3)),
+                const SizedBox(width: 20),
+                Expanded(child: Text(tx('Çıkış yapılıyor…'))),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+    try {
+      await Future.wait([
+        if (uid != null) repo.addInboxAndWait(uid, InboxType.logout),
+        notifications.stop(),
+      ]).timeout(const Duration(seconds: 5));
+    } catch (e) {
+      debugPrint('Çıkış öncesi temizlik tamamlanamadı: $e');
+    }
     await auth.signOut();
+    debugPrint(
+      '[çıkış] firebase: ${auth.currentUser == null ? 'kapalı' : 'AÇIK'}, '
+      'uygulama: ${container.read(authStateProvider).value == null ? 'kapalı' : 'AÇIK'}',
+    );
+    // Ekran her durumda karşılama ekranına döner (bkz. syncAuthState).
+    syncAuthState(container);
+    container.read(shellIndexProvider.notifier).select(0);
     navigator.popUntil((route) => route.isFirst);
   }
 
@@ -69,10 +103,12 @@ class ProfileScreen extends ConsumerWidget {
     if (confirmed != true || !context.mounted || uid == null) return;
     final navigator = Navigator.of(context);
     final messenger = ScaffoldMessenger.of(context);
+    final container = ProviderScope.containerOf(context, listen: false);
     try {
       await notifications.stop();
       await repo.deleteAllUserData(uid);
       await auth.deleteAccount();
+      syncAuthState(container);
       navigator.popUntil((route) => route.isFirst);
     } on AuthFailure catch (e) {
       messenger.showSnackBar(SnackBar(content: Text(e.message)));
@@ -241,6 +277,24 @@ class ProfileScreen extends ConsumerWidget {
                       'Her gün 13.00\'te kısa bir motivasyon mesajı; bir süre görünmediğinde de hal hatır sorarız. Yalnızca 10:00–21:00 arası.',
                     ),
                   ),
+                ),
+                ListTile(
+                  leading: const Icon(Icons.notification_add_outlined),
+                  title: Text(tx('Deneme bildirimi gönder')),
+                  subtitle: Text(tx('Uygulamayı kapat; birkaç saniye içinde telefonuna bir bildirim gelir.')),
+                  onTap: () async {
+                    final messenger = ScaffoldMessenger.of(context);
+                    final ok = await LocalNotifier.sendTest();
+                    messenger.showSnackBar(
+                      SnackBar(
+                        content: Text(
+                          ok
+                              ? tx('Deneme bildirimi 10 saniye içinde gelecek. Şimdi uygulamayı kapatabilirsin.')
+                              : tx('Bildirim izni kapalı. Telefonun Ayarlar → Uygulamalar → Haven → Bildirimler bölümünden açabilirsin.'),
+                        ),
+                      ),
+                    );
+                  },
                 ),
                 SwitchListTile(
                   value: user.analyticsEnabled,

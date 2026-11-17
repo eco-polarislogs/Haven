@@ -229,8 +229,10 @@ void checkIn(BuildContext context, WidgetRef ref, Struggle struggle, CheckInResu
     final milestone = _milestones[outcome.state.current];
     final message = tx('Zorlandın ama dayandın; serin devam ediyor. Bu gerçek bir güç.');
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(milestone == null ? message : '$message $milestone'),
+      _checkInSnack(
+        context,
+        Icons.bolt_rounded,
+        milestone == null ? message : '$message $milestone',
         duration: const Duration(seconds: 6),
         action: SnackBarAction(
           label: tx('Sakinleş'),
@@ -239,9 +241,38 @@ void checkIn(BuildContext context, WidgetRef ref, Struggle struggle, CheckInResu
       ),
     );
   } else {
-    final message = _milestones[outcome.state.current] ?? tx('Bugünü kaydettin. Küçük adımlar da gerçek adımlardır.');
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
+    final milestone = _milestones[outcome.state.current];
+    ScaffoldMessenger.of(context).showSnackBar(
+      _checkInSnack(
+        context,
+        milestone == null ? Icons.check_circle_rounded : Icons.local_fire_department_rounded,
+        milestone ?? tx('Bugünü kaydettin. Küçük adımlar da gerçek adımlardır.'),
+      ),
+    );
   }
+}
+
+/// Değerlendirme ve seri mesajı: temanın derin renginde, düğmedeki simgeyle
+/// (Başardım ✓, Zorlandım ⚡, seri 🔥) ve sıcak vurgu rengiyle.
+SnackBar _checkInSnack(
+  BuildContext context,
+  IconData icon,
+  String message, {
+  SnackBarAction? action,
+  Duration duration = const Duration(seconds: 4),
+}) {
+  final accent = Theme.of(context).extension<HavenPalette>()?.accent ?? HavenColors.amber;
+  return SnackBar(
+    duration: duration,
+    action: action,
+    content: Row(
+      children: [
+        Icon(icon, color: accent, size: 24),
+        const SizedBox(width: 12),
+        Expanded(child: Text(message)),
+      ],
+    ),
+  );
 }
 
 /// Değerlendirme düğmesi: simge, kısa etiket ve altında ne anlama geldiği.
