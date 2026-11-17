@@ -84,6 +84,9 @@ Değiştirirsen: `firebase deploy --only hosting`.
 - Sağlık uygulamaları beyanı: ruh sağlığı ve iyi oluş desteği, alışkanlık takibi; **tıbbi cihaz değildir**, teşhis koymaz (uygulama içinde de yazıyor).
 - Uygulama erişimi: giriş Google hesabıyla yapılır; inceleme için bir test Google hesabı bilgisi vermen istenebilir.
 
-## 4. Mağaza sayfası malzemeleri
-- Uygulama simgesi 512×512, öne çıkan görsel 1024×500, en az 2 telefon ekran görüntüsü.
-- Kısa açıklama (80 karakter) ve tam açıklama (4000 karakter), tercihen 5 dilde.
+## 4. Mağaza sayfası malzemeleri ✓
+Hepsi `store/` klasöründe (kopyası masaüstünde: *Haven Mağaza*); hangi dosyanın Play Console'da nereye gittiği `store/README.md`'de.
+- Simge 512×512, öne çıkan grafik 1024×500 (Türkçe + İngilizce).
+- 5 telefon ekran görüntüsü 1080×1920 (Türkçe + İngilizce): uygulamanın gerçek ekranları, örnek verilerle.
+- Uygulama adı, kısa açıklama, tam açıklama (Türkçe + İngilizce), Play karakter sınırlarının içinde.
+- Telefona doğrudan kurulabilen APK (gösterim ve deneme için): masaüstünde `Haven-3.2.0-3.apk`. Play'den kapalı test sürümünü kurmadan önce bu APK'yı kaldır; imzaları farklı olduğu için üzerine kurulmaz.
