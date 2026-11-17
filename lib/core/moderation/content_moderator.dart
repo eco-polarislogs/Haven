@@ -22,23 +22,30 @@ class ModerationResult {
   bool get isOk => verdict == ModerationVerdict.ok;
 
   String get message => switch (verdict) {
-        ModerationVerdict.ok => '',
-        ModerationVerdict.empty => 'Bir şeyler yazmayı dener misin?',
-        ModerationVerdict.tooShort => 'Biraz daha uzun yazmayı dener misin?',
-        ModerationVerdict.tooLong => 'Notlar en fazla ${ContentModerator.maxNoteLength} karakter olabilir.',
-        ModerationVerdict.crisis =>
-          'Yazdıkların şu an çok zorlandığını gösteriyor. Bu notu paylaşmak yerine '
-              'sana destek olmak istiyoruz.',
-        ModerationVerdict.personalInfo =>
-          'Güvenliğin için notlarda link, telefon, e-posta ya da kullanıcı adı paylaşılamıyor.',
-        ModerationVerdict.profanity || ModerationVerdict.insult =>
-          'Bu metinde kırıcı olabilecek bir ifade var. Haven herkes için güvenli bir liman '
-              'olsun diye bunu paylaşamıyoruz. Aynı şeyi daha yumuşak kelimelerle anlatmayı dener misin?',
-        ModerationVerdict.trigger =>
-          'Bu not, aynı yolda yürüyen birini tetikleyebilecek bir ayrıntı içeriyor '
-              '(örneğin sayılar, yöntemler ya da tetikleyici kelimeler). Deneyimini '
-              'ayrıntıya girmeden, hislerin üzerinden paylaşmayı dener misin?',
-      };
+    ModerationVerdict.ok => '',
+    ModerationVerdict.empty => 'Bir şeyler yazmayı dener misin?',
+    ModerationVerdict.tooShort => 'Biraz daha uzun yazmayı dener misin?',
+    ModerationVerdict.tooLong => 'Notlar en fazla ${ContentModerator.maxNoteLength} karakter olabilir.',
+    ModerationVerdict.crisis =>
+      'Yazdıkların şu an çok zorlandığını gösteriyor. Bu notu paylaşmak yerine '
+          'sana destek olmak istiyoruz.',
+    ModerationVerdict.personalInfo =>
+      'Güvenliğin için notlarda link, telefon, e-posta ya da kullanıcı adı paylaşılamıyor.',
+    ModerationVerdict.profanity || ModerationVerdict.insult =>
+      'Bu metinde kırıcı olabilecek bir ifade var. Haven herkes için güvenli bir liman '
+          'olsun diye bunu paylaşamıyoruz. Aynı şeyi daha yumuşak kelimelerle anlatmayı dener misin?',
+    ModerationVerdict.trigger =>
+      'Bu not, aynı yolda yürüyen birini tetikleyebilecek bir ayrıntı içeriyor '
+          '(örneğin sayılar, yöntemler ya da tetikleyici kelimeler). Deneyimini '
+          'ayrıntıya girmeden, hislerin üzerinden paylaşmayı dener misin?',
+  };
+}
+
+/// Okuyan için gizlenmiş metin: [hidden] kaç ifadenin gizlendiğini söyler.
+class MaskedText {
+  const MaskedText(this.text, this.hidden);
+  final String text;
+  final int hidden;
 }
 
 class ContentModerator {
@@ -49,11 +56,45 @@ class ContentModerator {
   // "=" ile başlayan terim: yalnızca tam kelime. Boşluklu terim: tam ifade.
   // Diğerleri: kelime başı eşleşmesi (Türkçe ekleri yakalamak için).
   static const _profanity = [
-    '=am', '=amk', '=aq', '=amq', '=mk', '=oc', 'amına', 'amcık', 'orospu', 'orosbu',
-    'piç', 'siktir', 'sikerim', 'sikeyim', 'siktiğim', 'sikik', '=sik', 'yarrak', '=yarak',
-    '=göt', 'götveren', 'pezevenk', 'kahpe', 'kaltak', 'ibne', 'puşt', 'gavat', 'yavşak',
-    'şerefsiz', 'haysiyetsiz', 'dalyarak', 'sürtük', 'fahişe', 'ananı', 'ananın',
-    '=bok', 'boktan', '=lan', '=mal',
+    '=am',
+    '=amk',
+    '=aq',
+    '=amq',
+    '=mk',
+    '=oc',
+    'amına',
+    'amcık',
+    'orospu',
+    'orosbu',
+    'piç',
+    'siktir',
+    'sikerim',
+    'sikeyim',
+    'siktiğim',
+    'sikik',
+    '=sik',
+    'yarrak',
+    '=yarak',
+    '=göt',
+    'götveren',
+    'pezevenk',
+    'kahpe',
+    'kaltak',
+    'ibne',
+    'puşt',
+    'gavat',
+    'yavşak',
+    'şerefsiz',
+    'haysiyetsiz',
+    'dalyarak',
+    'sürtük',
+    'fahişe',
+    'ananı',
+    'ananın',
+    '=bok',
+    'boktan',
+    '=lan',
+    '=mal',
   ];
 
   static const _insults = [
@@ -68,19 +109,43 @@ class ContentModerator {
 
   /// Herkes için tetikleyici ayrıntılar (yöntemler, sayılar, övgü).
   static const _triggers = [
-    '=kg', 'kilo verdim', 'kilo aldım', 'kalori', '=kcal', 'kustum', 'kusmak',
-    'laksatif', 'müshil', 'aç kaldım', 'jilet', 'kesik', 'kestim', 'yara izi',
-    'kanattım', 'kafam iyi', 'sarhoş', 'kupon', 'jackpot',
+    '=kg',
+    'kilo verdim',
+    'kilo aldım',
+    'kalori',
+    '=kcal',
+    'kustum',
+    'kusmak',
+    'laksatif',
+    'müshil',
+    'aç kaldım',
+    'jilet',
+    'kesik',
+    'kestim',
+    'yara izi',
+    'kanattım',
+    'kafam iyi',
+    'sarhoş',
+    'kupon',
+    'jackpot',
   ];
 
   /// Kriz işaretleri: not paylaşılmaz, kullanıcıya destek gösterilir.
   static const _crisis = [
-    'intihar', 'kendimi öldür', 'ölmek istiyorum', 'yaşamak istemiyorum',
-    'hayatıma son', 'canıma kıy', 'kendimi kes', 'kendime zarar vereceğim',
-    'yok olmak istiyorum', 'artık dayanamıyorum',
+    'intihar',
+    'kendimi öldür',
+    'ölmek istiyorum',
+    'yaşamak istemiyorum',
+    'hayatıma son',
+    'canıma kıy',
+    'kendimi kes',
+    'kendime zarar vereceğim',
+    'yok olmak istiyorum',
+    'artık dayanamıyorum',
   ];
 
-  static final _numberUnit = RegExp(r'\d+[.,]?\d*\s*(kg|kilo|kalori|kcal|gr|gram|tl|lira|₺)');
+  // "3 kilometre", "5 grup" gibi ifadeler birim sayılmaz.
+  static final _numberUnit = RegExp(r'\d+[.,]?\d*\s*(kg\b|kilo(?!metre)|kalori|kcal|gr\b|gram|tl\b|lira|₺)');
   static final _url = RegExp(r'(https?://|www\.|\.(com|net|org|tr|io|me)\b)', caseSensitive: false);
   static final _email = RegExp(r'[\w.+-]+@[\w-]+\.[\w.]+');
   static final _handle = RegExp(r'(^|\s)@\w{3,}');
@@ -134,13 +199,90 @@ class ContentModerator {
     return const ModerationResult(ModerationVerdict.ok);
   }
 
+  /// OKUYAN tarafı koruma. Gönderiler paylaşılırken kendi çemberine göre
+  /// denetlenir; ama "Arkadaşlar" akışında, kişi profillerinde ve yanıtlarda
+  /// başka çemberlerden paylaşımlar da görünür. Bu fonksiyon, okuyanın kendi
+  /// alanları için tetikleyici olabilecek ifadeleri ("diyet", "kalori",
+  /// "5 kilo" gibi) metinden çıkarıp yerine "•••" koyar.
+  static MaskedText maskFor(String text, Iterable<StruggleCategory> readerCategories) {
+    final terms = <String>[..._triggers, for (final c in readerCategories) ...c.avoidWords];
+    // Uzunluğu koruyan küçük harf: Dart'ta 'İ'.toLowerCase() iki karakter olur.
+    final lower = text.replaceAll('İ', 'i').replaceAll('I', 'ı').toLowerCase();
+
+    final spans = <(int, int, String)>[];
+    for (final m in _word.allMatches(text)) {
+      final toks = tokenize(normalize(m.group(0)!));
+      if (toks.isNotEmpty) spans.add((m.start, m.end, toks.join()));
+    }
+
+    final ranges = <(int, int)>[for (final m in _numberUnit.allMatches(lower)) (m.start, m.end)];
+    for (final raw in terms) {
+      final exact = raw.startsWith('=');
+      final parts = tokenize(normalize(exact ? raw.substring(1) : raw));
+      if (parts.isEmpty) continue;
+      for (var i = 0; i + parts.length <= spans.length; i++) {
+        var ok = true;
+        for (var j = 0; j < parts.length; j++) {
+          final w = spans[i + j].$3;
+          final p = parts[j];
+          final match = parts.length == 1 ? (exact ? w == p : w.startsWith(p)) : w == p;
+          if (!match) {
+            ok = false;
+            break;
+          }
+        }
+        if (ok) ranges.add((spans[i].$1, spans[i + parts.length - 1].$2));
+      }
+    }
+    if (ranges.isEmpty) return MaskedText(text, 0);
+
+    ranges.sort((a, b) => a.$1 - b.$1);
+    final merged = <(int, int)>[];
+    for (final r in ranges) {
+      if (merged.isNotEmpty && r.$1 <= merged.last.$2) {
+        final last = merged.removeLast();
+        merged.add((last.$1, r.$2 > last.$2 ? r.$2 : last.$2));
+      } else {
+        merged.add(r);
+      }
+    }
+    final b = StringBuffer();
+    var pos = 0;
+    for (final r in merged) {
+      b
+        ..write(text.substring(pos, r.$1))
+        ..write('•••');
+      pos = r.$2;
+    }
+    b.write(text.substring(pos));
+    return MaskedText(b.toString(), merged.length);
+  }
+
+  static final _word = RegExp(r'[\p{L}\p{N}@$€]+', unicode: true);
+
   /// Küçük harf (Türkçe), leetspeak çözümü, Türkçe karakterleri sadeleştirme
   /// ve tekrarlanan harfleri teke indirme ("saaalak" → "salak").
   static String normalize(String s) {
     var t = s.replaceAll('İ', 'i').replaceAll('I', 'ı').toLowerCase();
     const map = {
-      '0': 'o', '1': 'i', '3': 'e', '4': 'a', '5': 's', '7': 't', '@': 'a', r'$': 's', '€': 'e',
-      'ç': 'c', 'ğ': 'g', 'ı': 'i', 'ö': 'o', 'ş': 's', 'ü': 'u', 'â': 'a', 'î': 'i', 'û': 'u',
+      '0': 'o',
+      '1': 'i',
+      '3': 'e',
+      '4': 'a',
+      '5': 's',
+      '7': 't',
+      '@': 'a',
+      r'$': 's',
+      '€': 'e',
+      'ç': 'c',
+      'ğ': 'g',
+      'ı': 'i',
+      'ö': 'o',
+      'ş': 's',
+      'ü': 'u',
+      'â': 'a',
+      'î': 'i',
+      'û': 'u',
     };
     final b = StringBuffer();
     String? prev;
@@ -183,10 +325,8 @@ class ContentModerator {
     return out;
   }
 
-  static List<String> tokenize(String normalized) => normalized
-      .split(RegExp(r'[^a-z0-9₺]+'))
-      .where((w) => w.isNotEmpty)
-      .toList();
+  static List<String> tokenize(String normalized) =>
+      normalized.split(RegExp(r'[^a-z0-9₺]+')).where((w) => w.isNotEmpty).toList();
 
   static bool containsTerm(List<String> toks, String rawTerm) {
     final exact = rawTerm.startsWith('=');

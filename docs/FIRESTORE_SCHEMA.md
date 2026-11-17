@@ -203,3 +203,23 @@ notes/{noteId}/replies/{replyId}
 - Hesap silmede kullanıcının tüm yanıtları `collectionGroup('replies').where('authorUid', ==, uid)` ile bulunur ve silinir (alan dışlaması `firestore.indexes.json` → `fieldOverrides`).
 - Yeni bileşik dizin: `notes (authorUid ASC, createdAt DESC)` → "Arkadaşlar" akışı ve kişi profili.
 - `users/{uid}/inbox` izinli türler: `friend_added`, `kudos`, `note_support`, `note_reply`, `friend_streak`.
+
+## Anonim paylaşım (v2.3)
+
+```
+notes/{noteId}                      // anonim biçim
+  anonymous: true
+  nickname: "Anonim üye"
+  avatar: -1
+  streak: 0
+  // authorUid YOK: yazarın kimliği herkese açık belgede tutulmaz
+  circleId, text, createdAt, supportCount, reportCount, replyCount
+
+users/{uid}/myNotes/{noteId}        // yalnızca sahibi okur
+  at: timestamp
+```
+
+- Anonim gönderi ve `myNotes` sahiplik kaydı **aynı batch**'te yazılır. Kural: `myNotes` kaydı yalnızca gönderi henüz yokken ve aynı istekte oluşuyorsa yazılabilir (başkasının gönderisini sahiplenip silmek engellenir).
+- Silme: `authorUid == ben` **veya** `users/{ben}/myNotes/{noteId}` var.
+- Anonim gönderinin yazarı bilinmediği için destek/yanıt bildirimi gönderilmez.
+- Okuyan tarafı koruma: `ContentModerator.maskFor` okuyanın alanları için tetikleyici ifadeleri ekranda "•••" ile gizler (veri değişmez).

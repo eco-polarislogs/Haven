@@ -4,6 +4,7 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:timezone/data/latest.dart' as tz_data;
 import 'package:timezone/timezone.dart' as tz;
 
+import '../../core/constants/app_constants.dart';
 import '../models/community.dart';
 
 /// Telefonun üst çubuğunda görünen bildirimler — SUNUCU GEREKTİRMEZ.
@@ -55,6 +56,44 @@ class LocalNotifier {
   static const _nudgeOffsets = [Duration(days: 1), Duration(days: 2), Duration(days: 3), Duration(days: 7)];
   static const _nudgeIds = [101, 102, 103, 104];
   static const _eveningId = 110;
+
+  /// Gün içi motivasyon (Duolingo tarzı): her gün 13:00'te kısa, her gün
+  /// değişen bir mesaj. 7 gün ileriye zamanlanır; uygulama her açıldığında
+  /// ve her kayıttan sonra yenilenir. Sorunun adı asla geçmez.
+  static const dailyHour = 13;
+  static const dailyTitles = [
+    'Günün sözü ✨',
+    'Küçük bir mola ☁️',
+    'Bugün de buradayız 🤍',
+    'Kendine bir dakika 🌤',
+    'Bir nefeslik ara',
+    'Selam 👋',
+    'Yanındayız 🤍',
+  ];
+  static const checkInInvite =
+      'Bugün nasıl geçiyor? Günü değerlendirmek birkaç saniye sürer; ne seçersen seç, burada yargı yok.';
+  static const _dailyIds = [120, 121, 122, 123, 124, 125, 126];
+
+  /// Saf plan (testli): hangi gün, hangi saatte, hangi mesaj.
+  @visibleForTesting
+  static List<({int slot, DateTime when, String title, String body})> dailyPlan(
+    DateTime now, {
+    required bool checkedInToday,
+  }) {
+    final dayIndex = now.difference(DateTime(now.year)).inDays;
+    return [
+      for (var d = 0; d < _dailyIds.length; d++)
+        if (DateTime(now.year, now.month, now.day + d, dailyHour).isAfter(now.add(const Duration(minutes: 30))))
+          (
+            slot: d,
+            when: DateTime(now.year, now.month, now.day + d, dailyHour),
+            title: dailyTitles[(dayIndex + d) % dailyTitles.length],
+            body: (d == 0 && !checkedInToday)
+                ? checkInInvite
+                : kGeneralAffirmations[(dayIndex + d) % kGeneralAffirmations.length],
+          ),
+    ];
+  }
 
   static Future<void> init() async {
     if (_ready || kIsWeb) return;
@@ -123,11 +162,14 @@ class LocalNotifier {
   static Future<void> scheduleGentleNudges({required bool enabled, required bool checkedInToday}) async {
     if (!_ready) return;
     try {
-      for (final id in [..._nudgeIds, _eveningId]) {
+      for (final id in [..._nudgeIds, _eveningId, ..._dailyIds]) {
         await _plugin.cancel(id: id);
       }
       if (!enabled) return;
       final now = DateTime.now();
+      for (final p in dailyPlan(now, checkedInToday: checkedInToday)) {
+        await _schedule(_dailyIds[p.slot], p.when, p.title, p.body, 'daily');
+      }
       for (var i = 0; i < _nudgeIds.length; i++) {
         await _schedule(_nudgeIds[i], withinWindow(now.add(_nudgeOffsets[i])), nudgeTitles[i], nudges[i], 'nudge_${i + 1}');
       }

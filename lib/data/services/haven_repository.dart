@@ -339,6 +339,19 @@ class HavenRepository {
       }
     }
 
+    // Anonim gönderilerim: kimliğim gönderide yok; sahiplik özel kaydımda.
+    final myNotes = await _user(uid).collection('myNotes').get(server);
+    for (final n in myNotes.docs) {
+      try {
+        await (_db.batch()
+              ..delete(_db.collection('notes').doc(n.id))
+              ..delete(n.reference))
+            .commit();
+      } on FirebaseException {
+        await n.reference.delete();
+      }
+    }
+
     await deleteAll(_db.collection('notes').where('authorUid', isEqualTo: uid));
     await deleteAll(_struggles(uid));
     await deleteAll(_checkins(uid));

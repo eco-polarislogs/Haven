@@ -100,25 +100,53 @@ class CommunityRepository {
         .map((q) => q.docs.map(CommunityNote.fromDoc).toList());
   }
 
+  /// [anonymous] true ise gönderide ad, avatar, seri ve yazar kimliği YOK;
+  /// sahiplik (silebilmek için) aynı batch'te yazarın özel kaydına yazılır.
   Future<void> postNote({
     required PublicProfile author,
     required StruggleCategory circle,
     required String text,
     required int streak,
+    bool anonymous = false,
   }) {
-    return _notes.add({
-      'authorUid': author.uid,
-      'nickname': author.nickname,
-      'avatar': author.avatar,
-      'streak': streak,
+    final ref = _notes.doc();
+    final common = {
       'circleId': circle.name,
       // Sunucu filtresinin satır atlamayla atlatılmaması için tek satır.
       'text': text.trim().replaceAll(RegExp(r'\s+'), ' '),
       'createdAt': FieldValue.serverTimestamp(),
       'supportCount': 0,
       'reportCount': 0,
-    }).timeout(const Duration(seconds: 15));
+    };
+    final batch = _db.batch();
+    if (anonymous) {
+      batch
+        ..set(ref, {
+          ...common,
+          'anonymous': true,
+          'nickname': CommunityNote.anonymousName,
+          'avatar': -1,
+          'streak': 0,
+        })
+        ..set(_myNotes(author.uid).doc(ref.id), {'at': FieldValue.serverTimestamp()});
+    } else {
+      batch.set(ref, {
+        ...common,
+        'anonymous': false,
+        'authorUid': author.uid,
+        'nickname': author.nickname,
+        'avatar': author.avatar,
+        'streak': streak,
+      });
+    }
+    return batch.commit().timeout(const Duration(seconds: 15));
   }
+
+  CollectionReference<Map<String, dynamic>> _myNotes(String uid) => _user(uid).collection('myNotes');
+
+  /// Kullanıcının anonim gönderilerinin kimlikleri (yalnızca kendisi okuyabilir).
+  Stream<Set<String>> watchMyAnonNoteIds(String uid) =>
+      _myNotes(uid).snapshots().map((q) => q.docs.map((d) => d.id).toSet());
 
   Future<void> supportNote(CommunityNote note, PublicProfile me) {
     final ref = _notes.doc(note.id);
@@ -128,7 +156,8 @@ class CommunityRepository {
       ..set(_user(me.uid), {
         'supportedNotes': FieldValue.arrayUnion([note.id])
       }, SetOptions(merge: true));
-    if (note.authorUid != me.uid) {
+    // Anonim gönderinin yazarı bilinmez → bildirim gönderilmez.
+    if (note.authorUid.isNotEmpty && note.authorUid != me.uid) {
       batch.set(_inbox(note.authorUid).doc(), _fromMe(me, InboxType.noteSupport));
     }
     return batch.commit().timeout(const Duration(seconds: 15));
@@ -145,7 +174,12 @@ class CommunityRepository {
     return batch.commit().timeout(const Duration(seconds: 15));
   }
 
-  Future<void> deleteNote(String noteId) => _notes.doc(noteId).delete();
+  /// Gönderiyi ve (anonimse) yazarın özel sahiplik kaydını birlikte siler.
+  Future<void> deleteNote(String noteId, String myUid) => (_db.batch()
+        ..delete(_notes.doc(noteId))
+        ..delete(_myNotes(myUid).doc(noteId)))
+      .commit()
+      .timeout(const Duration(seconds: 15));
 
   /// "Arkadaşlar" akışı: arkadaşlarının (ve senin) son paylaşımları.
   Stream<List<CommunityNote>> watchAuthorsFeed(List<String> authorIds) {
@@ -178,7 +212,7 @@ class CommunityRepository {
         'createdAt': FieldValue.serverTimestamp(),
       })
       ..update(ref, {'replyCount': FieldValue.increment(1)});
-    if (note.authorUid != me.uid) {
+    if (note.authorUid.isNotEmpty && note.authorUid != me.uid) {
       batch.set(_inbox(note.authorUid).doc(), _fromMe(me, InboxType.noteReply));
     }
     return batch.commit().timeout(const Duration(seconds: 15));

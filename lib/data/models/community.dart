@@ -55,10 +55,18 @@ class CommunityNote {
     required this.supportCount,
     required this.reportCount,
     this.replyCount = 0,
+    this.anonymous = false,
   });
 
+  /// Anonim gönderilerde görünen ad.
+  static const anonymousName = 'Anonim üye';
+
   final String id;
+
+  /// Anonim gönderilerde BOŞ: yazarın kimliği herkese açık belgede tutulmaz;
+  /// sahiplik yalnızca yazarın kendi özel `users/{uid}/myNotes` kaydındadır.
   final String authorUid;
+  final bool anonymous;
   final String nickname;
   final int avatar;
   final int streak;
@@ -86,6 +94,7 @@ class CommunityNote {
       supportCount: (m['supportCount'] as num?)?.toInt() ?? 0,
       reportCount: (m['reportCount'] as num?)?.toInt() ?? 0,
       replyCount: (m['replyCount'] as num?)?.toInt() ?? 0,
+      anonymous: m['anonymous'] == true,
     );
   }
 }

@@ -61,9 +61,11 @@ class _PostDetailScreenState extends ConsumerState<PostDetailScreen> {
       _controller.clear();
       if (mounted) FocusScope.of(context).unfocus();
     } on FirebaseException catch (e) {
-      setState(() => _problem = e.code == 'permission-denied'
-          ? 'Bu yanıt topluluk kurallarına takıldı. Daha yumuşak bir ifadeyle tekrar dener misin?'
-          : 'Yanıt şu an gönderilemedi.');
+      setState(
+        () => _problem = e.code == 'permission-denied'
+            ? 'Bu yanıt topluluk kurallarına takıldı. Daha yumuşak bir ifadeyle tekrar dener misin?'
+            : 'Yanıt şu an gönderilemedi.',
+      );
     } catch (_) {
       setState(() => _problem = 'Yanıt şu an gönderilemedi.');
     } finally {
@@ -78,93 +80,131 @@ class _PostDetailScreenState extends ConsumerState<PostDetailScreen> {
     final user = ref.watch(appUserProvider).value;
     final uid = ref.watch(uidProvider);
     // Gönderinin güncel hali (destek/yanıt sayıları) akıştan gelir.
-    final live = [
-      ...?ref.watch(feedProvider).value,
-      ...?ref.watch(friendsFeedProvider).value,
-    ].where((n) => n.id == widget.note.id).firstOrNull ?? widget.note;
+    final live =
+        [
+          ...?ref.watch(feedProvider).value,
+          ...?ref.watch(friendsFeedProvider).value,
+        ].where((n) => n.id == widget.note.id).firstOrNull ??
+        widget.note;
     final replies = ref.watch(repliesProvider(widget.note.id)).value ?? const <NoteReply>[];
     final myProfile = ref.watch(myProfileProvider).value;
 
     return Scaffold(
       appBar: AppBar(title: const Text('Paylaşım')),
-      body: Column(children: [
-        Expanded(
-          child: ListView(children: [
-            PostCard(note: live, supported: user?.supportedNotes.contains(live.id) ?? false, tappable: false),
-            const Divider(height: 1),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
-              child: Text(replies.isEmpty ? 'Henüz yanıt yok. İlk yanıtı sen yazabilirsin.' : 'Yanıtlar',
-                  style: t.labelLarge?.copyWith(color: scheme.outline)),
-            ),
-            for (final r in replies)
-              ListTile(
-                contentPadding: const EdgeInsets.fromLTRB(16, 2, 4, 2),
-                leading: GestureDetector(
-                  onTap: () => pushScreen(context, 'user_profile',
-                      UserProfileScreen(uid: r.authorUid, fallbackName: r.nickname)),
-                  child: AvatarBadge(index: r.avatar, radius: 18),
-                ),
-                title: Text.rich(TextSpan(children: [
-                  TextSpan(text: r.nickname, style: const TextStyle(fontWeight: FontWeight.w700)),
-                  TextSpan(text: '  · ${timeAgo(r.createdAt)}', style: t.bodySmall?.copyWith(color: scheme.outline)),
-                ])),
-                subtitle: Text(r.text, style: t.bodyMedium),
-                trailing: r.authorUid == uid
-                    ? IconButton(
-                        tooltip: 'Sil',
-                        icon: const Icon(Icons.delete_outline_rounded, size: 20),
-                        onPressed: () => ref.read(communityRepositoryProvider).deleteReply(widget.note.id, r.id),
-                      )
-                    : null,
-              ),
-            const SizedBox(height: 16),
-          ]),
-        ),
-        if (_problem != null)
-          Container(
-            margin: const EdgeInsets.fromLTRB(12, 0, 12, 6),
-            padding: const EdgeInsets.all(10),
-            decoration: BoxDecoration(
-                color: HavenColors.clay.withValues(alpha: 0.12), borderRadius: BorderRadius.circular(12)),
-            child: Row(children: [
-              const Icon(Icons.info_outline_rounded, color: HavenColors.clay, size: 20),
-              const SizedBox(width: 8),
-              Expanded(child: Text(_problem!, style: t.bodySmall)),
-            ]),
-          ),
-        SafeArea(
-          top: false,
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(12, 4, 8, 8),
-            child: Row(children: [
-              if (myProfile != null) AvatarBadge(index: myProfile.avatar, radius: 16),
-              const SizedBox(width: 8),
-              Expanded(
-                child: TextField(
-                  controller: _controller,
-                  maxLength: ContentModerator.maxNoteLength,
-                  minLines: 1,
-                  maxLines: 4,
-                  onChanged: (_) {
-                    if (_problem != null) setState(() => _problem = null);
-                  },
-                  decoration: const InputDecoration(
-                    hintText: 'Destekleyici bir yanıt yaz…',
-                    counterText: '',
-                    isDense: true,
+      body: Column(
+        children: [
+          Expanded(
+            child: ListView(
+              children: [
+                PostCard(note: live, supported: user?.supportedNotes.contains(live.id) ?? false, tappable: false),
+                const Divider(height: 1),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
+                  child: Text(
+                    replies.isEmpty ? 'Henüz yanıt yok. İlk yanıtı sen yazabilirsin.' : 'Yanıtlar',
+                    style: t.labelLarge?.copyWith(color: scheme.outline),
                   ),
                 ),
-              ),
-              IconButton.filled(
-                tooltip: 'Gönder',
-                onPressed: (_sending || myProfile == null) ? null : _send,
-                icon: const Icon(Icons.send_rounded),
-              ),
-            ]),
+                for (final r in replies)
+                  ListTile(
+                    contentPadding: const EdgeInsets.fromLTRB(16, 2, 4, 2),
+                    leading: GestureDetector(
+                      onTap: () => pushScreen(
+                        context,
+                        'user_profile',
+                        UserProfileScreen(uid: r.authorUid, fallbackName: r.nickname),
+                      ),
+                      child: AvatarBadge(index: r.avatar, radius: 18),
+                    ),
+                    title: Text.rich(
+                      TextSpan(
+                        children: [
+                          TextSpan(
+                            text: r.nickname,
+                            style: const TextStyle(fontWeight: FontWeight.w700),
+                          ),
+                          TextSpan(
+                            text: '  · ${timeAgo(r.createdAt)}',
+                            style: t.bodySmall?.copyWith(color: scheme.outline),
+                          ),
+                        ],
+                      ),
+                    ),
+                    subtitle: Builder(
+                      builder: (context) {
+                        final m = ContentModerator.maskFor(r.text, ref.watch(readerCategoriesProvider));
+                        return Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(m.text, style: t.bodyMedium),
+                            if (m.hidden > 0) const HiddenWordsNote(),
+                          ],
+                        );
+                      },
+                    ),
+                    trailing: r.authorUid == uid
+                        ? IconButton(
+                            tooltip: 'Sil',
+                            icon: const Icon(Icons.delete_outline_rounded, size: 20),
+                            onPressed: () => ref.read(communityRepositoryProvider).deleteReply(widget.note.id, r.id),
+                          )
+                        : null,
+                  ),
+                const SizedBox(height: 16),
+              ],
+            ),
           ),
-        ),
-      ]),
+          if (_problem != null)
+            Container(
+              margin: const EdgeInsets.fromLTRB(12, 0, 12, 6),
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                color: HavenColors.clay.withValues(alpha: 0.12),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Row(
+                children: [
+                  const Icon(Icons.info_outline_rounded, color: HavenColors.clay, size: 20),
+                  const SizedBox(width: 8),
+                  Expanded(child: Text(_problem!, style: t.bodySmall)),
+                ],
+              ),
+            ),
+          SafeArea(
+            top: false,
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(12, 4, 8, 8),
+              child: Row(
+                children: [
+                  if (myProfile != null) AvatarBadge(index: myProfile.avatar, radius: 16),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: TextField(
+                      controller: _controller,
+                      maxLength: ContentModerator.maxNoteLength,
+                      minLines: 1,
+                      maxLines: 4,
+                      onChanged: (_) {
+                        if (_problem != null) setState(() => _problem = null);
+                      },
+                      decoration: const InputDecoration(
+                        hintText: 'Destekleyici bir yanıt yaz…',
+                        counterText: '',
+                        isDense: true,
+                      ),
+                    ),
+                  ),
+                  IconButton.filled(
+                    tooltip: 'Gönder',
+                    onPressed: (_sending || myProfile == null) ? null : _send,
+                    icon: const Icon(Icons.send_rounded),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

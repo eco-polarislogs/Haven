@@ -55,7 +55,8 @@ class AnalyticsService {
 
   // Topluluk (içerik ASLA gönderilmez)
   Future<void> communityJoined(bool joined) => _log('community_joined', {'joined': joined ? 1 : 0});
-  Future<void> notePosted(StruggleCategory circle) => _log('note_posted', {'circle': circle.name});
+  Future<void> notePosted(StruggleCategory circle, {bool anonymous = false}) =>
+      _log('note_posted', {'circle': circle.name, 'anonymous': anonymous ? 1 : 0});
   Future<void> noteBlocked(String verdict) => _log('note_blocked', {'verdict': verdict});
   Future<void> noteSupported() => _log('note_supported', {});
   Future<void> replyPosted() => _log('reply_posted', {});

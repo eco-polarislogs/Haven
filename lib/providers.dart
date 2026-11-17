@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'core/constants/struggle_catalog.dart';
 import 'core/theme/theme_presets.dart';
 import 'data/models/app_user.dart';
 import 'data/models/community.dart';
@@ -131,6 +132,21 @@ final profileProvider = StreamProvider.family<PublicProfile?, String>(
 
 final repliesProvider = StreamProvider.family<List<NoteReply>, String>(
     (ref, noteId) => ref.watch(communityRepositoryProvider).watchReplies(noteId));
+
+/// Kendi anonim gönderilerimin kimlikleri (silme menüsü için; yalnızca bende).
+final myAnonNoteIdsProvider = StreamProvider<Set<String>>((ref) {
+  final uid = ref.watch(uidProvider);
+  if (uid == null) return Stream.value(const {});
+  return ref.watch(communityRepositoryProvider).watchMyAnonNoteIds(uid);
+});
+
+/// Okuyanın alanları: başkalarının paylaşımlarında bu alanlar için
+/// tetikleyici olabilecek ifadeler gizlenir (ContentModerator.maskFor).
+final readerCategoriesProvider = Provider<List<StruggleCategory>>((ref) =>
+    (ref.watch(appUserProvider).value?.categoryIds ?? const <String>[])
+        .map(categoryByName)
+        .whereType<StruggleCategory>()
+        .toList());
 
 final friendIdsProvider = StreamProvider<List<String>>((ref) {
   final uid = ref.watch(uidProvider);

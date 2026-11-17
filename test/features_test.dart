@@ -99,6 +99,28 @@ void main() {
       }
     });
 
+    test('gün içi bildirim: her gün 13:00, 7 gün, değişen ve sorunu adlandırmayan mesaj', () {
+      final plan = LocalNotifier.dailyPlan(DateTime(2026, 11, 18, 9), checkedInToday: false);
+      expect(plan.length, 7);
+      expect(plan.every((p) => p.when.hour == 13 && p.when.minute == 0), isTrue);
+      expect(plan.first.body, LocalNotifier.checkInInvite); // bugün kayıt yoksa davet
+      expect(plan.map((p) => p.body).toSet().length, greaterThan(3)); // her gün farklı
+      for (final p in plan) {
+        expect(LocalNotifier.withinWindow(p.when), p.when, reason: "sessiz saat dışında");
+        for (final c in StruggleCategory.values) {
+          expect(p.body.toLowerCase(), isNot(contains(c.shortTitle.toLowerCase())), reason: p.body);
+        }
+      }
+    });
+
+    test('gün içi bildirim: 13:00 geçtiyse bugünkü atlanır, kayıt varsa davet yerine söz gelir', () {
+      final late = LocalNotifier.dailyPlan(DateTime(2026, 11, 18, 15), checkedInToday: false);
+      expect(late.length, 6);
+      expect(late.first.when.day, 19);
+      final done = LocalNotifier.dailyPlan(DateTime(2026, 11, 18, 9), checkedInToday: true);
+      expect(done.first.body, isNot(LocalNotifier.checkInInvite));
+    });
+
     test('sessiz saatler: yalnızca 10:00–20:59', () {
       expect(LocalNotifier.withinWindow(DateTime(2026, 11, 18, 7)), DateTime(2026, 11, 18, 10, 30));
       expect(LocalNotifier.withinWindow(DateTime(2026, 11, 18, 22)), DateTime(2026, 11, 19, 10, 30));

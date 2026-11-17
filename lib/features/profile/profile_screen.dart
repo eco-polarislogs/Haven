@@ -19,6 +19,7 @@ import '../notifications/notification_bell.dart';
 import '../onboarding/struggle_picker_screen.dart';
 import '../../core/theme/app_theme.dart';
 import '../../l10n/l10n.dart';
+import '../ads/rewarded_unlock.dart';
 import '../rewards/gifts_screen.dart';
 import '../support/professional_support_screen.dart';
 
@@ -189,7 +190,8 @@ class ProfileScreen extends ConsumerWidget {
                 onChanged: (v) => repo.setNotificationsEnabled(uid, v),
                 secondary: const Icon(Icons.notifications_active_outlined),
                 title: const Text('Hatırlatmalar'),
-                subtitle: const Text('Bir süre görünmediğinde en fazla 3 kez hal hatır sorarız.'),
+                subtitle: const Text('Her gün 13.00\'te kısa bir motivasyon mesajı; bir süre görünmediğinde de '
+                    'hal hatır sorarız. Yalnızca 10:00–21:00 arası.'),
               ),
               SwitchListTile(
                 value: user.analyticsEnabled,
@@ -205,8 +207,9 @@ class ProfileScreen extends ConsumerWidget {
                 value: user.adsAllowed,
                 onChanged: (v) => repo.setAdsOptIn(uid, v),
                 secondary: const Icon(Icons.verified_user_outlined),
-                title: const Text('Filtreli reklamlar (isteğe bağlı)'),
-                subtitle: const Text('Yalnızca Hediyelerim\'de, sen istediğinde. Hassas alanlarda varsayılan kapalı.'),
+                title: const Text('Filtreli reklamlar'),
+                subtitle: const Text('Alt çubukta küçük bir reklam; temaları ve hediyeleri reklamla açabilme. '
+                    'Hassas alanlarda varsayılan kapalı; Sakinleş ekranında asla reklam yok.'),
               ),
             ]),
           ),
@@ -217,14 +220,14 @@ class ProfileScreen extends ConsumerWidget {
                 final open = isGiftUnlocked(
                     unlockStreak: p.unlockStreak, id: p.name, best: best, user: user);
                 return ChoiceChip(
+                  // Kilitli temada reklam izni varsa "reklamla aç" simgesi.
                   avatar: open
                       ? CircleAvatar(backgroundColor: p.primary, radius: 8)
-                      : const Icon(Icons.lock_outline_rounded, size: 16),
+                      : Icon(user.adsAllowed ? Icons.ondemand_video_rounded : Icons.lock_outline_rounded,
+                          size: 16),
                   label: Text(p.label),
                   selected: currentTheme == p,
-                  onSelected: open
-                      ? (_) => repo.setTheme(uid, p.name)
-                      : (_) => pushScreen(context, 'gifts', const GiftsScreen()),
+                  onSelected: open ? (_) => repo.setTheme(uid, p.name) : (_) => offerThemeUnlock(context, ref, p),
                 );
               }),
           ]),

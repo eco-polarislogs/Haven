@@ -6,15 +6,13 @@ import '../../core/constants/app_constants.dart';
 import '../../core/constants/struggle_catalog.dart';
 import '../../core/moderation/content_moderator.dart';
 import '../../core/theme/app_theme.dart';
+import '../../data/models/community.dart';
 import '../../providers.dart';
 import '../support/hard_day_sheet.dart';
 import 'community_screen.dart';
 
-Future<void> showComposeNoteSheet(BuildContext context) => showModalBottomSheet<void>(
-      context: context,
-      isScrollControlled: true,
-      builder: (_) => const _ComposeNoteSheet(),
-    );
+Future<void> showComposeNoteSheet(BuildContext context) =>
+    showModalBottomSheet<void>(context: context, isScrollControlled: true, builder: (_) => const _ComposeNoteSheet());
 
 class _ComposeNoteSheet extends ConsumerStatefulWidget {
   const _ComposeNoteSheet();
@@ -28,6 +26,9 @@ class _ComposeNoteSheetState extends ConsumerState<_ComposeNoteSheet> {
   StruggleCategory? _circle;
   String? _problem;
   bool _sending = false;
+
+  /// Gönderi başına seçim: isimle (takma ad + avatar + seri) ya da anonim.
+  bool _anonymous = false;
 
   @override
   void dispose() {
@@ -64,11 +65,18 @@ class _ComposeNoteSheetState extends ConsumerState<_ComposeNoteSheet> {
     final nav = Navigator.of(context);
     final messenger = ScaffoldMessenger.of(context);
     try {
-      await repo.postNote(author: me, circle: circle, text: _controller.text, streak: streak);
-      analytics.notePosted(circle);
+      await repo.postNote(author: me, circle: circle, text: _controller.text, streak: streak, anonymous: _anonymous);
+      analytics.notePosted(circle, anonymous: _anonymous);
       nav.pop();
-      messenger.showSnackBar(const SnackBar(
-          content: Text('Notun paylaşıldı. Birinin gününe ışık olabilir. 💙')));
+      messenger.showSnackBar(
+        SnackBar(
+          content: Text(
+            _anonymous
+                ? 'Anonim olarak paylaşıldı. Birinin gününe ışık olabilir. 💙'
+                : 'Paylaşıldı. Birinin gününe ışık olabilir. 💙',
+          ),
+        ),
+      );
     } on FirebaseException catch (e) {
       setState(() {
         _sending = false;
@@ -87,13 +95,11 @@ class _ComposeNoteSheetState extends ConsumerState<_ComposeNoteSheet> {
   @override
   Widget build(BuildContext context) {
     final user = ref.watch(appUserProvider).value;
-    final circles = (user?.categoryIds ?? const <String>[])
-        .map(categoryByName)
-        .whereType<StruggleCategory>()
-        .toList();
+    final circles = (user?.categoryIds ?? const <String>[]).map(categoryByName).whereType<StruggleCategory>().toList();
     _circle ??= circles.isEmpty ? null : circles.first;
     final t = Theme.of(context).textTheme;
-    final profileReady = ref.watch(myProfileProvider).value != null;
+    final me = ref.watch(myProfileProvider).value;
+    final profileReady = me != null;
 
     return Padding(
       padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
@@ -106,21 +112,51 @@ class _ComposeNoteSheetState extends ConsumerState<_ComposeNoteSheet> {
             children: [
               Text('Bir şey paylaş', style: t.titleLarge),
               const SizedBox(height: 4),
-              Text('Seni güçlendiren bir şeyi paylaş. Ayrıntılara (sayılar, yöntemler) girmeden, '
-                  'hislerinin üzerinden yazmak herkes için daha güvenli.',
-                  style: t.bodySmall),
+              Text(
+                'Seni güçlendiren bir şeyi paylaş. Ayrıntılara (sayılar, yöntemler) girmeden, '
+                'hislerinin üzerinden yazmak herkes için daha güvenli.',
+                style: t.bodySmall,
+              ),
               const SizedBox(height: 14),
               Text('Hangi çembere?', style: t.labelLarge),
               const SizedBox(height: 6),
-              Wrap(spacing: 8, runSpacing: 8, children: [
-                for (final c in circles)
-                  ChoiceChip(
-                    avatar: Icon(c.icon, size: 16, color: categoryAccent(c)),
-                    label: Text(c.shortTitle),
-                    selected: _circle == c,
-                    onSelected: (_) => setState(() => _circle = c),
+              Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                children: [
+                  for (final c in circles)
+                    ChoiceChip(
+                      avatar: Icon(c.icon, size: 16, color: categoryAccent(c)),
+                      label: Text(c.shortTitle),
+                      selected: _circle == c,
+                      onSelected: (_) => setState(() => _circle = c),
+                    ),
+                ],
+              ),
+              const SizedBox(height: 14),
+              Text('Nasıl görünsün?', style: t.labelLarge),
+              const SizedBox(height: 6),
+              SegmentedButton<bool>(
+                segments: [
+                  ButtonSegment(
+                    value: false,
+                    icon: const Icon(Icons.person_outline_rounded),
+                    label: Text(me?.nickname ?? 'İsmimle', overflow: TextOverflow.ellipsis),
                   ),
-              ]),
+                  const ButtonSegment(value: true, icon: Icon(Icons.visibility_off_outlined), label: Text('Anonim')),
+                ],
+                selected: {_anonymous},
+                showSelectedIcon: false,
+                onSelectionChanged: (s) => setState(() => _anonymous = s.first),
+              ),
+              const SizedBox(height: 6),
+              Text(
+                _anonymous
+                    ? 'Adın, avatarın ve serin görünmez; "${CommunityNote.anonymousName}" olarak paylaşılır. '
+                          'Yalnızca hangi alanda paylaştığın görünür.'
+                    : 'Takma adın, avatarın ve serin görünür; hangi alanda paylaştığın da yazar.',
+                style: t.bodySmall,
+              ),
               const SizedBox(height: 14),
               TextField(
                 controller: _controller,
@@ -132,13 +168,17 @@ class _ComposeNoteSheetState extends ConsumerState<_ComposeNoteSheet> {
                 },
                 decoration: const InputDecoration(hintText: 'Bugün kendim için yaptığım küçük bir şey…'),
               ),
-              Wrap(spacing: 8, runSpacing: 4, children: [
-                for (final p in kNotePrompts)
-                  ActionChip(
-                    label: Text(p.trim(), style: t.labelSmall),
-                    onPressed: () => setState(() => _controller.text = p),
-                  ),
-              ]),
+              Wrap(
+                spacing: 8,
+                runSpacing: 4,
+                children: [
+                  for (final p in kNotePrompts)
+                    ActionChip(
+                      label: Text(p.trim(), style: t.labelSmall),
+                      onPressed: () => setState(() => _controller.text = p),
+                    ),
+                ],
+              ),
               if (_problem != null) ...[
                 const SizedBox(height: 12),
                 Container(
@@ -147,11 +187,14 @@ class _ComposeNoteSheetState extends ConsumerState<_ComposeNoteSheet> {
                     color: HavenColors.clay.withValues(alpha: 0.12),
                     borderRadius: BorderRadius.circular(14),
                   ),
-                  child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                    const Icon(Icons.info_outline_rounded, color: HavenColors.clay),
-                    const SizedBox(width: 10),
-                    Expanded(child: Text(_problem!, style: t.bodyMedium)),
-                  ]),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Icon(Icons.info_outline_rounded, color: HavenColors.clay),
+                      const SizedBox(width: 10),
+                      Expanded(child: Text(_problem!, style: t.bodyMedium)),
+                    ],
+                  ),
                 ),
               ],
               const SizedBox(height: 16),
@@ -159,7 +202,9 @@ class _ComposeNoteSheetState extends ConsumerState<_ComposeNoteSheet> {
                 onPressed: (_sending || _circle == null || !profileReady) ? null : _send,
                 icon: _sending
                     ? const SizedBox.square(
-                        dimension: 18, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
+                        dimension: 18,
+                        child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                      )
                     : const Icon(Icons.send_rounded),
                 label: Text(profileReady ? 'Paylaş' : 'Profil hazırlanıyor…'),
               ),

@@ -17,10 +17,22 @@ class AdIds {
   static const _androidRewardedTest = 'ca-app-pub-3940256099942544/5224354917';
   static const _iosRewardedTest = 'ca-app-pub-3940256099942544/1712485313';
 
-  static String get rewarded {
+  // TODO(Gün 8): AdMob → Reklam birimleri → Banner (320x50)
+  static const _androidBannerReal = 'ca-app-pub-XXXXXXXXXXXXXXXX/XXXXXXXXXX';
+  static const _iosBannerReal = 'ca-app-pub-XXXXXXXXXXXXXXXX/XXXXXXXXXX';
+  static const _androidBannerTest = 'ca-app-pub-3940256099942544/6300978111';
+  static const _iosBannerTest = 'ca-app-pub-3940256099942544/2934735716';
+
+  static String get rewarded =>
+      _pick(_iosRewardedReal, _androidRewardedReal, _iosRewardedTest, _androidRewardedTest);
+
+  /// Alt çubuğun hemen üstündeki ince banner (320x50).
+  static String get banner => _pick(_iosBannerReal, _androidBannerReal, _iosBannerTest, _androidBannerTest);
+
+  static String _pick(String iosReal, String androidReal, String iosTest, String androidTest) {
     final isIos = defaultTargetPlatform == TargetPlatform.iOS;
-    final real = isIos ? _iosRewardedReal : _androidRewardedReal;
+    final real = isIos ? iosReal : androidReal;
     if (kReleaseMode && !real.contains('XXXX')) return real;
-    return isIos ? _iosRewardedTest : _androidRewardedTest;
+    return isIos ? iosTest : androidTest;
   }
 }

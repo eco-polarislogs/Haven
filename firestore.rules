@@ -27,6 +27,14 @@ service cloud.firestore {
         && !request.resource.data.diff(resource.data).affectedKeys().hasAny(['nudge']);
 
       match /struggles/{id} { allow read, write: if isOwner(); }
+      // Anonim gönderilerimin sahiplik kaydı. Yalnızca gönderiyle AYNI batch'te
+      // oluşturulabilir (başkasının gönderisini sahiplenip silmek engellenir).
+      match /myNotes/{noteId} {
+        allow read, delete: if isOwner();
+        allow create: if isOwner()
+          && !exists(/databases/$(database)/documents/notes/$(noteId))
+          && existsAfter(/databases/$(database)/documents/notes/$(noteId));
+      }
       match /checkins/{id} { allow read, write: if isOwner(); }
       // Özel notlar (günlük): yalnızca sahibi; 1000 karakter sınırı.
       match /journal/{id} {
@@ -81,9 +89,16 @@ service cloud.firestore {
 
       allow read: if signedIn();
 
+      function myNotePath() {
+        return /databases/$(database)/documents/users/$(me())/myNotes/$(noteId);
+      }
+
       // Not yalnızca yazarın kendi seçtiği çembere (kategoriye), temiz metinle.
+      // İki biçim:
+      //  - İsimli: authorUid == ben.
+      //  - Anonim: belgede authorUid YOK, ad "Anonim üye"; sahiplik aynı
+      //    batch'te users/{ben}/myNotes/{noteId} özel kaydına yazılır.
       allow create: if signedIn()
-        && request.resource.data.authorUid == me()
         && request.resource.data.text is string
         && request.resource.data.text.size() >= 3
         && request.resource.data.text.size() <= 280
@@ -91,9 +106,20 @@ service cloud.firestore {
         && request.resource.data.supportCount == 0
         && request.resource.data.reportCount == 0
         && request.resource.data.circleId in
-             get(/databases/$(database)/documents/users/$(me())).data.categoryIds;
+             get(/databases/$(database)/documents/users/$(me())).data.categoryIds
+        && (
+          (request.resource.data.get('authorUid', '') == me()
+            && request.resource.data.get('anonymous', false) == false)
+          ||
+          (request.resource.data.get('anonymous', false) == true
+            && !('authorUid' in request.resource.data)
+            && request.resource.data.nickname == 'Anonim üye'
+            && request.resource.data.streak == 0
+            && existsAfter(myNotePath()))
+        );
 
-      allow delete: if signedIn() && resource.data.authorUid == me();
+      allow delete: if signedIn()
+        && (resource.data.get('authorUid', '') == me() || exists(myNotePath()));
 
       // Başkaları yalnızca sayaçları +1 artırabilir; aynı batch'te kendi
       // destek/şikayet kaydını oluşturmalıdır → kişi başı 1 kez.

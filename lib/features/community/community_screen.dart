@@ -52,7 +52,10 @@ class CommunityScreen extends ConsumerWidget {
                     child: InkWell(
                       customBorder: const CircleBorder(),
                       onTap: () => pushScreen(
-                          context, 'user_profile', UserProfileScreen(uid: me.uid, fallbackName: me.nickname)),
+                        context,
+                        'user_profile',
+                        UserProfileScreen(uid: me.uid, fallbackName: me.nickname),
+                      ),
                       child: AvatarBadge(index: me.avatar, radius: 17),
                     ),
                   ),
@@ -60,7 +63,11 @@ class CommunityScreen extends ConsumerWidget {
           title: const Text('Topluluk'),
           actions: const [NotificationBell(), SizedBox(width: 4)],
           bottom: const TabBar(
-            tabs: [Tab(text: 'Senin için'), Tab(text: 'Arkadaşlar'), Tab(text: 'Kişiler')],
+            tabs: [
+              Tab(text: 'Senin için'),
+              Tab(text: 'Arkadaşlar'),
+              Tab(text: 'Kişiler'),
+            ],
           ),
         ),
         floatingActionButton: Builder(
@@ -99,8 +106,11 @@ class _JoinView extends ConsumerWidget {
           ),
         ),
         const SizedBox(height: 20),
-        Text('Aynı yolda yürüyenlerle buluş',
-            textAlign: TextAlign.center, style: t.headlineSmall?.copyWith(fontWeight: FontWeight.w600)),
+        Text(
+          'Aynı yolda yürüyenlerle buluş',
+          textAlign: TextAlign.center,
+          style: t.headlineSmall?.copyWith(fontWeight: FontWeight.w600),
+        ),
         const SizedBox(height: 12),
         Text(
           'Kısa paylaşımlar yap, başkalarının paylaşımlarına destek ver ve yanıt yaz, '
@@ -111,7 +121,10 @@ class _JoinView extends ConsumerWidget {
         const SizedBox(height: 16),
         const _RuleLine(icon: Icons.shield_outlined, text: 'Her paylaşım ve yanıt yayınlanmadan önce denetlenir.'),
         const _RuleLine(icon: Icons.visibility_off_outlined, text: 'Takipçi ve beğeni yarışı yok; kimse puanlanmaz.'),
-        const _RuleLine(icon: Icons.flag_outlined, text: 'Rahatsız eden bir şeyi bildirdiğinde senin için hemen gizlenir.'),
+        const _RuleLine(
+          icon: Icons.flag_outlined,
+          text: 'Rahatsız eden bir şeyi bildirdiğinde senin için hemen gizlenir.',
+        ),
         const SizedBox(height: 24),
         FilledButton.icon(
           onPressed: () {
@@ -120,10 +133,12 @@ class _JoinView extends ConsumerWidget {
             if (uid == null || user == null) return;
             ref.read(repositoryProvider).setCommunityJoined(uid, true);
             ref.read(analyticsProvider).communityJoined(true);
-            unawaited(ref
-                .read(communityRepositoryProvider)
-                .ensureProfile(uid, nickname: user.nickname ?? 'Haven üyesi', avatar: user.avatar, daily: user.daily)
-                .catchError((Object e) => debugPrint('Profil: $e')));
+            unawaited(
+              ref
+                  .read(communityRepositoryProvider)
+                  .ensureProfile(uid, nickname: user.nickname ?? 'Haven üyesi', avatar: user.avatar, daily: user.daily)
+                  .catchError((Object e) => debugPrint('Profil: $e')),
+            );
           },
           icon: const Icon(Icons.login_rounded),
           label: const Text('Topluluğa katıl'),
@@ -140,13 +155,15 @@ class _RuleLine extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Padding(
-        padding: const EdgeInsets.symmetric(vertical: 5),
-        child: Row(children: [
-          Icon(icon, size: 20, color: Theme.of(context).colorScheme.primary),
-          const SizedBox(width: 10),
-          Expanded(child: Text(text, style: Theme.of(context).textTheme.bodyMedium)),
-        ]),
-      );
+    padding: const EdgeInsets.symmetric(vertical: 5),
+    child: Row(
+      children: [
+        Icon(icon, size: 20, color: Theme.of(context).colorScheme.primary),
+        const SizedBox(width: 10),
+        Expanded(child: Text(text, style: Theme.of(context).textTheme.bodyMedium)),
+      ],
+    ),
+  );
 }
 
 // ----------------------------------------------------------------- akışlar
@@ -170,10 +187,7 @@ class _ForYouTabState extends ConsumerState<_ForYouTab> with AutomaticKeepAliveC
   Widget build(BuildContext context) {
     super.build(context);
     final user = ref.watch(appUserProvider).value;
-    final circles = (user?.categoryIds ?? const <String>[])
-        .map(categoryByName)
-        .whereType<StruggleCategory>()
-        .toList();
+    final circles = (user?.categoryIds ?? const <String>[]).map(categoryByName).whereType<StruggleCategory>().toList();
     final filter = circles.contains(_filter) ? _filter : null;
 
     return _Feed(
@@ -274,10 +288,12 @@ class _Feed extends ConsumerWidget {
             if (i == 1) return const _ComposerRow();
             if (visible.isEmpty) return empty;
             final n = visible[i - 2];
-            return Column(children: [
-              PostCard(note: n, supported: user?.supportedNotes.contains(n.id) ?? false),
-              const Divider(height: 1),
-            ]);
+            return Column(
+              children: [
+                PostCard(note: n, supported: user?.supportedNotes.contains(n.id) ?? false),
+                const Divider(height: 1),
+              ],
+            );
           },
         );
       },
@@ -293,24 +309,30 @@ class _ComposerRow extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final me = ref.watch(myProfileProvider).value;
     final scheme = Theme.of(context).colorScheme;
-    return Column(children: [
-      InkWell(
-        onTap: () => showComposeNoteSheet(context),
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(16, 12, 16, 12),
-          child: Row(children: [
-            AvatarBadge(index: me?.avatar ?? 0, radius: 22),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Text('Bugün neyi paylaşmak istersin?',
-                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(color: scheme.outline)),
+    return Column(
+      children: [
+        InkWell(
+          onTap: () => showComposeNoteSheet(context),
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(16, 12, 16, 12),
+            child: Row(
+              children: [
+                AvatarBadge(index: me?.avatar ?? 0, radius: 22),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    'Bugün neyi paylaşmak istersin?',
+                    style: Theme.of(context).textTheme.bodyLarge?.copyWith(color: scheme.outline),
+                  ),
+                ),
+                Icon(Icons.edit_outlined, color: scheme.primary),
+              ],
             ),
-            Icon(Icons.edit_outlined, color: scheme.primary),
-          ]),
+          ),
         ),
-      ),
-      const Divider(height: 1),
-    ]);
+        const Divider(height: 1),
+      ],
+    );
   }
 }
 
@@ -323,15 +345,15 @@ class _TopicChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Padding(
-        padding: const EdgeInsets.only(right: 8),
-        child: ChoiceChip(
-          avatar: icon == null ? null : Icon(icon, size: 16),
-          label: Text(label),
-          selected: selected,
-          showCheckmark: false,
-          onSelected: (_) => onTap(),
-        ),
-      );
+    padding: const EdgeInsets.only(right: 8),
+    child: ChoiceChip(
+      avatar: icon == null ? null : Icon(icon, size: 16),
+      label: Text(label),
+      selected: selected,
+      showCheckmark: false,
+      onSelected: (_) => onTap(),
+    ),
+  );
 }
 
 class _Message extends StatelessWidget {
@@ -346,14 +368,16 @@ class _Message extends StatelessWidget {
     final t = Theme.of(context).textTheme;
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 40, horizontal: 24),
-      child: Column(children: [
-        Icon(icon, size: 48, color: Theme.of(context).colorScheme.primary),
-        const SizedBox(height: 12),
-        Text(title, style: t.titleMedium, textAlign: TextAlign.center),
-        const SizedBox(height: 6),
-        Text(body, style: t.bodyMedium, textAlign: TextAlign.center),
-        if (action != null) ...[const SizedBox(height: 8), action!],
-      ]),
+      child: Column(
+        children: [
+          Icon(icon, size: 48, color: Theme.of(context).colorScheme.primary),
+          const SizedBox(height: 12),
+          Text(title, style: t.titleMedium, textAlign: TextAlign.center),
+          const SizedBox(height: 6),
+          Text(body, style: t.bodyMedium, textAlign: TextAlign.center),
+          if (action != null) ...[const SizedBox(height: 8), action!],
+        ],
+      ),
     );
   }
 }
