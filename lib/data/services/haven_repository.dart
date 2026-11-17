@@ -342,6 +342,7 @@ class HavenRepository {
     }
 
     await deleteAll(_db.collection('notes').where('authorUid', isEqualTo: uid));
+    await deleteAll(_db.collection('feedback').where('uid', isEqualTo: uid));
     await deleteAll(_struggles(uid));
     await deleteAll(_checkins(uid));
     await deleteAll(_inbox(uid));

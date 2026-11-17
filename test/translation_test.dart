@@ -115,7 +115,9 @@ void main() {
       ..add(LocalNotifier.eveningTitle)
       ..add(LocalNotifier.eveningReminder)
       ..addAll(LocalNotifier.dailyTitles)
-      ..add(LocalNotifier.checkInInvite);
+      ..add(LocalNotifier.checkInInvite)
+      ..add(LocalNotifier.checkInInviteStreak)
+      ..add(LocalNotifier.greetingTitle);
     return keys;
   }
 

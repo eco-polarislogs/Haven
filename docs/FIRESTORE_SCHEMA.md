@@ -223,3 +223,26 @@ users/{uid}/myNotes/{noteId}        // yalnızca sahibi okur
 - Silme: `authorUid == ben` **veya** `users/{ben}/myNotes/{noteId}` var.
 - Anonim gönderinin yazarı bilinmediği için destek/yanıt bildirimi gönderilmez.
 - Okuyan tarafı koruma: `ContentModerator.maskFor` okuyanın alanları için tetikleyici ifadeleri ekranda "•••" ile gizler (veri değişmez).
+
+## Destek ve öneriler (v3.1)
+
+```
+feedback/{id}                        // kullanıcı → geliştirici talebi; toplulukta GÖRÜNMEZ
+  uid: string                        // gönderen (yanıt bildirimi için)
+  kind: "idea" | "bug" | "help" | "other"
+  text: string                       // 10–1500 karakter
+  status: "open" | "seen" | "planned" | "done"
+  nickname?: string                  // yalnızca "takma adımı ekle" seçildiyse
+  lang: "tr" | "en" | "es" | "zh" | "hi"
+  platform: string                   // android / iOS
+  appVersion: string
+  createdAt: timestamp (sunucu)
+  reply?: string, replyLang?: string, repliedAt?: timestamp, updatedAt?: timestamp   // yalnızca geliştirici yazar
+```
+
+- **Okuma:** yalnızca talebin sahibi ve geliştirici (`developerUids()` kuralı = `kDeveloperUids`).
+- **Oluşturma:** yalnızca kendi adına, `status == "open"`, hazır alanlarla. Mücadele alanları ve notlar EKLENMEZ.
+- **Güncelleme:** yalnızca geliştirici; sadece `status`, `reply`, `replyLang`, `repliedAt`, `updatedAt`.
+- **Silme:** sahibi ya da geliştirici. Hesap silinince kullanıcının tüm talepleri de silinir.
+- **Bildirimler:** talep gönderilince aynı batch'te geliştiricinin kutusuna `feedback_new` (value = tür); geliştirici yeni yanıt yazınca ya da durumu planlandı/tamamlandı yapınca kullanıcının kutusuna `feedback_reply` (value = yeni durum). İkisi de `inboxPush` ile 5 dilde push olur (Blaze).
+- Geliştirici eklemek: uid'yi `lib/core/constants/app_constants.dart → kDeveloperUids` ve `firestore.rules → developerUids()` listelerine ekle, `firebase deploy --only firestore:rules`.

@@ -22,6 +22,8 @@ import '../../l10n/l10n.dart';
 import '../ads/rewarded_unlock.dart';
 import '../rewards/gifts_screen.dart';
 import 'badges.dart';
+import '../support/developer_panel_screen.dart';
+import '../support/feedback_screen.dart';
 import '../support/professional_support_screen.dart';
 import '../../l10n/tx.dart';
 
@@ -285,6 +287,32 @@ class ProfileScreen extends ConsumerWidget {
             child: Text(
               tx('Tüm içerik 5 dilde. Çeviriler özenle hazırlandı; yine de bir uzmanın tavsiyesinin yerini tutmaz.'),
               style: t.bodySmall,
+            ),
+          ),
+          SectionTitle(tx('Destek ve öneriler')),
+          Card(
+            child: Column(
+              children: [
+                ListTile(
+                  leading: const Icon(Icons.forum_outlined),
+                  title: Text(tx('Geliştiriciye yaz')),
+                  subtitle: Text(tx('Öneri, hata bildirimi ya da soru; yanıtı burada görürsün.')),
+                  trailing: const Icon(Icons.chevron_right_rounded),
+                  onTap: () => pushScreen(context, 'feedback', const FeedbackScreen()),
+                ),
+                if (ref.watch(isDeveloperProvider))
+                  ListTile(
+                    leading: Badge(
+                      isLabelVisible: ref.watch(openTicketCountProvider) > 0,
+                      label: Text('${ref.watch(openTicketCountProvider)}'),
+                      child: const Icon(Icons.inbox_outlined),
+                    ),
+                    title: Text(tx('Geliştirici paneli')),
+                    subtitle: Text(tx('Kullanıcılardan gelen talepler (yalnızca sana görünür)')),
+                    trailing: const Icon(Icons.chevron_right_rounded),
+                    onTap: () => pushScreen(context, 'developer_panel', const DeveloperPanelScreen()),
+                  ),
+              ],
             ),
           ),
           SectionTitle(tx('Hesap')),

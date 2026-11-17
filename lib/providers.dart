@@ -15,11 +15,13 @@ import 'data/models/community.dart';
 import 'data/models/journal_entry.dart';
 import 'data/models/month_log.dart';
 import 'data/models/struggle.dart';
+import 'data/models/support_ticket.dart';
 import 'data/services/analytics_service.dart';
 import 'data/services/auth_service.dart';
 import 'data/services/community_repository.dart';
 import 'data/services/haven_repository.dart';
 import 'data/services/notification_service.dart';
+import 'data/services/support_repository.dart';
 
 // Neden Riverpod (kod üretimi olmadan)? Auth durumu ve Firestore akışları
 // doğrudan StreamProvider'a oturuyor; AsyncValue.when ile yükleniyor/hata/veri
@@ -201,6 +203,30 @@ final inboxProvider = StreamProvider<List<InboxItem>>((ref) {
 
 final unreadCountProvider = Provider<int>(
   (ref) => (ref.watch(inboxProvider).value ?? const []).where((i) => !i.read).length,
+);
+
+// ------------------------------------------------------------ destek ve öneriler
+final supportRepositoryProvider = Provider<SupportRepository>((ref) => SupportRepository(FirebaseFirestore.instance));
+
+/// Bu hesap geliştirici mi? (Geliştirici paneli yalnızca ona görünür.)
+final isDeveloperProvider = Provider<bool>(
+  (ref) => ref.watch(supportRepositoryProvider).isDeveloper(ref.watch(uidProvider)),
+);
+
+final myTicketsProvider = StreamProvider<List<SupportTicket>>((ref) {
+  final uid = ref.watch(uidProvider);
+  if (uid == null) return Stream.value(const []);
+  return ref.watch(supportRepositoryProvider).watchMine(uid);
+});
+
+final allTicketsProvider = StreamProvider<List<SupportTicket>>((ref) {
+  if (!ref.watch(isDeveloperProvider)) return Stream.value(const []);
+  return ref.watch(supportRepositoryProvider).watchAll();
+});
+
+/// Geliştirici panelindeki okunmamış (yeni) talep sayısı.
+final openTicketCountProvider = Provider<int>(
+  (ref) => (ref.watch(allTicketsProvider).value ?? const []).where((t) => t.status == TicketStatus.open).length,
 );
 
 // ------------------------------------------------------------ gezinme

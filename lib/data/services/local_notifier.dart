@@ -5,6 +5,9 @@ import 'package:timezone/data/latest.dart' as tz_data;
 import 'package:timezone/timezone.dart' as tz;
 
 import '../../core/constants/app_constants.dart';
+import '../../core/constants/struggle_catalog.dart';
+import '../../core/utils/day_key.dart';
+import '../models/app_user.dart';
 import '../../l10n/tx.dart';
 import '../models/community.dart';
 
@@ -72,27 +75,69 @@ class LocalNotifier {
   ];
   static const checkInInvite =
       'Bugün nasıl geçiyor? Günü değerlendirmek birkaç saniye sürer; ne seçersen seç, burada yargı yok.';
+
+  /// Kişiye özel davet: serisi olan kullanıcıya kendi yolunu hatırlatır.
+  /// Baskı yok ("bozulur", "kaybedersin" gibi ifadeler asla kullanılmaz).
+  static const checkInInviteStreak =
+      'Bugün nasıl geçiyor? {n} günlük yolun burada; günü eklemek birkaç saniye sürer. Ne seçersen seç, yargı yok.';
+
+  /// Takma adla kişisel selam (kilit ekranında içerik zaten gizli).
+  static const greetingTitle = 'Selam {name} 👋';
   static const _dailyIds = [120, 121, 122, 123, 124, 125, 126];
 
   /// Saf plan (testli): hangi gün, hangi saatte, hangi mesaj.
+  ///
+  /// Kişiye göre: seçtiği alanların sözleri genel sözlerle gün aşırı
+  /// dönüşümlü gelir (ör. uyku alanı seçen birine dinlenmeyle ilgili sözler);
+  /// bugün kayıt yoksa davet, serisi varsa kendi gün sayısıyla, takma adı
+  /// varsa adıyla selamlanır. Sorunun adı hiçbir mesajda geçmez.
   @visibleForTesting
-  static List<({int slot, DateTime when, String title, String body})> dailyPlan(
+  static List<({int slot, DateTime when, String title, String body, Map<String, Object?> args})> dailyPlan(
     DateTime now, {
     required bool checkedInToday,
+    List<StruggleCategory> categories = const [],
+    int streak = 0,
+    String? nickname,
   }) {
     final dayIndex = now.difference(DateTime(now.year)).inDays;
+    final own = [for (final c in categories) ...c.affirmationsTr];
+    final name = nickname?.trim() ?? '';
+    String quote(int i) => (own.isNotEmpty && i.isEven)
+        ? own[(i ~/ 2) % own.length]
+        : kGeneralAffirmations[(i ~/ (own.isEmpty ? 1 : 2)) % kGeneralAffirmations.length];
     return [
       for (var d = 0; d < _dailyIds.length; d++)
         if (DateTime(now.year, now.month, now.day + d, dailyHour).isAfter(now.add(const Duration(minutes: 30))))
-          (
-            slot: d,
-            when: DateTime(now.year, now.month, now.day + d, dailyHour),
-            title: dailyTitles[(dayIndex + d) % dailyTitles.length],
-            body: (d == 0 && !checkedInToday)
-                ? checkInInvite
-                : kGeneralAffirmations[(dayIndex + d) % kGeneralAffirmations.length],
-          ),
+          if (d == 0 && !checkedInToday)
+            (
+              slot: d,
+              when: DateTime(now.year, now.month, now.day + d, dailyHour),
+              title: name.isNotEmpty ? greetingTitle : dailyTitles[(dayIndex + d) % dailyTitles.length],
+              body: streak > 0 ? checkInInviteStreak : checkInInvite,
+              args: {'name': name, 'n': streak},
+            )
+          else
+            (
+              slot: d,
+              when: DateTime(now.year, now.month, now.day + d, dailyHour),
+              title: dailyTitles[(dayIndex + d) % dailyTitles.length],
+              body: quote(dayIndex + d),
+              args: const <String, Object?>{},
+            ),
     ];
+  }
+
+  /// Kullanıcının kendi verisiyle (alanlar, seri, takma ad, bildirim tercihi)
+  /// tüm telefon bildirimlerini yeniden kurar.
+  static Future<void> scheduleFor(AppUser user, {bool? checkedInToday}) {
+    final today = todayKey();
+    return scheduleGentleNudges(
+      enabled: user.notificationsEnabled,
+      checkedInToday: checkedInToday ?? user.daily.lastDay == today,
+      categories: user.categoryIds.map(categoryByName).nonNulls.toList(),
+      streak: user.daily.live(today),
+      nickname: user.nickname,
+    );
   }
 
   static Future<void> init() async {
@@ -154,7 +199,13 @@ class LocalNotifier {
   );
 
   /// Her açılışta ve her kayıttan sonra çağrılır.
-  static Future<void> scheduleGentleNudges({required bool enabled, required bool checkedInToday}) async {
+  static Future<void> scheduleGentleNudges({
+    required bool enabled,
+    required bool checkedInToday,
+    List<StruggleCategory> categories = const [],
+    int streak = 0,
+    String? nickname,
+  }) async {
     if (!_ready) return;
     try {
       for (final id in [..._nudgeIds, _eveningId, ..._dailyIds]) {
@@ -163,8 +214,15 @@ class LocalNotifier {
       if (!enabled) return;
       await _refreshChannels();
       final now = DateTime.now();
-      for (final p in dailyPlan(now, checkedInToday: checkedInToday)) {
-        await _schedule(_dailyIds[p.slot], p.when, p.title, p.body, 'daily');
+      final plan = dailyPlan(
+        now,
+        checkedInToday: checkedInToday,
+        categories: categories,
+        streak: streak,
+        nickname: nickname,
+      );
+      for (final p in plan) {
+        await _schedule(_dailyIds[p.slot], p.when, p.title, p.body, 'daily', p.args);
       }
       for (var i = 0; i < _nudgeIds.length; i++) {
         await _schedule(
@@ -197,9 +255,16 @@ class LocalNotifier {
 
   /// Metinler Türkçe kaynaktır; zamanlama anında kullanıcının diline çevrilir.
   /// (Uygulama dili değişince açılışta yeniden zamanlanır.)
-  static Future<void> _schedule(int id, DateTime when, String titleTr, String bodyTr, String payload) {
-    final title = tx(titleTr);
-    final body = tx(bodyTr);
+  static Future<void> _schedule(
+    int id,
+    DateTime when,
+    String titleTr,
+    String bodyTr,
+    String payload, [
+    Map<String, Object?> args = const {},
+  ]) {
+    final title = tx(titleTr, args);
+    final body = tx(bodyTr, args);
     return _plugin.zonedSchedule(
       id: id,
       scheduledDate: tz.TZDateTime.from(when, tz.UTC),

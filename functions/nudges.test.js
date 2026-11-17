@@ -89,3 +89,15 @@ test("bildirim kutusu push metinleri 5 dilde ve hazır mesaj listeleri eşit uzu
   assert.equal(inboxText({ type: "kudos", messageId: 1 }, "es"), "Una amistad: " + KUDOS_I18N.es[1]);
   assert.equal(inboxText({ type: "login" }, "xx"), inboxText({ type: "login" }, "tr"));
 });
+
+test("destek talebi bildirimleri: 5 dilde, türe ve duruma göre", () => {
+  for (const lang of ["tr", "en", "es", "zh", "hi"]) {
+    const fresh = inboxText({ type: "feedback_new", value: 1 }, lang);
+    assert.ok(fresh && fresh.length > 10, lang);
+    const replies = [0, 2, 3].map((v) => inboxText({ type: "feedback_reply", value: v }, lang));
+    assert.equal(new Set(replies).size, 3, `${lang}: yanıt / planlandı / tamamlandı farklı`);
+  }
+  assert.match(inboxText({ type: "feedback_new", value: 0, fromNickname: "Deniz" }), /Öneri.*Deniz/);
+  assert.match(inboxText({ type: "feedback_new", value: 9 }), /Diğer.*İsimsiz/);
+  assert.match(inboxText({ type: "feedback_reply", value: 3 }, "en"), /done/);
+});

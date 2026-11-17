@@ -198,7 +198,7 @@ void checkIn(BuildContext context, WidgetRef ref, Struggle struggle, CheckInResu
   if (outcome == null) return;
 
   // Kayıt yapıldı: akşam hatırlatmasını iptal et, merdiveni yeniden kur.
-  LocalNotifier.scheduleGentleNudges(enabled: user.notificationsEnabled, checkedInToday: true);
+  LocalNotifier.scheduleFor(user, checkedInToday: true);
 
   final daily = outcome.daily;
   ref.read(analyticsProvider).checkIn(struggle.category, result, gapDays: outcome.gapDays, dailyStreak: daily?.current);

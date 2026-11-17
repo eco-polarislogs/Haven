@@ -7,6 +7,9 @@ import '../../data/models/community.dart';
 import '../../l10n/l10n.dart';
 import '../../providers.dart';
 import '../../l10n/tx.dart';
+import '../../core/navigation.dart';
+import '../support/developer_panel_screen.dart';
+import '../support/feedback_screen.dart';
 
 /// Bildirim merkezi: arkadaş ekleme, cesaret notları, destekler, seriler,
 /// giriş/çıkış olayları — hepsi tek yerde.
@@ -74,7 +77,16 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
             itemBuilder: (context, i) => _InboxTile(
               item: list[i],
               onTap: () {
-                if (!list[i].read && uid != null) repo.markRead(uid, list[i].id);
+                final item = list[i];
+                if (!item.read && uid != null) repo.markRead(uid, item.id);
+                switch (item.type) {
+                  case InboxType.feedbackNew:
+                    pushScreen(context, 'developer_panel', const DeveloperPanelScreen());
+                  case InboxType.feedbackReply:
+                    pushScreen(context, 'feedback', const FeedbackScreen());
+                  default:
+                    break;
+                }
               },
             ),
           );

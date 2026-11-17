@@ -1,4 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:haven/l10n/tx.dart';
 import 'package:haven/core/constants/app_constants.dart';
 import 'package:haven/core/constants/struggle_catalog.dart';
 import 'package:haven/core/moderation/content_moderator.dart';
@@ -119,6 +120,33 @@ void main() {
       expect(late.first.when.day, 19);
       final done = LocalNotifier.dailyPlan(DateTime(2026, 11, 18, 9), checkedInToday: true);
       expect(done.first.body, isNot(LocalNotifier.checkInInvite));
+    });
+
+    test('gün içi bildirim kişiye göre: kendi alanlarının sözleri, kendi serisi, takma adı', () {
+      final cats = [StruggleCategory.sleep];
+      final plan = LocalNotifier.dailyPlan(
+        DateTime(2026, 11, 18, 9),
+        checkedInToday: false,
+        categories: cats,
+        streak: 5,
+        nickname: 'Deniz',
+      );
+      expect(plan.first.body, LocalNotifier.checkInInviteStreak);
+      expect(plan.first.title, LocalNotifier.greetingTitle);
+      expect(plan.first.args, {'name': 'Deniz', 'n': 5});
+      final bodies = plan.skip(1).map((p) => p.body).toList();
+      expect(bodies.any(StruggleCategory.sleep.affirmationsTr.contains), isTrue, reason: 'kendi alanından söz');
+      expect(bodies.any(kGeneralAffirmations.contains), isTrue, reason: 'genel söz de gelir');
+      // Uyku alanı seçmeyen birine uyku sözleri gelmez.
+      final other = LocalNotifier.dailyPlan(DateTime(2026, 11, 18, 9), checkedInToday: true, categories: [StruggleCategory.anger]);
+      expect(other.map((p) => p.body).any(StruggleCategory.sleep.affirmationsTr.contains), isFalse);
+      // Davet metni baskı kurmaz, sorunu adlandırmaz.
+      for (final m in [LocalNotifier.checkInInviteStreak, LocalNotifier.greetingTitle]) {
+        for (final w in ['bozul', 'kaybet', 'başarısız', 'sıfırlan']) {
+          expect(m.toLowerCase().contains(w), isFalse, reason: m);
+        }
+      }
+      expect(fillPlaceholders(LocalNotifier.checkInInviteStreak, plan.first.args), contains('5 günlük'));
     });
 
     test('sessiz saatler: yalnızca 10:00–20:59', () {

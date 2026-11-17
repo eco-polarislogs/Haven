@@ -153,10 +153,16 @@ flutter build appbundle --release
 
 ## Telefon bildirimleri (üst çubuk)
 
-- **Şefkatli hatırlatmalar cihazda zamanlanır** (`lib/data/services/local_notifier.dart`), sunucu gerektirmez. Uygulama her açıldığında merdiven yeniden kurulur: ~1. gün "Bugün buralarda görünmüyorsun…", ~2. gün "Zor bir gün müydü?…", ~3. gün "Sadece nasıl olduğunu sormak istedik…", ~7. gün "Gözlerimiz seni aradı…"; o gün kayıt yoksa 20:00'de "Bugünlük sayfamızı boş bıraktık…". Ayrıca **her gün 13.00'te** kısa, her gün değişen bir motivasyon mesajı gelir (o gün henüz kayıt yoksa günü değerlendirmeye nazik bir davet). Yalnızca 10:00–20:59 arası, kilit ekranında içerik gizli, dokununca uygulama açılır. Profil → Hatırlatmalar ile tamamen kapatılabilir.
+- **Şefkatli hatırlatmalar cihazda zamanlanır** (`lib/data/services/local_notifier.dart`), sunucu gerektirmez. Uygulama her açıldığında merdiven yeniden kurulur: ~1. gün "Bugün buralarda görünmüyorsun…", ~2. gün "Zor bir gün müydü?…", ~3. gün "Sadece nasıl olduğunu sormak istedik…", ~7. gün "Gözlerimiz seni aradı…"; o gün kayıt yoksa 20:00'de "Bugünlük sayfamızı boş bıraktık…". Ayrıca **her gün 13.00'te** kısa, her gün değişen bir motivasyon mesajı gelir. **Kişiye göre:** kullanıcının seçtiği alanların sözleri genel sözlerle gün aşırı dönüşümlü gelir; o gün henüz kayıt yoksa takma adıyla selamlanır ("Selam Deniz 👋") ve serisi varsa kendi gün sayısıyla davet edilir. Bildirim dili kullanıcının uygulama dilidir. Yalnızca 10:00–20:59 arası, kilit ekranında içerik gizli, dokununca uygulama açılır. Profil → Hatırlatmalar ile tamamen kapatılabilir.
 - Her bildirim kısa ve sıcak bir başlıkla gelir ("Merhaba 👋", "Kendine bir mola ☁️", "Yarın da buradayız ✨"), genişletilebilir metin, kalkan simgesi ve tema rengiyle gösterilir.
 - **Topluluk olayları** (arkadaş ekledi, cesaret notu, destek, yanıt, seri) uygulama açık ya da arka plandayken üst çubukta gösterilir; dokununca bildirim merkezi açılır. Uygulama **tamamen kapalıyken** de gelmesi için `firebase deploy --only functions` (Blaze planı) gerekir → `inboxPush`.
 - Sunucudaki zamanlanmış hatırlatma (`gentleNudges`) çift bildirim olmasın diye varsayılan kapalıdır (`SERVER_NUDGES=true` ile açılır).
+
+## Destek ve öneriler (kullanıcı → geliştirici)
+
+- **Kullanıcı:** Profil → Destek ve öneriler → *Geliştiriciye yaz*. Tür seçer (Öneri / Hata bildir / Yardım / Diğer), yazar, isterse takma adını ekler. Talep toplulukta görünmez; yalnızca uygulama dili, cihaz türü ve sürüm eklenir. Gönderdiği taleplerin durumunu (Gönderildi → Okundu → Planlandı → Tamamlandı) ve geliştiricinin yanıtını aynı sayfada görür; yanıt farklı dildeyse cihaz üstünde çevrilebilir. Metin acil bir durumu anlatıyorsa destek hatları hemen önerilir.
+- **Geliştirici:** Profil → *Geliştirici paneli* (yalnızca `kDeveloperUids` hesaplarına görünür; yeni talep sayısı rozetle). Tüm talepler, durum filtreleri, tam metin + çeviri, kopyala, durum değiştir, yanıt yaz, sil. Yeni talep gelince bildirim merkezine düşer; yanıt yazınca kullanıcıya bildirim gider.
+- Kurallar ve şema: `docs/FIRESTORE_SCHEMA.md` → *Destek ve öneriler*.
 
 ## Reklam güvenliği (AdMob'da ZORUNLU ayarlar)
 

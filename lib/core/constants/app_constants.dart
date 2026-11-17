@@ -228,3 +228,13 @@ String generateFriendCode([Random? random]) {
   final r = random ?? Random.secure();
   return List.generate(6, (_) => _codeChars[r.nextInt(_codeChars.length)]).join();
 }
+
+// ------------------------------------------------------------ destek talepleri
+
+/// Uygulama sürümü (destek taleplerine eklenir; pubspec.yaml ile aynı tutulmalı).
+const kAppVersion = '3.1.0';
+
+/// Destek ve öneri taleplerini okuyup yanıtlayabilen geliştirici hesapları
+/// (Firebase Auth uid). firestore.rules → developerUids() ile AYNI olmalı.
+/// Yeni bir geliştirici eklemek için uid'yi iki yere de ekle ve kuralları yayınla.
+const kDeveloperUids = <String>{'45q7AAJ06TOi49mMyHEPdLMDPi82'};

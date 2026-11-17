@@ -4,7 +4,6 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../core/utils/day_key.dart';
 import '../../data/models/community.dart';
 import '../../data/services/local_notifier.dart';
 import '../../providers.dart';
@@ -54,12 +53,8 @@ class _SessionBootstrapState extends ConsumerState<SessionBootstrap> with Widget
   void _rescheduleNudges() {
     final user = ref.read(appUserProvider).value;
     if (user == null) return;
-    unawaited(
-      LocalNotifier.scheduleGentleNudges(
-        enabled: user.notificationsEnabled,
-        checkedInToday: user.daily.lastDay == todayKey(),
-      ),
-    );
+    // Kişiye göre: alanlarının sözleri, kendi serisi ve takma adı.
+    unawaited(LocalNotifier.scheduleFor(user));
   }
 
   void _onInbox(List<InboxItem>? items) {

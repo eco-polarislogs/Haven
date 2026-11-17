@@ -10,6 +10,11 @@ service cloud.firestore {
     function signedIn() { return request.auth != null; }
     function me() { return request.auth.uid; }
 
+    // Destek taleplerini okuyup yanıtlayabilen geliştirici hesapları.
+    // lib/core/constants/app_constants.dart → kDeveloperUids ile AYNI olmalı.
+    function developerUids() { return ['45q7AAJ06TOi49mMyHEPdLMDPi82']; }
+    function isDeveloper() { return signedIn() && me() in developerUids(); }
+
     // Sunucu tarafı içerik filtresi: istemci atlatılsa bile en ağır ifadeler,
     // kriz/yöntem kelimeleri ve linkler reddedilir. Ayrıntılı denetim istemcide
     // (lib/core/moderation/content_moderator.dart).
@@ -58,7 +63,11 @@ service cloud.firestore {
         allow create: if isOwner() || (
           signedIn()
           && request.resource.data.fromUid == me()
-          && request.resource.data.type in ['friend_added', 'kudos', 'note_support', 'note_reply', 'friend_streak']
+          && (request.resource.data.type in ['friend_added', 'kudos', 'note_support', 'note_reply', 'friend_streak']
+              // Destek talebi: yalnızca geliştiricinin kutusuna "yeni talep";
+              // yalnızca geliştirici kullanıcıya "talebin güncellendi" bırakabilir.
+              || (request.resource.data.type == 'feedback_new' && uid in developerUids())
+              || (request.resource.data.type == 'feedback_reply' && isDeveloper()))
           && request.resource.data.keys().hasOnly(
                ['type', 'fromUid', 'fromNickname', 'fromAvatar', 'messageId', 'value', 'createdAt', 'read'])
           && request.resource.data.read == false
@@ -167,6 +176,35 @@ service cloud.firestore {
           && getAfter(notePath()).data.replyCount == get(notePath()).data.get('replyCount', 0) + 1;
         allow delete: if signedIn() && resource.data.authorUid == me();
       }
+    }
+
+    // Destek ve öneri talepleri: yalnızca sahibi ve geliştirici okur.
+    // Kullanıcı yalnızca kendi adına, "open" durumunda, hazır alanlarla yazar;
+    // durumu ve yanıtı yalnızca geliştirici değiştirir. Toplulukta görünmez.
+    match /feedback/{id} {
+      allow read: if signedIn() && (resource.data.uid == me() || isDeveloper());
+      allow create: if signedIn()
+        && request.resource.data.uid == me()
+        && request.resource.data.keys().hasOnly(
+             ['uid', 'kind', 'text', 'status', 'nickname', 'lang', 'platform', 'appVersion', 'createdAt'])
+        && request.resource.data.kind in ['idea', 'bug', 'help', 'other']
+        && request.resource.data.status == 'open'
+        && request.resource.data.text is string
+        && request.resource.data.text.size() >= 10
+        && request.resource.data.text.size() <= 1500
+        && request.resource.data.lang is string && request.resource.data.lang.size() <= 5
+        && request.resource.data.platform is string && request.resource.data.platform.size() <= 12
+        && request.resource.data.appVersion is string && request.resource.data.appVersion.size() <= 16
+        && request.resource.data.createdAt == request.time
+        && (!('nickname' in request.resource.data)
+            || (request.resource.data.nickname is string && request.resource.data.nickname.size() <= 24));
+      allow update: if isDeveloper()
+        && request.resource.data.diff(resource.data).affectedKeys()
+             .hasOnly(['status', 'reply', 'replyLang', 'repliedAt', 'updatedAt'])
+        && request.resource.data.status in ['open', 'seen', 'planned', 'done']
+        && (!('reply' in request.resource.data)
+            || (request.resource.data.reply is string && request.resource.data.reply.size() <= 1500));
+      allow delete: if signedIn() && (resource.data.uid == me() || isDeveloper());
     }
 
     // Hesap silme: kullanıcının tüm yanıtlarını bulmak için collection group okuma.

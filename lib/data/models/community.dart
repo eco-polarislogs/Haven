@@ -5,6 +5,7 @@ import '../../core/constants/app_constants.dart';
 import '../../core/constants/struggle_catalog.dart';
 import '../../core/utils/streak.dart';
 import '../../l10n/tx.dart';
+import 'support_ticket.dart';
 
 DateTime? _date(Object? v) => v is Timestamp ? v.toDate() : null;
 
@@ -152,6 +153,9 @@ enum InboxType {
   friendStreak('friend_streak'),
   streakMilestone('streak_milestone'),
   supportSuggestion('support_suggestion'),
+  // Destek ve öneriler: geliştiriciye yeni talep / kullanıcıya talep güncellemesi.
+  feedbackNew('feedback_new'),
+  feedbackReply('feedback_reply'),
   unknown('unknown');
 
   const InboxType(this.wire);
@@ -203,6 +207,13 @@ class InboxItem {
 
   String get _who => fromNickname ?? tx('Bir arkadaşın');
 
+  /// feedback_new: value = talep türü; feedback_reply: value = yeni durum.
+  TicketKind get _ticketKind => (value != null && value! >= 0 && value! < TicketKind.values.length)
+      ? TicketKind.values[value!]
+      : TicketKind.other;
+  TicketStatus? get _ticketStatus =>
+      (value != null && value! >= 0 && value! < TicketStatus.values.length) ? TicketStatus.values[value!] : null;
+
   String get title => switch (type) {
     InboxType.welcome => tx('Haven\'a hoş geldin'),
     InboxType.login => tx('Hesabına giriş yapıldı'),
@@ -214,6 +225,8 @@ class InboxItem {
     InboxType.friendStreak => tx('{who} {p} günlük seriye ulaştı', {'who': _who, 'p': value ?? ''}),
     InboxType.streakMilestone => tx('{p} günlük seri!', {'p': value ?? ''}),
     InboxType.supportSuggestion => tx('Seni düşünüyoruz'),
+    InboxType.feedbackNew => tx('Yeni destek talebi · {kind}', {'kind': _ticketKind.label}),
+    InboxType.feedbackReply => tx('Destek talebin güncellendi'),
     InboxType.unknown => 'Haven',
   };
 
@@ -233,6 +246,14 @@ class InboxItem {
     InboxType.supportSuggestion => tx(
       'Son günlerin zor geçmiş görünüyor. Bir uzmanla konuşmak iyi gelebilir; Destek al bölümüne göz at.',
     ),
+    InboxType.feedbackNew => tx('Gönderen: {who}. Profil → Geliştirici paneli\'nden okuyabilirsin.', {
+      'who': fromNickname ?? tx('İsimsiz bir kullanıcı'),
+    }),
+    InboxType.feedbackReply => switch (_ticketStatus) {
+      TicketStatus.planned => tx('Talebin planlandı. Ayrıntılar Profil → Destek ve öneriler\'de.'),
+      TicketStatus.done => tx('Talebin tamamlandı, teşekkürler! Ayrıntılar Profil → Destek ve öneriler\'de.'),
+      _ => tx('Geliştirici talebini yanıtladı. Profil → Destek ve öneriler\'den okuyabilirsin.'),
+    },
     InboxType.unknown => '',
   };
 
@@ -247,6 +268,8 @@ class InboxItem {
     InboxType.friendStreak => Icons.local_fire_department_outlined,
     InboxType.streakMilestone => Icons.local_fire_department_rounded,
     InboxType.supportSuggestion => Icons.volunteer_activism_outlined,
+    InboxType.feedbackNew => Icons.inbox_outlined,
+    InboxType.feedbackReply => Icons.support_agent_rounded,
     InboxType.unknown => Icons.notifications_none_rounded,
   };
 }

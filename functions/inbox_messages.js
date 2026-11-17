@@ -73,6 +73,10 @@ const T = {
     streak_milestone: (v) => `${v} günlük seri! Kendine her gün geri döndün.`,
     login: "Hesabına yeni bir giriş yapıldı. Bu sen değilsen Profil → Çıkış yap.",
     support_suggestion: "Seni düşünüyoruz. Destek al bölümü her zaman bir dokunuş uzağında.",
+    kinds: ["Öneri", "Hata bildirimi", "Yardım", "Diğer"],
+    feedback_new: (k, n) => `Yeni destek talebi (${k}) · ${n}. Profil → Geliştirici paneli.`,
+    anon: "İsimsiz",
+    feedback_reply: ["Geliştirici talebini yanıtladı. Profil → Destek ve öneriler.", "Talebin planlandı. Ayrıntılar Profil → Destek ve öneriler'de.", "Talebin tamamlandı, teşekkürler! Ayrıntılar Profil → Destek ve öneriler'de."],
   },
   en: {
     friend: "A friend",
@@ -84,6 +88,10 @@ const T = {
     streak_milestone: (v) => `${v}-day streak! You came back to yourself every day.`,
     login: "There was a new sign-in to your account. If this wasn't you, go to Profile → Sign out.",
     support_suggestion: "We're thinking of you. The Get support section is always one tap away.",
+    kinds: ["Idea", "Bug report", "Help", "Other"],
+    feedback_new: (k, n) => `New support request (${k}) · ${n}. Profile → Developer panel.`,
+    anon: "No name",
+    feedback_reply: ["The developer replied to your request. Profile → Support & feedback.", "Your request is planned. Details in Profile → Support & feedback.", "Your request is done, thank you! Details in Profile → Support & feedback."],
   },
   es: {
     friend: "Una amistad",
@@ -95,6 +103,10 @@ const T = {
     streak_milestone: (v) => `¡Racha de ${v} días! Volviste a ti cada día.`,
     login: "Se inició sesión en tu cuenta. Si no fuiste tú, ve a Perfil → Cerrar sesión.",
     support_suggestion: "Pensamos en ti. La sección Buscar apoyo está siempre a un toque.",
+    kinds: ["Sugerencia", "Error", "Ayuda", "Otro"],
+    feedback_new: (k, n) => `Nueva solicitud de soporte (${k}) · ${n}. Perfil → Panel de desarrollo.`,
+    anon: "Sin nombre",
+    feedback_reply: ["El equipo de desarrollo respondió a tu solicitud. Perfil → Soporte y sugerencias.", "Tu solicitud está planificada. Detalles en Perfil → Soporte y sugerencias.", "¡Tu solicitud está completada, gracias! Detalles en Perfil → Soporte y sugerencias."],
   },
   zh: {
     friend: "一位好友",
@@ -106,6 +118,10 @@ const T = {
     streak_milestone: (v) => `连续 ${v} 天！你每天都回到了自己身边。`,
     login: "你的账户有新的登录。如果不是你本人，请前往“个人资料 → 退出登录”。",
     support_suggestion: "我们在想你。“获取支持”板块永远只需轻点一下。",
+    kinds: ["建议", "问题反馈", "帮助", "其他"],
+    feedback_new: (k, n) => `新的支持请求（${k}）· ${n}。个人资料 → 开发者面板。`,
+    anon: "匿名",
+    feedback_reply: ["开发者已回复你的请求。个人资料 → 支持与建议。", "你的请求已列入计划。详情见“个人资料 → 支持与建议”。", "你的请求已完成，谢谢！详情见“个人资料 → 支持与建议”。"],
   },
   hi: {
     friend: "एक दोस्त",
@@ -117,6 +133,10 @@ const T = {
     streak_milestone: (v) => `${v} दिन की स्ट्रीक! आप हर दिन ख़ुद के पास लौटे।`,
     login: "आपके खाते में नया साइन इन हुआ। अगर यह आप नहीं थे, तो प्रोफ़ाइल → साइन आउट पर जाएँ।",
     support_suggestion: "हम आपके बारे में सोच रहे हैं। सहायता लें सेक्शन हमेशा एक टैप दूर है।",
+    kinds: ["सुझाव", "गड़बड़ी की रिपोर्ट", "मदद", "अन्य"],
+    feedback_new: (k, n) => `नया सहायता अनुरोध (${k}) · ${n}। प्रोफ़ाइल → डेवलपर पैनल।`,
+    anon: "बिना नाम",
+    feedback_reply: ["डेवलपर ने आपके अनुरोध का जवाब दिया। प्रोफ़ाइल → सहायता और सुझाव।", "आपका अनुरोध योजना में शामिल हो गया। विवरण प्रोफ़ाइल → सहायता और सुझाव में।", "आपका अनुरोध पूरा हो गया, धन्यवाद! विवरण प्रोफ़ाइल → सहायता और सुझाव में।"],
   },
 };
 
@@ -151,6 +171,14 @@ function inboxText(item, language) {
       return t.login;
     case "support_suggestion":
       return t.support_suggestion;
+    case "feedback_new": {
+      // value = talep türü (0 öneri, 1 hata, 2 yardım, 3 diğer)
+      const n = typeof item.fromNickname === "string" && item.fromNickname.trim() ? item.fromNickname.trim().slice(0, 24) : t.anon;
+      return t.feedback_new(t.kinds[item.value] || t.kinds[3], n);
+    }
+    case "feedback_reply":
+      // value = yeni durum (2 planlandı, 3 tamamlandı, diğerleri: yanıt)
+      return item.value === 2 ? t.feedback_reply[1] : item.value === 3 ? t.feedback_reply[2] : t.feedback_reply[0];
     default:
       return null;
   }
