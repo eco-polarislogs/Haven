@@ -101,7 +101,7 @@ dart pub global activate flutterfire_cli
    ```
    `lib/firebase_options.dart` ve `android/app/google-services.json` oluşur. SHA ekledikten sonra bu komutu **tekrar** çalıştır.
 6. Kuralları ve gizlilik sayfalarını yükle: `firebase use --add` (projeni seç) → `firebase deploy --only firestore:rules,hosting`
-7. `site/gizlilik.html` ve `site/hesap-silme.html` içindeki `[GELİŞTİRİCİ ADI]`, `[E-POSTA]`, `[TARİH]` alanlarını doldurup tekrar deploy et. Linkler: `https://<proje-id>.web.app/gizlilik` ve `/hesap-silme`. İlkini `lib/core/constants/app_constants.dart`'a, ikisini de Play Console'a yaz.
+7. Gizlilik ve hesap silme sayfaları `site/` altında (geliştirici, e-posta ve tarih dolu). Değiştirince tekrar deploy et. Linkler: https://ecren-7050e.web.app/gizlilik ve https://ecren-7050e.web.app/hesap-silme. İlki `lib/core/constants/app_constants.dart`'ta; ikisi de Play Console'a yazılır.
 
 ### 4. Çalıştır
 

@@ -47,6 +47,13 @@
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_color"
             android:resource="@color/haven_notification" />
+        <!-- FCM: Firebase Console kampanyaları ve sunucu push'ları da yüksek öncelikli
+             kanala düşsün; uygulama kapalıyken bile ekranın üstünden kayarak görünür.
+             Kanal yoksa Android bunları "Diğer" kanalına koyar ve yalnızca durum
+             çubuğunda simge olarak gösterir. Kanal LocalNotifier.init'te oluşturulur. -->
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_channel_id"
+            android:value="haven_gentle" />
         <!-- FCM 17+: cihaz hedefi olarak Firebase Installation ID (FID) kullanımını aç.
              Bu olmadan register() "API disabled" hatası verir. -->
         <meta-data

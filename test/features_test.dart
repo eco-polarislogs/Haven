@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:haven/l10n/tx.dart';
 import 'package:haven/core/constants/app_constants.dart';
@@ -153,6 +156,20 @@ void main() {
       expect(LocalNotifier.withinWindow(DateTime(2026, 11, 18, 7)), DateTime(2026, 11, 18, 10, 30));
       expect(LocalNotifier.withinWindow(DateTime(2026, 11, 18, 22)), DateTime(2026, 11, 19, 10, 30));
       expect(LocalNotifier.withinWindow(DateTime(2026, 11, 18, 15)), DateTime(2026, 11, 18, 15));
+    });
+
+    test('push bildirimleri de yukarıdan kayan (yüksek öncelikli) kanala düşer', () {
+      // Kanal belirtilmezse Android FCM bildirimini "Diğer" kanalına koyar ve
+      // yalnızca durum çubuğunda simge gösterir (uygulama kapalıyken de).
+      final manifest = File('android/app/src/main/AndroidManifest.xml').readAsStringSync();
+      expect(
+        RegExp(r'default_notification_channel_id"\s+android:value="(\w+)"').firstMatch(manifest)?.group(1),
+        LocalNotifier.gentleChannel.id,
+      );
+      expect(LocalNotifier.gentleChannel.importance, Importance.high);
+      final functions = File('functions/index.js').readAsStringSync();
+      expect(functions, contains('inbox: "${LocalNotifier.socialChannel.id}"'));
+      expect(functions, contains('gentle_nudge: "${LocalNotifier.gentleChannel.id}"'));
     });
   });
 

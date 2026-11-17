@@ -1,6 +1,6 @@
 # Haven — Yayın kontrol listesi
 
-Son kontrol: 17 Kasım 2026 · sürüm 3.1.0 (2)
+Son kontrol: 17 Kasım 2026 · sürüm 3.2.0 (3)
 
 ## 1. Kodda hazır olanlar (doğrulandı)
 
@@ -9,7 +9,8 @@ Son kontrol: 17 Kasım 2026 · sürüm 3.1.0 (2)
 | Google ile giriş (Android), Apple ile giriş kodu (iOS) | Hazır | Emülatörde giriş; Firebase'de debug + yükleme anahtarı SHA-1/SHA-256 kayıtlı |
 | Firestore veritabanı + güvenlik kuralları | Yayında | `firebase deploy --only firestore:rules` |
 | Analytics (ekran + 20 özel olay) | Hazır | `analytics_service.dart`; DebugView ile izlenebilir |
-| Bildirimler: cihazda zamanlanan günlük/kişisel hatırlatmalar, bildirim merkezi, FCM | Hazır | Emülatörde; Firebase Console → Messaging kampanyası Blaze gerektirmez |
+| Bildirimler: cihazda zamanlanan günlük/kişisel hatırlatmalar, bildirim merkezi, FCM | Hazır | Hepsi uygulama kapalıyken de gelir ve ekranın üstünden kayar (yüksek öncelikli kanal; FCM için `default_notification_channel_id`). `test/features_test.dart` |
+| Gizlilik politikası + hesap silme sayfası | Yayında | https://ecren-7050e.web.app/gizlilik · https://ecren-7050e.web.app/hesap-silme |
 | Topluluk: paylaşım, yanıt, destek, arkadaş, cesaret notu, anonim paylaşım | Hazır | Testler + emülatör |
 | **Bildir / Engelle** (Play kullanıcı içeriği politikası) | Hazır | `test/moderation_actions_test.dart`, kurallar yayında |
 | Destek ve öneriler + Geliştirici paneli + şikâyetleri kaldırma | Hazır | Emülatörde uçtan uca denendi |
@@ -22,7 +23,7 @@ Son kontrol: 17 Kasım 2026 · sürüm 3.1.0 (2)
 ## 2. Senin yapman gerekenler (hesap / ödeme / kişisel bilgi)
 
 ### 2.1 Google Play Console — kritik yol
-1. Play Console geliştirici hesabı aç (tek seferlik 25 $).
+1. ~~Play Console geliştirici hesabı aç~~ ✓ açıldı.
 2. Uygulama oluştur → **Dahili test** kanalına `build/app/outputs/bundle/release/app-release.aab` yükle. Dahili test incelemesiz ve hemen yayına girer; "mağazaya yüklendi" şartı için ilk kanıt budur.
 3. **Kapalı test** başlat. 2023 sonrası açılan kişisel hesaplarda üretime geçmek için **en az 12 testçinin 14 gün kesintisiz** katılması gerekir. Hocanı da testçi listesine ekle.
 4. İlk yüklemeden sonra Play Console → *Uygulama bütünlüğü → Uygulama imzalama* sayfasındaki **uygulama imzalama anahtarı SHA-1 ve SHA-256** değerlerini Firebase'e ekle. Bunu yapmazsan Play'den indirilen sürümde Google ile giriş çalışmaz. Değerleri Claude'a verirsen `firebase apps:android:sha:create` ile o ekler.
@@ -33,11 +34,30 @@ Son kontrol: 17 Kasım 2026 · sürüm 3.1.0 (2)
 3. Uygulama kimliğini (`ca-app-pub-…~…`) ve üç birim kimliğini Claude'a ver. `AndroidManifest.xml` ve `lib/core/constants/ad_ids.dart` güncellenir.
 4. Engelleme kontrolleri: içerik derecelendirmesi en fazla **G**, hassas kategoriler kapalı (README → Reklam güvenliği).
 
-### 2.3 Gizlilik politikası ve hesap silme sayfası
-`site/gizlilik.html` ve `site/hesap-silme.html` içinde **[GELİŞTİRİCİ ADI]**, **[E-POSTA]**, **[TARİH]** boşlukları duruyor. Play, ulaşılabilir bir iletişim bilgisi ister. Herkese açık yayımlanacak ad ve e-postayı sen seç (kişisel e-posta yerine proje için ayrı bir adres önerilir), sonra `firebase deploy --only hosting`.
+### 2.3 Gizlilik politikası ve hesap silme sayfası ✓
+Geliştirici: Ecren Solmazgül · solmazgulecren@gmail.com · yürürlük 17 Kasım 2026. Yayında:
+- Gizlilik politikası: https://ecren-7050e.web.app/gizlilik
+- Hesap silme: https://ecren-7050e.web.app/hesap-silme
 
-### 2.4 İsteğe bağlı
-- **Firebase Blaze planı:** Uygulama tamamen kapalıyken topluluk bildirimlerinin push olarak gelmesi için (`inboxPush`). Blaze olmadan da bildirim merkezi, cihazdaki hatırlatmalar ve Console kampanyaları çalışır.
+Değiştirirsen: `firebase deploy --only hosting`.
+
+### 2.4 Uygulama kapalıyken kullanıcıya bildirim göndermek
+**Otomatik (cihazda, sunucusuz, ücretsiz):** Uygulama her açılışta telefona şunları kurar; uygulama kapalıyken ve internet yokken de gelir:
+- Her gün 13.00: kişiye özel mesaj (takma adıyla selam, kendi serisi, seçtiği alanlara göre söz).
+- Bugün kayıt yoksa 20.00'de tek bir nazik hatırlatma.
+- Uygulamaya girmezse 1., 2., 3. ve 7. günde "seni düşünüyoruz" merdiveni. Kullanıcı geri döndükçe bunlar iptal edilip yeniden kurulur.
+
+**Elle, istediğin an (Firebase Console, Blaze gerekmez):**
+1. Firebase Console → *Messaging* → **Yeni kampanya** → *Bildirimler*.
+2. Başlık ve metni yaz (nazik dil; sorunun adını yazma).
+3. Hedef: uygulama `com.havenapp.haven`. Bir süredir girmeyenleri geri çekmek için koşul ekle: **Son uygulama etkileşimi** → ör. 3 günden önce. Dile göre ayrı kampanya: **Diller** → Türkçe / English / …
+4. Zamanlama: *Şimdi* ya da *Yinelenen* (ör. her gün 13.00, kullanıcının saat diliminde).
+5. Gönder. Bildirim uygulama kapalıyken de gelir ve ekranın üstünden kayarak görünür (kanal artık varsayılan; *Ek seçenekler → Android bildirim kanalı* boş bırakılabilir).
+
+**Sunucudan otomatik push (Blaze gerekir):** Arkadaş ekleme, cesaret notu, yanıt gibi topluluk olaylarının uygulama kapalıyken push olarak gelmesi ve sunucu tarafı hatırlatmalar `functions/` içinde hazır. Blaze'e geçince (kart gerekir, bu kullanımda ücretsiz kotanın içinde kalır): `firebase deploy --only functions`.
+
+### 2.5 İsteğe bağlı
+- **Firebase Blaze planı:** bkz. 2.4, sunucudan otomatik push.
 - **iOS / App Store:** Windows'ta iOS derlenemez; Apple Developer (99 $/yıl) + Mac gerekir. Gereksinim "Google **veya** Apple" ve "App Store **veya** Google Play" olduğu için Android yeterli.
 - Firebase'de kullanılmayan "Gently" Android uygulamasını sil.
 - Destek hattı numaralarını resmi kaynaklardan yeniden doğrula (ör. Çin 12356).

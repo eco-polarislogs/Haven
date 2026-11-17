@@ -37,6 +37,10 @@ const DEAD_TARGET_CODES = new Set([
   "messaging/invalid-argument",
 ]);
 
+// Uygulamadaki kanallar (lib/data/services/local_notifier.dart); ikisi de yüksek
+// öncelikli, yani bildirim ekranın üstünden kayarak görünür.
+const CHANNEL = { inbox: "haven_social", gentle_nudge: "haven_gentle" };
+
 function buildMessage(fid, body, data, tag) {
   return {
     fid,
@@ -45,7 +49,7 @@ function buildMessage(fid, body, data, tag) {
     android: {
       priority: "normal",
       // Kilit ekranında içerik gizlenir; aynı türden yeni bildirim eskisinin üstüne yazılır.
-      notification: { visibility: "private", tag },
+      notification: { visibility: "private", tag, channelId: CHANNEL[tag] || "haven_gentle" },
     },
     apns: { payload: { aps: { "thread-id": tag } } },
   };
