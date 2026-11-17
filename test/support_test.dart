@@ -115,9 +115,11 @@ void main() {
 
     testWidgets('dört talep türü, gönder düğmesi ve boş liste mesajı', (tester) async {
       await pump(tester, const []);
-      for (final k in TicketKind.values) {
+      for (final k in TicketKind.selectable) {
         expect(find.text(k.label), findsOneWidget);
       }
+      // "Şikâyet" türü formda seçilmez; yalnızca Bildir menüsünden oluşur.
+      expect(find.text(TicketKind.report.label), findsNothing);
       final list = find.byType(Scrollable).first;
       await tester.scrollUntilVisible(find.text('Geliştiriciye gönder'), 200, scrollable: list);
       expect(find.text('Geliştiriciye gönder'), findsOneWidget);

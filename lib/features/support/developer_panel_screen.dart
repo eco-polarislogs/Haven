@@ -55,6 +55,7 @@ class _DeveloperPanelScreenState extends ConsumerState<DeveloperPanelScreen> {
                     _Count(value: count[TicketStatus.open]!, label: tx('yeni')),
                     _Count(value: all.where((x) => x.kind == TicketKind.idea).length, label: tx('öneri')),
                     _Count(value: all.where((x) => x.kind == TicketKind.bug).length, label: tx('hata')),
+                    _Count(value: all.where((x) => x.kind == TicketKind.report).length, label: tx('şikâyet')),
                   ],
                 ),
               ),
@@ -229,6 +230,33 @@ class _TicketSheetState extends ConsumerState<_TicketSheet> {
     }
   }
 
+  Future<void> _removeContent() async {
+    final uid = ref.read(uidProvider);
+    final repo = ref.read(supportRepositoryProvider);
+    final navigator = Navigator.of(context);
+    final messenger = ScaffoldMessenger.of(context);
+    if (uid == null) return;
+    final ok = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(tx('Bu içerik topluluktan kaldırılsın mı?')),
+        content: Text(tx('İçerik herkes için silinir ve şikâyet "Tamamlandı" olur; bildiren kişiye haber verilir.')),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(context, false), child: Text(tx('Vazgeç'))),
+          FilledButton(onPressed: () => Navigator.pop(context, true), child: Text(tx('Kaldır'))),
+        ],
+      ),
+    );
+    if (ok != true) return;
+    try {
+      await repo.removeTarget(widget.ticket, developerUid: uid);
+      navigator.pop();
+      messenger.showSnackBar(SnackBar(content: Text(tx('İçerik kaldırıldı.'))));
+    } catch (e) {
+      messenger.showSnackBar(SnackBar(content: Text(tx('Kaydedilemedi: {e}', {'e': e}))));
+    }
+  }
+
   Future<void> _delete() async {
     final repo = ref.read(supportRepositoryProvider);
     final navigator = Navigator.of(context);
@@ -288,6 +316,20 @@ class _TicketSheetState extends ConsumerState<_TicketSheet> {
               ),
               child: TranslatableText(text: ticket.text, lang: ticket.lang, style: t.bodyLarge),
             ),
+            if (ticket.kind == TicketKind.report && ticket.target != null) ...[
+              const SizedBox(height: 10),
+              Card(
+                color: scheme.errorContainer.withValues(alpha: 0.35),
+                child: ListTile(
+                  leading: Icon(Icons.flag_outlined, color: scheme.error),
+                  title: Text(ticket.targetsReply ? tx('Şikâyet edilen: bir yanıt') : tx('Şikâyet edilen: bir paylaşım')),
+                  subtitle: Text(ticket.target!, style: t.bodySmall),
+                  trailing: ticket.status == TicketStatus.done
+                      ? const Icon(Icons.task_alt_rounded)
+                      : FilledButton.tonal(onPressed: _removeContent, child: Text(tx('İçeriği kaldır'))),
+                ),
+              ),
+            ],
             Align(
               alignment: Alignment.centerRight,
               child: TextButton.icon(

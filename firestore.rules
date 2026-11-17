@@ -15,6 +15,11 @@ service cloud.firestore {
     function developerUids() { return ['45q7AAJ06TOi49mMyHEPdLMDPi82']; }
     function isDeveloper() { return signedIn() && me() in developerUids(); }
 
+    // {uid} kullanıcısı beni engelledi mi? (users/{uid}.blockedUids)
+    function blockedBy(uid) {
+      return me() in get(/databases/$(database)/documents/users/$(uid)).data.get('blockedUids', []);
+    }
+
     // Sunucu tarafı içerik filtresi: istemci atlatılsa bile en ağır ifadeler,
     // kriz/yöntem kelimeleri ve linkler reddedilir. Ayrıntılı denetim istemcide
     // (lib/core/moderation/content_moderator.dart).
@@ -53,7 +58,9 @@ service cloud.firestore {
       // yalnızca KENDİ kaydını (friends/{onun uid'i}) ekleyip silebilir.
       match /friends/{friendUid} {
         allow read: if isOwner();
-        allow create, delete: if isOwner() || (signedIn() && me() == friendUid);
+        allow delete: if isOwner() || (signedIn() && me() == friendUid);
+        // Beni engellemiş biri listesine beni ekleyemem.
+        allow create: if isOwner() || (signedIn() && me() == friendUid && !blockedBy(uid));
       }
 
       // Bildirim kutusu: sahibi her şeyi yapar; başkaları yalnızca hazır
@@ -62,6 +69,7 @@ service cloud.firestore {
         allow read, update, delete: if isOwner();
         allow create: if isOwner() || (
           signedIn()
+          && !blockedBy(uid)
           && request.resource.data.fromUid == me()
           && (request.resource.data.type in ['friend_added', 'kudos', 'note_support', 'note_reply', 'friend_streak']
               // Destek talebi: yalnızca geliştiricinin kutusuna "yeni talep";
@@ -128,7 +136,7 @@ service cloud.firestore {
         );
 
       allow delete: if signedIn()
-        && (resource.data.get('authorUid', '') == me() || exists(myNotePath()));
+        && (resource.data.get('authorUid', '') == me() || exists(myNotePath()) || isDeveloper());
 
       // Başkaları yalnızca sayaçları +1 artırabilir; aynı batch'te kendi
       // destek/şikayet kaydını oluşturmalıdır → kişi başı 1 kez.
@@ -174,7 +182,7 @@ service cloud.firestore {
           && request.resource.data.nickname is string
           && request.resource.data.nickname.size() <= 24
           && getAfter(notePath()).data.replyCount == get(notePath()).data.get('replyCount', 0) + 1;
-        allow delete: if signedIn() && resource.data.authorUid == me();
+        allow delete: if signedIn() && (resource.data.authorUid == me() || isDeveloper());
       }
     }
 
@@ -186,8 +194,11 @@ service cloud.firestore {
       allow create: if signedIn()
         && request.resource.data.uid == me()
         && request.resource.data.keys().hasOnly(
-             ['uid', 'kind', 'text', 'status', 'nickname', 'lang', 'platform', 'appVersion', 'createdAt'])
-        && request.resource.data.kind in ['idea', 'bug', 'help', 'other']
+             ['uid', 'kind', 'text', 'status', 'nickname', 'target', 'lang', 'platform', 'appVersion', 'createdAt'])
+        && request.resource.data.kind in ['idea', 'bug', 'help', 'other', 'report']
+        && (!('target' in request.resource.data)
+            || (request.resource.data.target is string
+                && request.resource.data.target.matches('notes/[A-Za-z0-9]{1,40}(/replies/[A-Za-z0-9]{1,40})?')))
         && request.resource.data.status == 'open'
         && request.resource.data.text is string
         && request.resource.data.text.size() >= 10

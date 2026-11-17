@@ -317,7 +317,7 @@ class _ThemeTile extends StatelessWidget {
             if (selected)
               const Icon(Icons.check_circle_rounded)
             else if (unlocked)
-              FilledButton.tonal(onPressed: onUse, child: const Text('Kullan'))
+              FilledButton.tonal(onPressed: onUse, child: Text(tx('Kullan')))
             else if (adReady)
               OutlinedButton(onPressed: onAd, child: Text(tx('Reklamla aç')))
             else
@@ -418,7 +418,7 @@ class _AdSafetyCard extends StatelessWidget {
               contentPadding: const EdgeInsets.only(right: 8),
               value: user.adsAllowed,
               onChanged: onAllow,
-              title: const Text('Filtreli reklamlara izin ver'),
+              title: Text(tx('Filtreli reklamlara izin ver')),
             ),
           ],
         ),

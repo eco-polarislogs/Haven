@@ -75,7 +75,7 @@ class _GroundingGameState extends ConsumerState<GroundingGame> {
     final primary = scheme.primary;
 
     return Scaffold(
-      appBar: AppBar(title: const Text('5-4-3-2-1 topraklanma')),
+      appBar: AppBar(title: Text(tx('5-4-3-2-1 topraklanma'))),
       body: Padding(
         padding: const EdgeInsets.all(24),
         child: Column(
@@ -113,7 +113,7 @@ class _GroundingGameState extends ConsumerState<GroundingGame> {
                   _count = 0;
                 }),
                 icon: const Icon(Icons.refresh_rounded),
-                label: const Text('Yeniden yap'),
+                label: Text(tx('Yeniden yap')),
               ),
             ] else ...[
               Text(_steps[_step].$2, style: t.headlineMedium?.copyWith(fontWeight: FontWeight.w700)),

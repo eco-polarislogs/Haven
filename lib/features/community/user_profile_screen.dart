@@ -5,7 +5,9 @@ import '../../core/constants/app_constants.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/utils/day_key.dart';
 import '../../core/widgets/avatar_badge.dart';
+import '../../data/models/community.dart';
 import '../../providers.dart';
+import 'moderation_actions.dart';
 import 'post_card.dart';
 import '../../l10n/tx.dart';
 
@@ -74,10 +76,25 @@ class UserProfileScreen extends ConsumerWidget {
     final isFriend = (ref.watch(friendIdsProvider).value ?? const []).contains(uid);
     final user = ref.watch(appUserProvider).value;
     final today = todayKey();
-    final visible = notes.where((n) => !n.hidden && !(user?.reportedNotes.contains(n.id) ?? false)).toList();
+    final blocked = user?.blockedUids.contains(uid) ?? false;
+    final visible = blocked
+        ? const <CommunityNote>[]
+        : notes.where((n) => !n.hidden && !(user?.reportedNotes.contains(n.id) ?? false)).toList();
+    final name = profile?.nickname ?? fallbackName;
 
     return Scaffold(
-      appBar: AppBar(title: Text(profile?.nickname ?? fallbackName)),
+      appBar: AppBar(
+        title: Text(name),
+        actions: [
+          if (!isMe && !blocked)
+            PopupMenuButton<String>(
+              onSelected: (_) => confirmBlock(context, ref, otherUid: uid, name: name),
+              itemBuilder: (_) => [
+                PopupMenuItem(value: 'block', child: Text(tx('{name} adlı kişiyi engelle', {'name': name}))),
+              ],
+            ),
+        ],
+      ),
       body: ListView(
         children: [
           Container(
@@ -127,7 +144,23 @@ class UserProfileScreen extends ConsumerWidget {
               ],
             ),
           ),
-          if (!isMe)
+          if (blocked)
+            Card(
+              margin: const EdgeInsets.symmetric(horizontal: 16),
+              child: ListTile(
+                leading: const Icon(Icons.block_rounded),
+                title: Text(tx('Bu kişiyi engelledin.')),
+                subtitle: Text(tx('Paylaşımlarını görmüyorsun; sana yazamaz.')),
+                trailing: TextButton(
+                  onPressed: () async {
+                    final me = ref.read(uidProvider);
+                    if (me != null) await ref.read(communityRepositoryProvider).unblockUser(me, uid);
+                  },
+                  child: Text(tx('Engeli kaldır')),
+                ),
+              ),
+            ),
+          if (!isMe && !blocked)
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Row(

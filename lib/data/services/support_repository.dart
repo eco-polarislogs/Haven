@@ -52,8 +52,10 @@ class SupportRepository {
     required String text,
     required String lang,
     String? nickname,
+    String? target,
   }) async {
     final nick = _nick(nickname);
+    assert(target == null || SupportTicket.targetPattern.hasMatch(target));
     final batch = _db.batch()
       ..set(_tickets.doc(), {
         'uid': uid,
@@ -61,6 +63,7 @@ class SupportRepository {
         'text': text.trim(),
         'status': TicketStatus.open.wire,
         'nickname': ?nick,
+        'target': ?target,
         'lang': lang,
         'platform': defaultTargetPlatform.name,
         'appVersion': kAppVersion,
@@ -82,6 +85,48 @@ class SupportRepository {
     } on TimeoutException {
       return false;
     }
+  }
+
+  /// Topluluktaki bir paylaşımı / yanıtı geliştiriciye şikâyet eder.
+  /// İçeriğin kısa bir alıntısı eklenir ki içerik silinse de neyin
+  /// bildirildiği anlaşılsın.
+  Future<bool> report({
+    required String uid,
+    required String target,
+    required String reason,
+    required String quote,
+    required String lang,
+  }) {
+    final q = quote.trim().replaceAll(RegExp(r'\s+'), ' ');
+    final cut = q.length > 300 ? '${q.substring(0, 300)}…' : q;
+    return submit(uid: uid, kind: TicketKind.report, text: '$reason — “$cut”', lang: lang, target: target);
+  }
+
+  /// Geliştirici şikâyet edilen içeriği kaldırır ve talebi "tamamlandı" yapar.
+  /// Yanıt siliniyorsa gönderinin yanıt sayacı da 1 azalır.
+  Future<void> removeTarget(SupportTicket t, {required String developerUid}) async {
+    final path = t.target;
+    if (path == null || !SupportTicket.targetPattern.hasMatch(path)) return;
+    final batch = _db.batch()..delete(_db.doc(path));
+    if (t.targetsReply) {
+      final note = _db.doc(path.split('/replies/').first);
+      final snap = await note.get();
+      if (snap.exists && ((snap.data()?['replyCount'] as num?) ?? 0) > 0) {
+        batch.update(note, {'replyCount': FieldValue.increment(-1)});
+      }
+    }
+    batch.update(_tickets.doc(t.id), {'status': TicketStatus.done.wire, 'updatedAt': FieldValue.serverTimestamp()});
+    if (t.uid != developerUid) {
+      batch.set(_inbox(t.uid).doc(), {
+        'type': InboxType.feedbackReply.wire,
+        'fromUid': developerUid,
+        'fromNickname': 'Haven',
+        'value': TicketStatus.done.index,
+        'createdAt': FieldValue.serverTimestamp(),
+        'read': false,
+      });
+    }
+    await batch.commit().timeout(const Duration(seconds: 15));
   }
 
   /// Geliştirici talebi açınca: "yeni" → "okundu".

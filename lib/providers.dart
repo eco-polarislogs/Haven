@@ -198,8 +198,18 @@ final friendProfilesProvider = StreamProvider<List<PublicProfile>>((ref) {
 final inboxProvider = StreamProvider<List<InboxItem>>((ref) {
   final uid = ref.watch(uidProvider);
   if (uid == null) return Stream.value(const []);
-  return ref.watch(communityRepositoryProvider).watchInbox(uid);
+  // Engellediğim kişilerden (engellemeden önce) gelmiş bildirimler de gizlenir.
+  final blocked = ref.watch(blockedUidsProvider);
+  return ref
+      .watch(communityRepositoryProvider)
+      .watchInbox(uid)
+      .map((items) => items.where((i) => i.fromUid == null || !blocked.contains(i.fromUid)).toList());
 });
+
+/// Engellediğim kullanıcılar (paylaşımları, yanıtları ve bildirimleri gizlenir).
+final blockedUidsProvider = Provider<Set<String>>(
+  (ref) => ref.watch(appUserProvider.select((u) => u.value?.blockedUids ?? const <String>{})),
+);
 
 final unreadCountProvider = Provider<int>(
   (ref) => (ref.watch(inboxProvider).value ?? const []).where((i) => !i.read).length,

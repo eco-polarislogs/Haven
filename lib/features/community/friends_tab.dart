@@ -36,7 +36,7 @@ class FriendsTab extends ConsumerWidget {
           ),
           actions: [
             TextButton(onPressed: () => Navigator.pop(ctx), child: Text(tx('Vazgeç'))),
-            FilledButton(onPressed: () => Navigator.pop(ctx, c.text), child: const Text('Ekle')),
+            FilledButton(onPressed: () => Navigator.pop(ctx, c.text), child: Text(tx('Ekle'))),
           ],
         );
       },
@@ -151,7 +151,7 @@ class FriendsTab extends ConsumerWidget {
                     ),
                     const Spacer(),
                     IconButton.filledTonal(
-                      tooltip: 'Kopyala',
+                      tooltip: tx('Kopyala'),
                       onPressed: me == null
                           ? null
                           : () {
@@ -209,7 +209,7 @@ class FriendsTab extends ConsumerWidget {
                       children: [
                         StreakBadge(days: f.daily.live(today)),
                         const SizedBox(width: 8),
-                        Text('En uzun: ${f.daily.longest}', style: t.labelSmall),
+                        Text(tx('En uzun: {n}', {'n': f.daily.longest}), style: t.labelSmall),
                       ],
                     ),
                   ),

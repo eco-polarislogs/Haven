@@ -22,6 +22,7 @@ import '../../l10n/l10n.dart';
 import '../ads/rewarded_unlock.dart';
 import '../rewards/gifts_screen.dart';
 import 'badges.dart';
+import '../community/moderation_actions.dart';
 import '../support/developer_panel_screen.dart';
 import '../support/feedback_screen.dart';
 import '../support/professional_support_screen.dart';
@@ -218,6 +219,18 @@ class ProfileScreen extends ConsumerWidget {
                   title: Text(tx('Topluluğa katıl')),
                   subtitle: Text(tx('Takma adın, avatarın ve serin görünür.')),
                 ),
+                ListTile(
+                  leading: const Icon(Icons.block_rounded),
+                  title: Text(tx('Engellediğin kişiler')),
+                  trailing: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      if (user.blockedUids.isNotEmpty) Text('${user.blockedUids.length}'),
+                      const Icon(Icons.chevron_right_rounded),
+                    ],
+                  ),
+                  onTap: () => pushScreen(context, 'blocked_users', const BlockedUsersScreen()),
+                ),
                 SwitchListTile(
                   value: user.notificationsEnabled,
                   onChanged: (v) => repo.setNotificationsEnabled(uid, v),
@@ -243,7 +256,7 @@ class ProfileScreen extends ConsumerWidget {
                   value: user.adsAllowed,
                   onChanged: (v) => repo.setAdsOptIn(uid, v),
                   secondary: const Icon(Icons.verified_user_outlined),
-                  title: const Text('Filtreli reklamlar'),
+                  title: Text(tx('Filtreli reklamlar')),
                   subtitle: Text(
                     tx(
                       'Alt çubukta küçük bir reklam; temaları ve hediyeleri reklamla açabilme. Hassas alanlarda varsayılan kapalı; Sakinleş ekranında asla reklam yok.',

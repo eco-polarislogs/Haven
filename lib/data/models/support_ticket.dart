@@ -8,9 +8,16 @@ enum TicketKind {
   idea('idea', Icons.lightbulb_outline_rounded),
   bug('bug', Icons.bug_report_outlined),
   help('help', Icons.help_outline_rounded),
-  other('other', Icons.chat_bubble_outline_rounded);
+  other('other', Icons.chat_bubble_outline_rounded),
+
+  /// Topluluktaki bir paylaşım / yanıt için şikâyet (formda seçilmez; "Bildir"
+  /// menüsünden otomatik oluşur, `target` içeriğin yolunu taşır).
+  report('report', Icons.flag_outlined);
 
   const TicketKind(this.wire, this.icon);
+
+  /// Destek formunda kullanıcının seçebildiği türler.
+  static const selectable = [TicketKind.idea, TicketKind.bug, TicketKind.help, TicketKind.other];
   final String wire;
   final IconData icon;
 
@@ -21,6 +28,7 @@ enum TicketKind {
     TicketKind.bug => tx('Hata bildir'),
     TicketKind.help => tx('Yardım'),
     TicketKind.other => tx('Diğer'),
+    TicketKind.report => tx('Şikâyet'),
   };
 
   String get hint => switch (this) {
@@ -28,6 +36,7 @@ enum TicketKind {
     TicketKind.bug => tx('Ne oldu, hangi ekranda? Ne yaptığında ortaya çıktı, ne olmasını beklerdin?'),
     TicketKind.help => tx('Takıldığın yeri yaz; sana yol gösterelim.'),
     TicketKind.other => tx('Aklındaki her şeyi yazabilirsin.'),
+    TicketKind.report => '',
   };
 }
 
@@ -67,6 +76,7 @@ class SupportTicket {
     this.platform = '',
     this.appVersion = '',
     this.nickname,
+    this.target,
     this.reply,
     this.replyLang,
     this.createdAt,
@@ -87,12 +97,21 @@ class SupportTicket {
 
   /// Kullanıcı "takma adımı ekle" dediyse; yoksa talep isimsizdir.
   final String? nickname;
+
+  /// Şikâyetlerde içeriğin yolu: `notes/{id}` ya da `notes/{id}/replies/{rid}`.
+  final String? target;
   final String? reply;
   final String? replyLang;
   final DateTime? createdAt;
   final DateTime? repliedAt;
 
   bool get hasReply => reply != null && reply!.trim().isNotEmpty;
+
+  /// Şikâyet edilen içerik bir yanıt mı?
+  bool get targetsReply => target?.contains('/replies/') ?? false;
+
+  /// firestore.rules → feedback.target ile aynı biçim.
+  static final targetPattern = RegExp(r'^notes/[A-Za-z0-9]{1,40}(/replies/[A-Za-z0-9]{1,40})?$');
 
   factory SupportTicket.fromDoc(DocumentSnapshot<Map<String, dynamic>> d) {
     final m = d.data() ?? const {};
@@ -106,6 +125,7 @@ class SupportTicket {
       platform: m['platform'] as String? ?? '',
       appVersion: m['appVersion'] as String? ?? '',
       nickname: m['nickname'] as String?,
+      target: m['target'] as String?,
       reply: m['reply'] as String?,
       replyLang: m['replyLang'] as String?,
       createdAt: (m['createdAt'] as Timestamp?)?.toDate(),

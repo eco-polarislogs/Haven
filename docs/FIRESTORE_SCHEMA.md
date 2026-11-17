@@ -246,3 +246,20 @@ feedback/{id}                        // kullanıcı → geliştirici talebi; top
 - **Silme:** sahibi ya da geliştirici. Hesap silinince kullanıcının tüm talepleri de silinir.
 - **Bildirimler:** talep gönderilince aynı batch'te geliştiricinin kutusuna `feedback_new` (value = tür); geliştirici yeni yanıt yazınca ya da durumu planlandı/tamamlandı yapınca kullanıcının kutusuna `feedback_reply` (value = yeni durum). İkisi de `inboxPush` ile 5 dilde push olur (Blaze).
 - Geliştirici eklemek: uid'yi `lib/core/constants/app_constants.dart → kDeveloperUids` ve `firestore.rules → developerUids()` listelerine ekle, `firebase deploy --only firestore:rules`.
+
+## Engelleme ve şikâyet (v3.2)
+
+```
+users/{uid}
+  blockedUids: [uid]                 // engellediğim kişiler (yalnızca ben okurum)
+  reportedReplies: [replyId]         // bildirdiğim yanıtlar (benim için gizli)
+
+feedback/{id}                        // kind: "report" olan şikâyet talebi
+  kind: "report"
+  target: "notes/{id}" | "notes/{id}/replies/{rid}"
+  text: "<neden> — “<içerikten alıntı>”"
+```
+
+- **Engelle:** `blockedUids`'e eklenir, arkadaşlık iki taraftan silinir. Kural `blockedBy(uid)`: beni engellemiş birinin bildirim kutusuna yazamam ve arkadaş listesine kendimi ekleyemem (yanıt/destek batch'leri de bu yüzden reddedilir). İstemci engellenen kişinin paylaşımlarını, yanıtlarını ve eski bildirimlerini gizler.
+- Kural her başka-kullanıcı bildiriminde alıcının belgesini okur (`get`); bir batch en fazla 20 erişime izin verdiği için seri kutlaması bildirimleri 15'erli gönderilir.
+- **Bildir:** paylaşımda `reportCount` +1 (3'te herkes için gizlenir) ve `reportedNotes`; yanıtta `reportedReplies`. İkisinde de geliştiriciye `feedback` şikâyeti yazılır. Geliştirici (`isDeveloper()`) şikâyet edilen notu / yanıtı silebilir.

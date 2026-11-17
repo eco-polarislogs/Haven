@@ -453,6 +453,13 @@ class _ConsentStep extends StatelessWidget {
                   ),
                   style: text.bodyMedium,
                 ),
+                const SizedBox(height: 12),
+                Text(
+                  tx(
+                    'Topluluk kuralları: saygılı ol. Kırıcı, tetikleyici, yöntem anlatan ya da kişisel bilgi içeren paylaşımlar kaldırılır; kuralları çiğneyen hesaplar engellenebilir. Rahatsız eden bir içeriği ya da kişiyi Bildir ve Engelle ile hemen gizleyebilirsin.',
+                  ),
+                  style: text.bodyMedium,
+                ),
               ],
             ),
           ),
@@ -464,7 +471,7 @@ class _ConsentStep extends StatelessWidget {
           controlAffinity: ListTileControlAffinity.leading,
           title: Text(
             tx(
-              'Seçtiğim alanların ve günlük kayıtlarımın, bana özel bir deneyim sunulması amacıyla hesabımda saklanmasına açık rıza veriyorum (KVKK).',
+              'Seçtiğim alanların ve günlük kayıtlarımın, bana özel bir deneyim sunulması amacıyla hesabımda saklanmasına açık rıza veriyorum (KVKK) ve topluluk kurallarını kabul ediyorum.',
             ),
             style: text.bodyMedium,
           ),

@@ -252,16 +252,46 @@ class CommunityRepository {
     return batch.commit().timeout(const Duration(seconds: 15));
   }
 
+  // ---------------------------------------------------------------- engelleme
+
+  /// Kullanıcıyı engeller: listeme eklenir, arkadaşlık iki taraftan da silinir.
+  /// Sunucu kuralı engellenen kişinin bana arkadaşlık / not / bildirim
+  /// göndermesini reddeder; istemci de paylaşımlarını ve yanıtlarını gizler.
+  Future<void> blockUser(String myUid, String otherUid) {
+    final batch = _db.batch()
+      ..set(_user(myUid), {
+        'blockedUids': FieldValue.arrayUnion([otherUid]),
+      }, SetOptions(merge: true))
+      ..delete(_friends(myUid).doc(otherUid))
+      ..delete(_friends(otherUid).doc(myUid));
+    return batch.commit().timeout(const Duration(seconds: 15));
+  }
+
+  Future<void> unblockUser(String myUid, String otherUid) => _user(myUid).set({
+    'blockedUids': FieldValue.arrayRemove([otherUid]),
+  }, SetOptions(merge: true)).timeout(const Duration(seconds: 15));
+
+  /// Bildirilen yanıt benim için hemen gizlenir (geliştiriciye giden şikâyet
+  /// SupportRepository.report ile ayrıca yazılır).
+  Future<void> hideReply(String myUid, String replyId) => _user(myUid).set({
+    'reportedReplies': FieldValue.arrayUnion([replyId]),
+  }, SetOptions(merge: true)).timeout(const Duration(seconds: 15));
+
   Future<void> sendKudos(PublicProfile me, String friendUid, int messageId) =>
       _inbox(friendUid).add(_fromMe(me, InboxType.kudos, messageId: messageId)).timeout(const Duration(seconds: 15));
 
   void notifyFriendsOfMilestone(PublicProfile me, List<String> friendIds, int days) {
     if (friendIds.isEmpty) return;
-    final batch = _db.batch();
-    for (final f in friendIds.take(400)) {
-      batch.set(_inbox(f).doc(), _fromMe(me, InboxType.friendStreak, value: days));
+    // Kural her bildirimde alıcının engel listesine bakar (get); Firestore bir
+    // batch'te en fazla 20 erişime izin verdiği için 15'erli gönderilir.
+    final ids = friendIds.take(400).toList();
+    for (var i = 0; i < ids.length; i += 15) {
+      final batch = _db.batch();
+      for (final f in ids.skip(i).take(15)) {
+        batch.set(_inbox(f).doc(), _fromMe(me, InboxType.friendStreak, value: days));
+      }
+      _fireAndForget(batch.commit());
     }
-    _fireAndForget(batch.commit());
   }
 
   Map<String, Object> _fromMe(PublicProfile me, InboxType type, {int? messageId, int? value}) => {

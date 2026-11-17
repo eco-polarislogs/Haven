@@ -285,7 +285,13 @@ class _Feed extends ConsumerWidget {
       ),
       data: (notes) {
         final visible = notes
-            .where((n) => !n.hidden && !(user?.reportedNotes.contains(n.id) ?? false) && where(n))
+            .where(
+              (n) =>
+                  !n.hidden &&
+                  !(user?.reportedNotes.contains(n.id) ?? false) &&
+                  !(user?.blockedUids.contains(n.authorUid) ?? false) &&
+                  where(n),
+            )
             .toList();
         return ListView.builder(
           padding: const EdgeInsets.only(bottom: 112),

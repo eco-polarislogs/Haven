@@ -7,6 +7,7 @@ import '../../core/utils/time_ago.dart';
 import '../../core/widgets/avatar_badge.dart';
 import '../../data/models/community.dart';
 import '../../providers.dart';
+import 'moderation_actions.dart';
 import 'post_detail_screen.dart';
 import 'translatable_text.dart';
 import 'user_profile_screen.dart';
@@ -44,31 +45,13 @@ class PostCard extends ConsumerWidget {
     final repo = ref.read(communityRepositoryProvider);
     final analytics = ref.read(analyticsProvider);
     final messenger = ScaffoldMessenger.of(context);
-    final reason = await showModalBottomSheet<String>(
-      context: context,
-      builder: (ctx) => SafeArea(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Padding(
-              padding: EdgeInsets.fromLTRB(24, 0, 24, 8),
-              child: Text(tx('Bu paylaşımı neden bildiriyorsun? Senin için hemen gizlenir.')),
-            ),
-            for (final r in [
-              tx('Kırıcı veya küçümseyici'),
-              tx('Tetikleyici içerik'),
-              'Spam veya reklam',
-              tx('Başka bir şey'),
-            ])
-              ListTile(leading: const Icon(Icons.flag_outlined), title: Text(r), onTap: () => Navigator.pop(ctx, r)),
-          ],
-        ),
-      ),
-    );
+    final reason = await pickReportReason(context, prompt: tx('Bu paylaşımı neden bildiriyorsun? Senin için hemen gizlenir.'));
     if (reason == null || uid == null) return;
     try {
       await repo.reportNote(note, uid, reason);
       analytics.noteReported();
+      // Geliştirici paneline şikâyet: içerik gerekirse kaldırılır.
+      if (context.mounted) sendReportToDeveloper(ref, target: 'notes/${note.id}', reason: reason, quote: note.text);
       messenger.showSnackBar(
         SnackBar(
           content: Text(tx('Teşekkürler. Bu paylaşım senin için gizlendi; topluluğu güvende tuttuğun için sağ ol.')),
@@ -177,12 +160,23 @@ class PostCard extends ConsumerWidget {
                         child: PopupMenuButton<String>(
                           padding: EdgeInsets.zero,
                           icon: Icon(Icons.more_horiz_rounded, size: 20, color: scheme.outline),
-                          onSelected: (v) => v == 'delete' ? _delete(context, ref) : _report(context, ref),
+                          onSelected: (v) => switch (v) {
+                            'delete' => _delete(context, ref),
+                            'block' => confirmBlock(context, ref, otherUid: note.authorUid, name: note.nickname),
+                            _ => _report(context, ref),
+                          },
                           itemBuilder: (_) => [
                             if (mine)
                               PopupMenuItem(value: 'delete', child: Text(tx('Paylaşımımı sil')))
-                            else
+                            else ...[
                               PopupMenuItem(value: 'report', child: Text(tx('Bildir'))),
+                              // Anonim paylaşımın yazarı bilinmez; bildirmek onu senin için gizler.
+                              if (!note.anonymous && note.authorUid.isNotEmpty)
+                                PopupMenuItem(
+                                  value: 'block',
+                                  child: Text(tx('{name} adlı kişiyi engelle', {'name': note.nickname})),
+                                ),
+                            ],
                           ],
                         ),
                       ),

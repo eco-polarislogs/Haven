@@ -14,6 +14,8 @@ class AppUser {
     required this.daily,
     required this.supportedNotes,
     required this.reportedNotes,
+    this.blockedUids = const {},
+    this.reportedReplies = const {},
     this.nickname,
     this.avatar = 0,
     this.anonymous = true,
@@ -56,6 +58,13 @@ class AppUser {
   final DailyStreak daily;
   final Set<String> supportedNotes;
   final Set<String> reportedNotes;
+
+  /// Engellediğim kullanıcılar: paylaşımları, yanıtları ve bildirimleri bana
+  /// görünmez; bana arkadaşlık isteği ya da not gönderemezler (firestore.rules).
+  final Set<String> blockedUids;
+
+  /// Bildirdiğim yanıtlar (benim için gizlenir).
+  final Set<String> reportedReplies;
   final String? nickname;
   final int avatar;
   final String? quoteUnlockedDay;
@@ -83,6 +92,8 @@ class AppUser {
       ),
       supportedNotes: strings('supportedNotes').toSet(),
       reportedNotes: strings('reportedNotes').toSet(),
+      blockedUids: strings('blockedUids').toSet(),
+      reportedReplies: strings('reportedReplies').toSet(),
       nickname: m['nickname'] as String?,
       avatar: (m['avatar'] as num?)?.toInt() ?? 0,
       anonymous: m['anonymous'] as bool? ?? true,

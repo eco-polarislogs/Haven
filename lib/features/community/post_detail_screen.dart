@@ -10,6 +10,7 @@ import '../../core/widgets/avatar_badge.dart';
 import '../../data/models/community.dart';
 import '../../providers.dart';
 import '../support/hard_day_sheet.dart';
+import 'moderation_actions.dart';
 import 'post_card.dart';
 import 'translatable_text.dart';
 import 'user_profile_screen.dart';
@@ -75,6 +76,24 @@ class _PostDetailScreenState extends ConsumerState<PostDetailScreen> {
     }
   }
 
+  /// Yanıtı bildirir: benim için hemen gizlenir, geliştiriciye şikâyet gider.
+  Future<void> _reportReply(NoteReply r) async {
+    final uid = ref.read(uidProvider);
+    final repo = ref.read(communityRepositoryProvider);
+    final messenger = ScaffoldMessenger.of(context);
+    final reason = await pickReportReason(context, prompt: tx('Bu yanıtı neden bildiriyorsun? Senin için hemen gizlenir.'));
+    if (reason == null || uid == null || !mounted) return;
+    try {
+      await repo.hideReply(uid, r.id);
+      sendReportToDeveloper(ref, target: 'notes/${widget.note.id}/replies/${r.id}', reason: reason, quote: r.text);
+      messenger.showSnackBar(
+        SnackBar(content: Text(tx('Teşekkürler. Bu yanıt senin için gizlendi ve incelemeye gönderildi.'))),
+      );
+    } catch (_) {
+      messenger.showSnackBar(SnackBar(content: Text(tx('Bildirim şu an gönderilemedi.'))));
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final t = Theme.of(context).textTheme;
@@ -88,7 +107,10 @@ class _PostDetailScreenState extends ConsumerState<PostDetailScreen> {
           ...?ref.watch(friendsFeedProvider).value,
         ].where((n) => n.id == widget.note.id).firstOrNull ??
         widget.note;
-    final replies = ref.watch(repliesProvider(widget.note.id)).value ?? const <NoteReply>[];
+    final blocked = ref.watch(blockedUidsProvider);
+    final replies = (ref.watch(repliesProvider(widget.note.id)).value ?? const <NoteReply>[])
+        .where((r) => !blocked.contains(r.authorUid) && !(user?.reportedReplies.contains(r.id) ?? false))
+        .toList();
     final myProfile = ref.watch(myProfileProvider).value;
 
     return Scaffold(
@@ -139,7 +161,19 @@ class _PostDetailScreenState extends ConsumerState<PostDetailScreen> {
                             icon: const Icon(Icons.delete_outline_rounded, size: 20),
                             onPressed: () => ref.read(communityRepositoryProvider).deleteReply(widget.note.id, r.id),
                           )
-                        : null,
+                        : PopupMenuButton<String>(
+                            icon: Icon(Icons.more_horiz_rounded, size: 20, color: scheme.outline),
+                            onSelected: (v) => v == 'block'
+                                ? confirmBlock(context, ref, otherUid: r.authorUid, name: r.nickname)
+                                : _reportReply(r),
+                            itemBuilder: (_) => [
+                              PopupMenuItem(value: 'report', child: Text(tx('Bildir'))),
+                              PopupMenuItem(
+                                value: 'block',
+                                child: Text(tx('{name} adlı kişiyi engelle', {'name': r.nickname})),
+                              ),
+                            ],
+                          ),
                   ),
                 const SizedBox(height: 16),
               ],

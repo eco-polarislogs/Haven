@@ -101,7 +101,7 @@ class _MemoryGameState extends ConsumerState<MemoryGame> {
             Row(
               children: [
                 Expanded(child: Text(tx('Eşleşen çiftleri bul. Kendi hızında.'), style: t.bodyMedium)),
-                Chip(label: Text('$_moves hamle')),
+                Chip(label: Text(tx('{n} hamle', {'n': _moves}))),
               ],
             ),
             const SizedBox(height: 12),
@@ -150,7 +150,7 @@ class _MemoryGameState extends ConsumerState<MemoryGame> {
               FilledButton.icon(
                 onPressed: () => setState(_shuffle),
                 icon: const Icon(Icons.refresh_rounded),
-                label: const Text('Yeniden oyna'),
+                label: Text(tx('Yeniden oyna')),
               ),
             ],
           ],

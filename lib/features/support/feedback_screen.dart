@@ -163,7 +163,7 @@ class _FeedbackScreenState extends ConsumerState<FeedbackScreen> {
             spacing: 8,
             runSpacing: 8,
             children: [
-              for (final k in TicketKind.values)
+              for (final k in TicketKind.selectable)
                 ChoiceChip(
                   avatar: Icon(k.icon, size: 18),
                   label: Text(k.label),

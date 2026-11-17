@@ -152,7 +152,7 @@ Future<void> showCategoryInfo(BuildContext context, StruggleCategory c) {
                   ),
                 ),
               ],
-              if (c.source != null) ...[const SizedBox(height: 10), Text('Kaynak: ${c.source}', style: text.bodySmall)],
+              if (c.source != null) ...[const SizedBox(height: 10), Text(tx('Kaynak: {s}', {'s': c.source}), style: text.bodySmall)],
               const SizedBox(height: 10),
               Text(tx('Bu bilgiler tanı koymak için değildir.'), style: text.bodySmall),
             ],

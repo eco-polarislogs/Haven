@@ -114,7 +114,7 @@ class _BubblePopGameState extends ConsumerState<BubblePopGame> with SingleTicker
   Widget build(BuildContext context) {
     final t = Theme.of(context).textTheme;
     return Scaffold(
-      appBar: AppBar(title: const Text('Baloncuk patlat')),
+      appBar: AppBar(title: Text(tx('Baloncuk patlat'))),
       body: Column(
         children: [
           Padding(
