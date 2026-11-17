@@ -1,0 +1,156 @@
+rules_version = '2';
+
+// Haven güvenlik kuralları.
+// - Kişisel veriler (users/{uid}) yalnızca sahibine açık.
+// - Topluluk (profiles, notes) giriş yapmış herkese okunur; yazma sıkı kurallı.
+// - Cloud Functions (Admin SDK) bu kuralları atlar.
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function signedIn() { return request.auth != null; }
+    function me() { return request.auth.uid; }
+
+    // Sunucu tarafı içerik filtresi: istemci atlatılsa bile en ağır ifadeler,
+    // kriz/yöntem kelimeleri ve linkler reddedilir. Ayrıntılı denetim istemcide
+    // (lib/core/moderation/content_moderator.dart).
+    function clean(t) {
+      return !t.lower().matches('.*(orospu|siktir|sikerim|sikeyim|amına|amcık|yarrak|pezevenk|şerefsiz|serefsiz|yavşak|gerizekal|intihar|jilet|https?://|www[.]).*');
+    }
+
+    match /users/{uid} {
+      function isOwner() { return signedIn() && me() == uid; }
+
+      allow read, delete: if isOwner();
+      // `nudge` alanını yalnızca sunucu yazar (bildirim sayacı spam'e çevrilemesin).
+      allow create: if isOwner() && !('nudge' in request.resource.data);
+      allow update: if isOwner()
+        && !request.resource.data.diff(resource.data).affectedKeys().hasAny(['nudge']);
+
+      match /struggles/{id} { allow read, write: if isOwner(); }
+      match /checkins/{id} { allow read, write: if isOwner(); }
+      // Özel notlar (günlük): yalnızca sahibi; 1000 karakter sınırı.
+      match /journal/{id} {
+        allow read, delete: if isOwner();
+        allow create, update: if isOwner()
+          && request.resource.data.text is string
+          && request.resource.data.text.size() <= 1000;
+      }
+
+      // Karşılıklı arkadaşlık: kendi listemi yönetirim; karşı taraf da
+      // yalnızca KENDİ kaydını (friends/{onun uid'i}) ekleyip silebilir.
+      match /friends/{friendUid} {
+        allow read: if isOwner();
+        allow create, delete: if isOwner() || (signedIn() && me() == friendUid);
+      }
+
+      // Bildirim kutusu: sahibi her şeyi yapar; başkaları yalnızca hazır
+      // mesaj kimliğiyle sınırlı türlerde bildirim bırakabilir (serbest metin yok).
+      match /inbox/{id} {
+        allow read, update, delete: if isOwner();
+        allow create: if isOwner() || (
+          signedIn()
+          && request.resource.data.fromUid == me()
+          && request.resource.data.type in ['friend_added', 'kudos', 'note_support', 'note_reply', 'friend_streak']
+          && request.resource.data.keys().hasOnly(
+               ['type', 'fromUid', 'fromNickname', 'fromAvatar', 'messageId', 'value', 'createdAt', 'read'])
+          && request.resource.data.read == false
+          && (!('fromNickname' in request.resource.data)
+              || (request.resource.data.fromNickname is string && request.resource.data.fromNickname.size() <= 24))
+          && (!('messageId' in request.resource.data)
+              || (request.resource.data.messageId is int
+                  && request.resource.data.messageId >= 0 && request.resource.data.messageId < 20))
+        );
+      }
+    }
+
+    // Herkese açık profil: takma ad, avatar, seri, arkadaş kodu. Başka bilgi yok.
+    match /profiles/{uid} {
+      function validNick(d) {
+        return d.nickname is string && d.nickname.size() >= 2 && d.nickname.size() <= 24 && clean(d.nickname);
+      }
+      allow read: if signedIn();
+      allow create: if signedIn() && me() == uid && validNick(request.resource.data);
+      allow update: if signedIn() && me() == uid
+        && validNick(request.resource.data)
+        && request.resource.data.friendCode == resource.data.friendCode;
+      allow delete: if signedIn() && me() == uid;
+    }
+
+    match /notes/{noteId} {
+      function notePath() { return /databases/$(database)/documents/notes/$(noteId); }
+
+      allow read: if signedIn();
+
+      // Not yalnızca yazarın kendi seçtiği çembere (kategoriye), temiz metinle.
+      allow create: if signedIn()
+        && request.resource.data.authorUid == me()
+        && request.resource.data.text is string
+        && request.resource.data.text.size() >= 3
+        && request.resource.data.text.size() <= 280
+        && clean(request.resource.data.text)
+        && request.resource.data.supportCount == 0
+        && request.resource.data.reportCount == 0
+        && request.resource.data.circleId in
+             get(/databases/$(database)/documents/users/$(me())).data.categoryIds;
+
+      allow delete: if signedIn() && resource.data.authorUid == me();
+
+      // Başkaları yalnızca sayaçları +1 artırabilir; aynı batch'te kendi
+      // destek/şikayet kaydını oluşturmalıdır → kişi başı 1 kez.
+      allow update: if signedIn() && (
+        (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['supportCount'])
+          && request.resource.data.supportCount == resource.data.supportCount + 1
+          && !exists(/databases/$(database)/documents/notes/$(noteId)/supports/$(me()))
+          && existsAfter(/databases/$(database)/documents/notes/$(noteId)/supports/$(me())))
+        ||
+        (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['reportCount'])
+          && request.resource.data.reportCount == resource.data.reportCount + 1
+          && !exists(/databases/$(database)/documents/notes/$(noteId)/reports/$(me()))
+          && existsAfter(/databases/$(database)/documents/notes/$(noteId)/reports/$(me())))
+        ||
+        // Yanıt sayacı: yalnızca ±1 (yanıt ekleme/silme ile aynı batch'te).
+        (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['replyCount'])
+          && (request.resource.data.replyCount == resource.data.get('replyCount', 0) + 1
+              || (request.resource.data.replyCount == resource.data.get('replyCount', 0) - 1
+                  && request.resource.data.replyCount >= 0)))
+      );
+
+      match /supports/{uid} {
+        allow read: if signedIn();
+        allow create: if signedIn() && me() == uid
+          && getAfter(notePath()).data.supportCount == get(notePath()).data.supportCount + 1;
+      }
+      match /reports/{uid} {
+        allow create: if signedIn() && me() == uid
+          && getAfter(notePath()).data.reportCount == get(notePath()).data.reportCount + 1;
+      }
+
+      // X tarzı yanıtlar: gönderiyle aynı sunucu filtresi, 1–280 karakter,
+      // yalnızca hazır alanlar; sayaç aynı batch'te +1 artmalı.
+      match /replies/{replyId} {
+        allow read: if signedIn();
+        allow create: if signedIn()
+          && request.resource.data.authorUid == me()
+          && request.resource.data.keys().hasOnly(['authorUid', 'nickname', 'avatar', 'text', 'createdAt'])
+          && request.resource.data.text is string
+          && request.resource.data.text.size() >= 1
+          && request.resource.data.text.size() <= 280
+          && clean(request.resource.data.text)
+          && request.resource.data.nickname is string
+          && request.resource.data.nickname.size() <= 24
+          && getAfter(notePath()).data.replyCount == get(notePath()).data.get('replyCount', 0) + 1;
+        allow delete: if signedIn() && resource.data.authorUid == me();
+      }
+    }
+
+    // Hesap silme: kullanıcının tüm yanıtlarını bulmak için collection group okuma.
+    match /{path=**}/replies/{replyId} {
+      allow read: if signedIn();
+    }
+
+    // Diğer her şey kapalı.
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

@@ -1,0 +1,100 @@
+{
+  "project_info": {
+    "project_number": "405103373295",
+    "project_id": "ecren-7050e",
+    "storage_bucket": "ecren-7050e.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:405103373295:android:b1bf7dda19665eee97241a",
+        "android_client_info": {
+          "package_name": "com.gentlyapp.gently"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "405103373295-la91a905fcq9p1ngo19jl6tj5ltt7ag5.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.gentlyapp.gently",
+            "certificate_hash": "acfcda3cf1e142d5f516d995b0c84d9b7644f4c1"
+          }
+        },
+        {
+          "client_id": "405103373295-q7d4a3946ltpknj94fmlkpaltr71cp90.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.gentlyapp.gently",
+            "certificate_hash": "bf201551e8ee2db712bbe254bba5480e83c7c34c"
+          }
+        },
+        {
+          "client_id": "405103373295-ollv78n7q700tq9aq5l3rph4qh2rs5i9.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB8X1lnKu78F1F2PKNY-L8mooYkQSTq3XQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "405103373295-ollv78n7q700tq9aq5l3rph4qh2rs5i9.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:405103373295:android:97bfce0ac11b376697241a",
+        "android_client_info": {
+          "package_name": "com.havenapp.haven"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "405103373295-rggcuglmd9hms2gv3mq372lfk8t30tb3.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.havenapp.haven",
+            "certificate_hash": "bf201551e8ee2db712bbe254bba5480e83c7c34c"
+          }
+        },
+        {
+          "client_id": "405103373295-vkl9dr3t42c8r0bfo74m7f0udd9dscdi.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.havenapp.haven",
+            "certificate_hash": "7c7ac0e98e5a0f088df5b0230629fcf299f51b71"
+          }
+        },
+        {
+          "client_id": "405103373295-ollv78n7q700tq9aq5l3rph4qh2rs5i9.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB8X1lnKu78F1F2PKNY-L8mooYkQSTq3XQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "405103373295-ollv78n7q700tq9aq5l3rph4qh2rs5i9.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

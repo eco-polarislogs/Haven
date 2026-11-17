@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Bildirim vurgu rengi: liman mavisi-yeşili (HavenColors.harbor) -->
+    <color name="haven_notification">#4A5C93</color>
+    <!-- Uygulama ikonu zemini: derin liman (HavenColors.harborDeep) -->
+    <color name="ic_launcher_background">#3B4A7A</color>
+    <!-- Açılış ekranı zemini: kum (HavenColors.sand) -->
+    <color name="haven_cream">#F5F2EC</color>
+</resources>

@@ -1,0 +1,160 @@
+{
+  "@@locale": "es",
+  "appName": "Haven",
+  "navToday": "Hoy",
+  "navCommunity": "Comunidad",
+  "navCalm": "Calma",
+  "navProfile": "Perfil",
+  "welcomeTagline": "Tu puerto seguro.",
+  "welcomeSubtitle": "Sin juicios, sin prisas; a tu propio ritmo.",
+  "welcomeFeaturePrivate": "Un diario privado solo para ti. Solo tú puedes ver tus registros.",
+  "welcomeFeatureCommunity": "Apoyo amable y amigos de racha de quienes recorren el mismo camino.",
+  "welcomeFeatureCalm": "Respiración, anclaje y juegos breves para los momentos difíciles.",
+  "welcomeGoogle": "Regístrate / inicia sesión con Google",
+  "welcomeGoogleNote": "Google solo verifica tu identidad; tu contraseña nunca se comparte con Haven. Completaremos el resto del registro aquí, juntos.",
+  "privacyPolicy": "Política de privacidad",
+  "stepProfile": "Perfil",
+  "stepAreas": "Tus áreas",
+  "stepCommunity": "Comunidad",
+  "stepConsent": "Consentimiento",
+  "continueButton": "Continuar",
+  "backButton": "Atrás",
+  "enterHaven": "Entrar a Haven",
+  "profileTitle": "¿Cómo te llamamos?",
+  "profileSubtitle": "No tienes que compartir quién eres. Podemos sugerirte un apodo tierno según tu avatar, o puedes escribir el tuyo.",
+  "anonymousOption": "Quiero ser anónimo/a",
+  "anonymousOptionDesc": "Te sugerimos un apodo según tu avatar",
+  "namedOption": "Quiero usar mi nombre",
+  "namedOptionDesc": "Puedes escribir tu nombre o iniciales",
+  "nicknameLabel": "Apodo",
+  "nameLabel": "Tu nombre",
+  "chooseAvatar": "Elige un avatar",
+  "suggestAnother": "Otra sugerencia",
+  "areasTitle": "¿Con qué estás lidiando?",
+  "areasSubtitle": "Puedes elegir más de una. Esto es privado y puedes cambiarlo cuando quieras.",
+  "communityTitle": "Conoce a quienes recorren el mismo camino",
+  "communitySubtitle": "En la comunidad de Haven, personas con desafíos similares se dejan notas amables, ven sus rachas y se animan.",
+  "communityJoin": "Quiero unirme a la comunidad",
+  "communityJoinDesc": "Puedes cambiarlo cuando quieras en Perfil.",
+  "consentTitle": "Un último paso",
+  "consentSubtitle": "Queremos que sepas cómo funciona Haven.",
+  "greetingMorning": "Buenos días",
+  "greetingDay": "Hola",
+  "greetingEvening": "Buenas tardes",
+  "greetingNight": "Buenas noches",
+  "dailyStreak": "días de racha",
+  "bestStreak": "Mejor: {days} días",
+  "@bestStreak": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "streakDoneToday": "Hoy ya te registraste; tu racha continúa.",
+  "streakNotDone": "Regístrate hoy para mantener tu racha. Saltarte un día no la rompe.",
+  "quoteTitle": "Frase del día",
+  "todayRecords": "Registros de hoy",
+  "monthLights": "Las luces de este mes",
+  "yourProgress": "Tu progreso",
+  "myNotes": "Mis notas",
+  "addNote": "Añadir nota",
+  "noNotesYet": "Aún no tienes notas. ¿Te dejas una nota amable?",
+  "kindDays": "días amables",
+  "currentStreak": "Racha actual",
+  "personalBest": "Tu récord",
+  "last30Days": "Últimos 30 días",
+  "imStruggling": "Me cuesta ahora mismo",
+  "quickBreath": "Respirar",
+  "quickGames": "Juegos",
+  "quickCommunity": "Comunidad",
+  "quickSupport": "Pedir apoyo",
+  "wentWell": "Fue bien",
+  "wasHard": "Fue difícil",
+  "comebackTitle": "Es solo un pequeño bache",
+  "comebackBody": "La última vez avanzaste muy bien durante {past} días. Esos días siguen siendo tuyos. ¡Ahora competimos con tu propio récord ({best} días)!",
+  "@comebackBody": {
+    "placeholders": {
+      "past": {
+        "type": "int"
+      },
+      "best": {
+        "type": "int"
+      }
+    }
+  },
+  "raceTitle": "Compites con tu propio récord",
+  "raceBody": "Te faltan {left} días para tu récord. Sin prisa, a tu ritmo.",
+  "@raceBody": {
+    "placeholders": {
+      "left": {
+        "type": "int"
+      }
+    }
+  },
+  "newRecordTitle": "¡Nuevo récord!",
+  "newRecordBody": "¡{days} días! Superaste tu propio récord. Siéntete orgulloso/a.",
+  "@newRecordBody": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "calmTitle": "Calma",
+  "calmIntro": "Este es tu espacio seguro. Cuando llega un impulso o la ansiedad, unos minutos de pausa ayudan a que pase la ola.",
+  "emergencyTitle": "Apoyo urgente",
+  "emergencyBody": "Si no te sientes a salvo, llama ahora. Pedir ayuda requiere fuerza.",
+  "breathingTitle": "Inhala · sostén · exhala",
+  "breathingDesc": "Inhala 4, sostén 4, exhala 6",
+  "breatheIn": "Inhala",
+  "hold": "Sostén",
+  "breatheOut": "Exhala despacio",
+  "gameBubbles": "Explota burbujas",
+  "gameBubblesDesc": "Una tarea segura para tus manos",
+  "gameColors": "Empareja colores",
+  "gameColorsDesc": "Empareja colores, descansa la mente",
+  "gameMemory": "Cartas de memoria",
+  "gameMemoryDesc": "Ocupa tu mente con suavidad",
+  "groundingTitle": "Anclaje 5-4-3-2-1",
+  "groundingDesc": "Vuelve al presente",
+  "supportTitle": "Pedir apoyo",
+  "supportDesc": "Líneas de crisis y ayuda profesional",
+  "notificationsTitle": "Notificaciones",
+  "markAllRead": "Marcar todo como leído",
+  "noNotifications": "Aún no hay notificaciones.",
+  "giftsTitle": "Mis regalos",
+  "giftsIntro": "Se desbloquean nuevos regalos a medida que vuelves a ti cada día. También puedes desbloquearlos con un anuncio corto; es totalmente opcional.",
+  "giftUnlockAt": "Se desbloquea con una racha de {days} días",
+  "@giftUnlockAt": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "giftDaysLeft": "Faltan {left} días",
+  "@giftDaysLeft": {
+    "placeholders": {
+      "left": {
+        "type": "int"
+      }
+    }
+  },
+  "themes": "Temas",
+  "avatars": "Avatares",
+  "language": "Idioma",
+  "systemLanguage": "Idioma del dispositivo",
+  "signOut": "Cerrar sesión",
+  "deleteAccount": "Eliminar mi cuenta y todos mis datos",
+  "save": "Guardar",
+  "cancel": "Cancelar",
+  "close": "Cerrar",
+  "daysCount": "{count} días",
+  "recordLabel": "Récord: {count} días",
+  "journeyStart": "Tu camino puede empezar hoy.",
+  "recordReached": "¡Alcanzaste tu récord! Mañana puede haber uno nuevo.",
+  "comebackShort": "Tu récord es de {best} días. Un buen día para empezar de nuevo.",
+  "seeAll": "Todo",
+  "beginning": "Comienzo"
+}

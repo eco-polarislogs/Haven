@@ -1,0 +1,160 @@
+{
+  "@@locale": "en",
+  "appName": "Haven",
+  "navToday": "Today",
+  "navCommunity": "Community",
+  "navCalm": "Calm",
+  "navProfile": "Profile",
+  "welcomeTagline": "Your safe harbor.",
+  "welcomeSubtitle": "No judgment, no rush — at your own pace.",
+  "welcomeFeaturePrivate": "A private journal just for you. Only you can see your entries.",
+  "welcomeFeatureCommunity": "Gentle support and streak friends from people walking the same path.",
+  "welcomeFeatureCalm": "Breathing, grounding and short calming games for hard moments.",
+  "welcomeGoogle": "Sign up / sign in with Google",
+  "welcomeGoogleNote": "Google only verifies who you are; your password is never shared with Haven. We'll finish the rest of your sign-up here, together.",
+  "privacyPolicy": "Privacy Policy",
+  "stepProfile": "Profile",
+  "stepAreas": "Your areas",
+  "stepCommunity": "Community",
+  "stepConsent": "Consent",
+  "continueButton": "Continue",
+  "backButton": "Back",
+  "enterHaven": "Enter Haven",
+  "profileTitle": "What should we call you?",
+  "profileSubtitle": "You don't have to share who you are. We can suggest a cute nickname based on your avatar, or you can write your own.",
+  "anonymousOption": "I'd like to stay anonymous",
+  "anonymousOptionDesc": "We'll suggest a nickname from your avatar",
+  "namedOption": "I'd like to use my name",
+  "namedOptionDesc": "You can write your name or initials",
+  "nicknameLabel": "Nickname",
+  "nameLabel": "Your name",
+  "chooseAvatar": "Choose an avatar",
+  "suggestAnother": "Another suggestion",
+  "areasTitle": "What are you working through?",
+  "areasSubtitle": "You can choose more than one. This stays private to you and you can change it anytime.",
+  "communityTitle": "Meet people on the same path",
+  "communitySubtitle": "In the Haven community, people facing similar challenges leave each other kind notes, see each other's streaks and cheer each other on.",
+  "communityJoin": "I'd like to join the community",
+  "communityJoinDesc": "You can change this anytime in Profile.",
+  "consentTitle": "One last step",
+  "consentSubtitle": "We want you to know how Haven works.",
+  "greetingMorning": "Good morning",
+  "greetingDay": "Hello",
+  "greetingEvening": "Good evening",
+  "greetingNight": "Good night",
+  "dailyStreak": "day streak",
+  "bestStreak": "Best: {days} days",
+  "@bestStreak": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "streakDoneToday": "You checked in today — your streak continues.",
+  "streakNotDone": "Check in today to keep your streak. Missing one day won't break it.",
+  "quoteTitle": "Quote of the day",
+  "todayRecords": "Today's check-ins",
+  "monthLights": "This month's lights",
+  "yourProgress": "Your progress",
+  "myNotes": "My notes",
+  "addNote": "Add note",
+  "noNotesYet": "No notes yet. How about leaving yourself a kind note?",
+  "kindDays": "good days",
+  "currentStreak": "Current streak",
+  "personalBest": "Your record",
+  "last30Days": "Last 30 days",
+  "imStruggling": "I'm struggling right now",
+  "quickBreath": "Breathe",
+  "quickGames": "Games",
+  "quickCommunity": "Community",
+  "quickSupport": "Get support",
+  "wentWell": "It went well",
+  "wasHard": "It was hard",
+  "comebackTitle": "This is just a small bump",
+  "comebackBody": "Last time you made beautiful progress for {past} days. Those days are still yours. Now we're racing your own record ({best} days)!",
+  "@comebackBody": {
+    "placeholders": {
+      "past": {
+        "type": "int"
+      },
+      "best": {
+        "type": "int"
+      }
+    }
+  },
+  "raceTitle": "Racing your own record",
+  "raceBody": "{left} days to your record. No rush — at your own pace.",
+  "@raceBody": {
+    "placeholders": {
+      "left": {
+        "type": "int"
+      }
+    }
+  },
+  "newRecordTitle": "New record!",
+  "newRecordBody": "{days} days! You beat your own record. Be proud of yourself.",
+  "@newRecordBody": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "calmTitle": "Calm",
+  "calmIntro": "This is your safe space. When an urge or anxiety comes, a few minutes' break helps the wave pass.",
+  "emergencyTitle": "Emergency support",
+  "emergencyBody": "If you don't feel safe, call now. Reaching out takes strength.",
+  "breathingTitle": "Breathe in · hold · out",
+  "breathingDesc": "In for 4, hold for 4, out for 6",
+  "breatheIn": "Breathe in",
+  "hold": "Hold",
+  "breatheOut": "Slowly out",
+  "gameBubbles": "Pop bubbles",
+  "gameBubblesDesc": "A safe task for your hands",
+  "gameColors": "Match colors",
+  "gameColorsDesc": "Match colors, rest your mind",
+  "gameMemory": "Memory cards",
+  "gameMemoryDesc": "Gently occupy your mind",
+  "groundingTitle": "5-4-3-2-1 grounding",
+  "groundingDesc": "Come back to now",
+  "supportTitle": "Get support",
+  "supportDesc": "Crisis lines and professional help",
+  "notificationsTitle": "Notifications",
+  "markAllRead": "Mark all as read",
+  "noNotifications": "No notifications yet.",
+  "giftsTitle": "My gifts",
+  "giftsIntro": "New gifts unlock as you keep coming back to yourself. You can also unlock them with a short ad — completely optional.",
+  "giftUnlockAt": "Unlocks at a {days}-day streak",
+  "@giftUnlockAt": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "giftDaysLeft": "{left} days to go",
+  "@giftDaysLeft": {
+    "placeholders": {
+      "left": {
+        "type": "int"
+      }
+    }
+  },
+  "themes": "Themes",
+  "avatars": "Avatars",
+  "language": "Language",
+  "systemLanguage": "Device language",
+  "signOut": "Sign out",
+  "deleteAccount": "Delete my account and all my data",
+  "save": "Save",
+  "cancel": "Cancel",
+  "close": "Close",
+  "daysCount": "{count} days",
+  "recordLabel": "Record: {count} days",
+  "journeyStart": "Your journey can begin today.",
+  "recordReached": "You reached your record! Tomorrow could be a new one.",
+  "comebackShort": "Your record is {best} days. A good day to begin again.",
+  "seeAll": "All",
+  "beginning": "Beginning"
+}

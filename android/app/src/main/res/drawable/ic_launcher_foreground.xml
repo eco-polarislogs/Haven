@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Haven uygulama ikonu: yumuşak köşeli bir kalkanın içinde sıcak ışıklı bir kapı.
+     "Sığınak / güvenli alan": korunma (kalkan) + içeri davet (kapı) + umut (ışık).
+     Soyut ve cinsiyetsiz; deniz, yaprak ya da çiçek figürü yok.
+     108x108 tuval; içerik 66dp'lik güvenli alanın içinde kalır. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp" android:height="108dp"
+    android:viewportWidth="108" android:viewportHeight="108">
+    <!-- kalkan: yumuşak tepeli, alta doğru daralan -->
+    <path android:fillColor="#FFFFFF"
+        android:pathData="M54,27 C61,31.5 68.5,33.5 76,33.5 C77,52 71,69 54,81 C37,69 31,52 32,33.5 C39.5,33.5 47,31.5 54,27 Z" />
+    <!-- iç kapı: kemerli giriş -->
+    <path android:fillColor="#3B4A7A"
+        android:pathData="M45.5,69 L45.5,54 A8.5,8.5 0 0 1 62.5,54 L62.5,69 Z" />
+    <!-- kapıdan sızan sıcak ışık -->
+    <path android:fillColor="#F4B860"
+        android:pathData="M49,69 L49,54.5 A5,5 0 0 1 59,54.5 L59,69 Z" />
+</vector>

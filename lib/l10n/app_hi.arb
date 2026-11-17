@@ -1,0 +1,160 @@
+{
+  "@@locale": "hi",
+  "appName": "Haven",
+  "navToday": "आज",
+  "navCommunity": "समुदाय",
+  "navCalm": "शांति",
+  "navProfile": "प्रोफ़ाइल",
+  "welcomeTagline": "आपका सुरक्षित ठिकाना।",
+  "welcomeSubtitle": "बिना किसी आलोचना के, बिना जल्दबाज़ी के; अपनी गति से।",
+  "welcomeFeaturePrivate": "सिर्फ़ आपके लिए एक निजी डायरी। आपकी प्रविष्टियाँ केवल आप देख सकते हैं।",
+  "welcomeFeatureCommunity": "उसी राह पर चलने वालों से सौम्य समर्थन और स्ट्रीक साथी।",
+  "welcomeFeatureCalm": "कठिन पलों के लिए श्वास, ग्राउंडिंग और छोटे शांत करने वाले खेल।",
+  "welcomeGoogle": "Google से साइन अप / साइन इन करें",
+  "welcomeGoogleNote": "Google केवल आपकी पहचान की पुष्टि करता है; आपका पासवर्ड कभी भी Haven के साथ साझा नहीं होता। बाकी पंजीकरण हम यहीं, साथ मिलकर पूरा करेंगे।",
+  "privacyPolicy": "गोपनीयता नीति",
+  "stepProfile": "प्रोफ़ाइल",
+  "stepAreas": "आपके क्षेत्र",
+  "stepCommunity": "समुदाय",
+  "stepConsent": "सहमति",
+  "continueButton": "आगे बढ़ें",
+  "backButton": "पीछे",
+  "enterHaven": "Haven में प्रवेश करें",
+  "profileTitle": "हम आपको क्या कहकर पुकारें?",
+  "profileSubtitle": "आपको अपनी पहचान बताने की ज़रूरत नहीं है। हम आपके अवतार के आधार पर एक प्यारा उपनाम सुझा सकते हैं, या आप ख़ुद लिख सकते हैं।",
+  "anonymousOption": "मैं गुमनाम रहना चाहता/चाहती हूँ",
+  "anonymousOptionDesc": "हम आपके अवतार से एक उपनाम सुझाएँगे",
+  "namedOption": "मैं अपना नाम इस्तेमाल करना चाहता/चाहती हूँ",
+  "namedOptionDesc": "आप अपना नाम या आद्याक्षर लिख सकते हैं",
+  "nicknameLabel": "उपनाम",
+  "nameLabel": "आपका नाम",
+  "chooseAvatar": "एक अवतार चुनें",
+  "suggestAnother": "दूसरा सुझाव",
+  "areasTitle": "आप किस चीज़ से जूझ रहे हैं?",
+  "areasSubtitle": "आप एक से अधिक चुन सकते हैं। यह जानकारी केवल आपकी है और आप इसे कभी भी बदल सकते हैं।",
+  "communityTitle": "उसी राह के साथियों से मिलें",
+  "communitySubtitle": "Haven समुदाय में समान चुनौतियों का सामना करने वाले लोग एक-दूसरे के लिए दयालु नोट छोड़ते हैं, स्ट्रीक देखते हैं और हौसला बढ़ाते हैं।",
+  "communityJoin": "मैं समुदाय से जुड़ना चाहता/चाहती हूँ",
+  "communityJoinDesc": "आप इसे कभी भी प्रोफ़ाइल में बदल सकते हैं।",
+  "consentTitle": "एक आख़िरी कदम",
+  "consentSubtitle": "हम चाहते हैं कि आप जानें कि Haven कैसे काम करता है।",
+  "greetingMorning": "सुप्रभात",
+  "greetingDay": "नमस्ते",
+  "greetingEvening": "शुभ संध्या",
+  "greetingNight": "शुभ रात्रि",
+  "dailyStreak": "दिन की स्ट्रीक",
+  "bestStreak": "सर्वश्रेष्ठ: {days} दिन",
+  "@bestStreak": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "streakDoneToday": "आज आपने दर्ज कर लिया, आपकी स्ट्रीक जारी है।",
+  "streakNotDone": "स्ट्रीक जारी रखने के लिए आज दर्ज करें। एक दिन छूटने से स्ट्रीक नहीं टूटती।",
+  "quoteTitle": "आज का विचार",
+  "todayRecords": "आज की प्रविष्टियाँ",
+  "monthLights": "इस महीने की रोशनी",
+  "yourProgress": "आपकी प्रगति",
+  "myNotes": "मेरे नोट",
+  "addNote": "नोट जोड़ें",
+  "noNotesYet": "अभी कोई नोट नहीं है। ख़ुद के लिए एक दयालु नोट छोड़ें?",
+  "kindDays": "दयालु दिन",
+  "currentStreak": "मौजूदा स्ट्रीक",
+  "personalBest": "आपका रिकॉर्ड",
+  "last30Days": "पिछले 30 दिन",
+  "imStruggling": "मुझे अभी मुश्किल हो रही है",
+  "quickBreath": "साँस",
+  "quickGames": "खेल",
+  "quickCommunity": "समुदाय",
+  "quickSupport": "सहायता लें",
+  "wentWell": "अच्छा रहा",
+  "wasHard": "मुश्किल था",
+  "comebackTitle": "यह बस एक छोटी सी रुकावट है",
+  "comebackBody": "पिछली बार आपने {past} दिनों तक बहुत अच्छी प्रगति की थी। वे दिन अब भी आपके हैं। अब हम आपके अपने रिकॉर्ड ({best} दिन) से मुकाबला कर रहे हैं!",
+  "@comebackBody": {
+    "placeholders": {
+      "past": {
+        "type": "int"
+      },
+      "best": {
+        "type": "int"
+      }
+    }
+  },
+  "raceTitle": "आप अपने ही रिकॉर्ड से मुकाबला कर रहे हैं",
+  "raceBody": "आपके रिकॉर्ड तक {left} दिन बाकी हैं। कोई जल्दी नहीं; अपनी गति से।",
+  "@raceBody": {
+    "placeholders": {
+      "left": {
+        "type": "int"
+      }
+    }
+  },
+  "newRecordTitle": "नया रिकॉर्ड!",
+  "newRecordBody": "{days} दिन! आपने अपना रिकॉर्ड तोड़ दिया। ख़ुद पर गर्व करें।",
+  "@newRecordBody": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "calmTitle": "शांति",
+  "calmIntro": "यह आपकी सुरक्षित जगह है। जब कोई आवेग या चिंता आए, तो कुछ मिनटों का विराम उस लहर को गुज़रने में मदद करता है।",
+  "emergencyTitle": "आपातकालीन सहायता",
+  "emergencyBody": "अगर आप सुरक्षित महसूस नहीं कर रहे, तो अभी कॉल करें। मदद माँगना हिम्मत का काम है।",
+  "breathingTitle": "साँस लें · रोकें · छोड़ें",
+  "breathingDesc": "4 सेकंड साँस लें, 4 रोकें, 6 में छोड़ें",
+  "breatheIn": "साँस लें",
+  "hold": "रोकें",
+  "breatheOut": "धीरे-धीरे छोड़ें",
+  "gameBubbles": "बुलबुले फोड़ें",
+  "gameBubblesDesc": "हाथों के लिए एक सुरक्षित काम",
+  "gameColors": "रंग मिलाएँ",
+  "gameColorsDesc": "रंग मिलाएँ, मन को आराम दें",
+  "gameMemory": "मेमोरी कार्ड",
+  "gameMemoryDesc": "मन को धीरे से व्यस्त रखें",
+  "groundingTitle": "5-4-3-2-1 ग्राउंडिंग",
+  "groundingDesc": "वर्तमान में लौटें",
+  "supportTitle": "सहायता लें",
+  "supportDesc": "संकट हेल्पलाइन और विशेषज्ञ सहायता",
+  "notificationsTitle": "सूचनाएँ",
+  "markAllRead": "सभी को पढ़ा हुआ चिह्नित करें",
+  "noNotifications": "अभी कोई सूचना नहीं है।",
+  "giftsTitle": "मेरे उपहार",
+  "giftsIntro": "जैसे-जैसे आप हर दिन ख़ुद की ओर लौटते हैं, नए उपहार खुलते हैं। आप चाहें तो एक छोटे विज्ञापन से भी खोल सकते हैं — पूरी तरह वैकल्पिक।",
+  "giftUnlockAt": "{days} दिन की स्ट्रीक पर खुलेगा",
+  "@giftUnlockAt": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "giftDaysLeft": "{left} दिन बाकी",
+  "@giftDaysLeft": {
+    "placeholders": {
+      "left": {
+        "type": "int"
+      }
+    }
+  },
+  "themes": "थीम",
+  "avatars": "अवतार",
+  "language": "भाषा",
+  "systemLanguage": "डिवाइस की भाषा",
+  "signOut": "साइन आउट करें",
+  "deleteAccount": "मेरा खाता और सारा डेटा हटाएँ",
+  "save": "सहेजें",
+  "cancel": "रद्द करें",
+  "close": "बंद करें",
+  "daysCount": "{count} दिन",
+  "recordLabel": "रिकॉर्ड: {count} दिन",
+  "journeyStart": "आपकी यात्रा आज से शुरू हो सकती है।",
+  "recordReached": "आपने अपना रिकॉर्ड छू लिया! कल नया रिकॉर्ड बन सकता है।",
+  "comebackShort": "आपका रिकॉर्ड {best} दिन है। फिर से शुरू करने के लिए अच्छा दिन है।",
+  "seeAll": "सभी",
+  "beginning": "शुरुआत"
+}

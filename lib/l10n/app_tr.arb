@@ -1,0 +1,181 @@
+{
+  "@@locale": "tr",
+  "appName": "Haven",
+  "navToday": "Bugün",
+  "navCommunity": "Topluluk",
+  "navCalm": "Sakinleş",
+  "navProfile": "Profil",
+  "welcomeTagline": "Güvenli limanın.",
+  "welcomeSubtitle": "Yargısız, acelesiz; kendi hızında.",
+  "welcomeFeaturePrivate": "Sana özel, gizli bir günlük. Kayıtlarını yalnızca sen görürsün.",
+  "welcomeFeatureCommunity": "Aynı yolda yürüyenlerden içten destek ve seri arkadaşları.",
+  "welcomeFeatureCalm": "Zor anlar için nefes, topraklanma ve kısa sakinleştirici oyunlar.",
+  "welcomeGoogle": "Google ile kayıt ol / giriş yap",
+  "welcomeGoogleNote": "Google yalnızca kimliğini doğrular; şifren Haven ile asla paylaşılmaz. Kaydın geri kalanını burada, birlikte tamamlayacağız.",
+  "privacyPolicy": "Gizlilik Politikası",
+  "stepProfile": "Profil",
+  "stepAreas": "Alanların",
+  "stepCommunity": "Topluluk",
+  "stepConsent": "Onay",
+  "continueButton": "Devam",
+  "backButton": "Geri",
+  "enterHaven": "Haven'a gir",
+  "profileTitle": "Seni nasıl çağıralım?",
+  "profileSubtitle": "Kimliğini paylaşmak zorunda değilsin. İstersen seçtiğin avatara göre sevimli bir takma ad önerelim; dilersen kendin yaz.",
+  "anonymousOption": "Anonim kalmak istiyorum",
+  "anonymousOptionDesc": "Avatarına göre bir takma ad öneririz",
+  "namedOption": "Adımı kullanmak istiyorum",
+  "namedOptionDesc": "Adını ya da kısaltmasını yazabilirsin",
+  "nicknameLabel": "Takma ad",
+  "nameLabel": "Adın",
+  "chooseAvatar": "Bir avatar seç",
+  "suggestAnother": "Başka bir öneri",
+  "areasTitle": "Neyle mücadele ediyorsun?",
+  "areasSubtitle": "Birden fazla alan seçebilirsin. Bu bilgi yalnızca sana özel kalır; istediğin zaman değiştirebilirsin.",
+  "communityTitle": "Aynı yolda yürüyenlerle buluş",
+  "communitySubtitle": "Haven topluluğunda benzer zorlukları yaşayan insanlar birbirine destek notları bırakır, serilerini görür ve cesaret verir.",
+  "communityJoin": "Topluluğa katılmak istiyorum",
+  "communityJoinDesc": "İstediğin zaman Profil'den değiştirebilirsin.",
+  "consentTitle": "Son bir adım",
+  "consentSubtitle": "Haven'ın nasıl çalıştığını bilmeni istiyoruz.",
+  "greetingMorning": "Günaydın",
+  "greetingDay": "Merhaba",
+  "greetingEvening": "İyi akşamlar",
+  "greetingNight": "İyi geceler",
+  "dailyStreak": "günlük seri",
+  "bestStreak": "En iyi: {days} gün",
+  "@bestStreak": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "streakDoneToday": "Bugünü kaydettin, serin devam ediyor.",
+  "streakNotDone": "Bugün bir kayıt yap, serin devam etsin. Bir günü kaçırmak serini bozmaz.",
+  "quoteTitle": "Günün sözü",
+  "todayRecords": "Bugünkü kayıtların",
+  "monthLights": "Bu ayın ışıkları",
+  "yourProgress": "İlerlemen",
+  "myNotes": "Notlarım",
+  "addNote": "Not ekle",
+  "noNotesYet": "Henüz notun yok. Kendine bir not bırakmaya ne dersin?",
+  "kindDays": "iyi geçen gün",
+  "currentStreak": "Şu anki seri",
+  "personalBest": "Rekorun",
+  "last30Days": "Son 30 gün",
+  "imStruggling": "Şu an zorlanıyorum",
+  "quickBreath": "Nefes",
+  "quickGames": "Oyunlar",
+  "quickCommunity": "Topluluk",
+  "quickSupport": "Destek al",
+  "wentWell": "İyi geçti",
+  "wasHard": "Zordu",
+  "comebackTitle": "Bu sadece küçük bir tümsek",
+  "comebackBody": "Geçen sefer {past} gün boyunca ne kadar güzel ilerlediğini gördük. O günler hâlâ senin. Şimdi kendi rekorunla ({best} gün) yarışıyoruz!",
+  "@comebackBody": {
+    "placeholders": {
+      "past": {
+        "type": "int"
+      },
+      "best": {
+        "type": "int"
+      }
+    }
+  },
+  "raceTitle": "Kendi rekorunla yarışıyorsun",
+  "raceBody": "Rekoruna {left} gün kaldı. Acele yok; kendi hızında.",
+  "@raceBody": {
+    "placeholders": {
+      "left": {
+        "type": "int"
+      }
+    }
+  },
+  "newRecordTitle": "Yeni rekor!",
+  "newRecordBody": "{days} gün! Kendi rekorunu aştın. Kendinle gurur duyabilirsin.",
+  "@newRecordBody": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "calmTitle": "Sakinleş",
+  "calmIntro": "Burası senin güvenli alanın. Dürtü ya da kaygı geldiğinde birkaç dakikalık bir mola, dalganın geçmesine yardım eder.",
+  "emergencyTitle": "Acil destek",
+  "emergencyBody": "Kendini güvende hissetmiyorsan hemen ara. Bunu yapmak güç gerektirir.",
+  "breathingTitle": "Nefes al · tut · ver",
+  "breathingDesc": "4 saniye al, 4 saniye tut, 6 saniye ver",
+  "breatheIn": "Nefes al",
+  "hold": "Tut",
+  "breatheOut": "Yavaşça ver",
+  "gameBubbles": "Baloncuk patlat",
+  "gameBubblesDesc": "Ellerine güvenli bir uğraş",
+  "gameColors": "Renk eşleştir",
+  "gameColorsDesc": "Renkleri eşleştir, zihnin dinlensin",
+  "gameMemory": "Hafıza kartları",
+  "gameMemoryDesc": "Zihnini nazikçe meşgul et",
+  "groundingTitle": "5-4-3-2-1 topraklanma",
+  "groundingDesc": "Şimdiye dön",
+  "supportTitle": "Destek al",
+  "supportDesc": "Kriz hatları ve uzman desteği",
+  "notificationsTitle": "Bildirimler",
+  "markAllRead": "Tümünü okundu say",
+  "noNotifications": "Henüz bildirim yok.",
+  "giftsTitle": "Hediyelerim",
+  "giftsIntro": "Kendine her gün geri döndükçe yeni hediyeler açılır. Dilersen kısa bir reklamla da açabilirsin; tamamen isteğe bağlı.",
+  "giftUnlockAt": "{days} günlük seride açılır",
+  "@giftUnlockAt": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "giftDaysLeft": "{left} gün kaldı",
+  "@giftDaysLeft": {
+    "placeholders": {
+      "left": {
+        "type": "int"
+      }
+    }
+  },
+  "themes": "Temalar",
+  "avatars": "Avatarlar",
+  "language": "Dil",
+  "systemLanguage": "Cihaz dili",
+  "signOut": "Çıkış yap",
+  "deleteAccount": "Hesabımı ve tüm verilerimi sil",
+  "save": "Kaydet",
+  "cancel": "Vazgeç",
+  "close": "Kapat",
+  "daysCount": "{count} gün",
+  "recordLabel": "Rekor: {count} gün",
+  "journeyStart": "Yolculuğun bugün başlayabilir.",
+  "recordReached": "Rekoruna ulaştın! Yarın yeni bir rekor olabilir.",
+  "comebackShort": "Rekorun {best} gün. Yeniden başlamak için güzel bir gün.",
+  "seeAll": "Tümü",
+  "beginning": "Başlangıç",
+  "@daysCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "@recordLabel": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "@comebackShort": {
+    "placeholders": {
+      "best": {
+        "type": "int"
+      }
+    }
+  }
+}
