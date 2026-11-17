@@ -12,6 +12,7 @@ import '../../data/models/community.dart';
 import '../../data/services/auth_service.dart';
 import '../../l10n/l10n.dart';
 import '../../providers.dart';
+import '../../l10n/tx.dart';
 
 /// Haven'ın kendi karşılama/kayıt ekranı. Google yalnızca kimliği doğrular
 /// (Android'in tek dokunuşluk hesap paneli); kayıt sürecinin geri kalanı
@@ -31,19 +32,18 @@ class _WelcomeScreenState extends ConsumerState<WelcomeScreen> {
     // Servisi await'ten ÖNCE al: giriş başarılı olunca bu ekran kalkar ve
     // sonrasında `ref` kullanmak hata verir (Riverpod 3).
     final repo = ref.read(repositoryProvider);
+    final language = ref.read(localeProvider).languageCode;
     try {
       final user = (await signIn())?.user;
       if (user != null) {
-        await repo.ensureUserDoc(user);
+        await repo.ensureUserDoc(user, language: language);
         repo.addInbox(user.uid, InboxType.login);
       }
     } on AuthFailure catch (e) {
       _snack(e.message);
     } catch (e) {
       debugPrint('Giriş hatası: $e');
-      _snack(
-        'Giriş şu an tamamlanamadı. İnternet bağlantını kontrol edip tekrar dener misin?',
-      );
+      _snack(tx('Giriş şu an tamamlanamadı. İnternet bağlantını kontrol edip tekrar dener misin?'));
     } finally {
       if (mounted) setState(() => _busy = false);
     }
@@ -71,11 +71,7 @@ class _WelcomeScreenState extends ConsumerState<WelcomeScreen> {
             gradient: LinearGradient(
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
-              colors: [
-                HavenColors.harborDeep,
-                HavenColors.harbor,
-                Color(0xFF3C7F86),
-              ],
+              colors: [HavenColors.harborDeep, HavenColors.harbor, Color(0xFF3C7F86)],
             ),
           ),
           child: SafeArea(
@@ -88,7 +84,8 @@ class _WelcomeScreenState extends ConsumerState<WelcomeScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        const SizedBox(height: 24),
+                        // Hesap açmadan önce dil seçimi (evrensel kullanım).
+                        Align(alignment: Alignment.centerRight, child: const _LanguagePicker()),
                         Center(child: HavenLogo(size: 128, lightColor: p.accent)),
                         const SizedBox(height: 16),
                         Text(
@@ -102,55 +99,42 @@ class _WelcomeScreenState extends ConsumerState<WelcomeScreen> {
                         ),
                         const SizedBox(height: 4),
                         Text(
-                          'Güvenli limanın.',
+                          tx('Güvenli limanın.'),
                           textAlign: TextAlign.center,
                           style: text.titleLarge?.copyWith(color: Colors.white),
                         ),
                         const SizedBox(height: 6),
                         Text(
-                          'Yargısız, acelesiz; kendi hızında.',
+                          tx('Yargısız, acelesiz; kendi hızında.'),
                           textAlign: TextAlign.center,
-                          style: text.bodyLarge?.copyWith(
-                            color: Colors.white70,
-                          ),
+                          style: text.bodyLarge?.copyWith(color: Colors.white70),
                         ),
                         const SizedBox(height: 36),
-                        const _Feature(
+                        _Feature(
                           Icons.lock_outline_rounded,
-                          'Sana özel, gizli bir günlük. Kayıtlarını yalnızca sen görürsün.',
+                          tx('Sana özel, gizli bir günlük. Kayıtlarını yalnızca sen görürsün.'),
                         ),
-                        const _Feature(
+                        _Feature(
                           Icons.groups_outlined,
-                          'Aynı yolda yürüyenlerden içten destek ve seri arkadaşları.',
+                          tx('Aynı yolda yürüyenlerden içten destek ve seri arkadaşları.'),
                         ),
-                        const _Feature(
+                        _Feature(
                           Icons.self_improvement_rounded,
-                          'Zor anlar için nefes egzersizleri ve kısa sakinleştirici oyunlar.',
+                          tx('Zor anlar için nefes egzersizleri ve kısa sakinleştirici oyunlar.'),
                         ),
                         const SizedBox(height: 36),
                         if (_busy)
-                          const Center(
-                            child: CircularProgressIndicator(
-                              color: Colors.white,
-                            ),
-                          )
+                          const Center(child: CircularProgressIndicator(color: Colors.white))
                         else ...[
                           FilledButton(
-                            style: FilledButton.styleFrom(
-                              backgroundColor: Colors.white,
-                              foregroundColor: p.deep,
-                            ),
+                            style: FilledButton.styleFrom(backgroundColor: Colors.white, foregroundColor: p.deep),
                             onPressed: () => _run(auth.signInWithGoogle),
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 Text(
                                   'G',
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.w800,
-                                    fontSize: 20,
-                                    color: Color(0xFF4285F4),
-                                  ),
+                                  style: TextStyle(fontWeight: FontWeight.w800, fontSize: 20, color: Color(0xFF4285F4)),
                                 ),
                                 SizedBox(width: 12),
                                 Flexible(child: Text(l.welcomeGoogle)),
@@ -166,7 +150,7 @@ class _WelcomeScreenState extends ConsumerState<WelcomeScreen> {
                               ),
                               onPressed: () => _run(auth.signInWithApple),
                               icon: const Icon(Icons.apple),
-                              label: const Text('Apple ile devam et'),
+                              label: Text(tx('Apple ile devam et')),
                             ),
                           ],
                         ],
@@ -177,29 +161,23 @@ class _WelcomeScreenState extends ConsumerState<WelcomeScreen> {
                           children: [
                             const Padding(
                               padding: EdgeInsets.only(top: 2),
-                              child: Icon(
-                                Icons.verified_user_outlined,
-                                size: 16,
-                                color: Colors.white70,
-                              ),
+                              child: Icon(Icons.verified_user_outlined, size: 16, color: Colors.white70),
                             ),
                             const SizedBox(width: 6),
                             Flexible(
                               child: Text(
-                                'Google yalnızca kimliğini doğrular; şifren Haven ile asla paylaşılmaz. '
-                                'Kaydın geri kalanını burada, birlikte tamamlayacağız.',
-                                style: text.bodySmall?.copyWith(
-                                  color: Colors.white70,
+                                tx(
+                                  'Google yalnızca kimliğini doğrular; şifren Haven ile asla paylaşılmaz. Kaydın geri kalanını burada, birlikte tamamlayacağız.',
                                 ),
+                                style: text.bodySmall?.copyWith(color: Colors.white70),
                               ),
                             ),
                           ],
                         ),
                         TextButton(
-                          onPressed: () =>
-                              launchUrl(Uri.parse(kPrivacyPolicyUrl)),
+                          onPressed: () => launchUrl(Uri.parse(kPrivacyPolicyUrl)),
                           child: Text(
-                            'Gizlilik Politikası',
+                            tx('Gizlilik Politikası'),
                             style: text.bodySmall?.copyWith(
                               color: Colors.white,
                               decoration: TextDecoration.underline,
@@ -243,13 +221,39 @@ class _Feature extends StatelessWidget {
           ),
           const SizedBox(width: 14),
           Expanded(
-            child: Text(
-              text,
-              style: Theme.of(context).textTheme.bodyMedium
-                  ?.copyWith(color: Colors.white),
-            ),
+            child: Text(text, style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.white)),
           ),
         ],
+      ),
+    );
+  }
+}
+
+/// Karşılama ekranındaki dil seçici: seçim hesap açılınca kaydedilir.
+class _LanguagePicker extends ConsumerWidget {
+  const _LanguagePicker();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final current = ref.watch(localeProvider).languageCode;
+    return PopupMenuButton<String>(
+      tooltip: kLanguageNames[current],
+      onSelected: (code) => ref.read(languageOverrideProvider.notifier).select(code),
+      itemBuilder: (_) => [
+        for (final e in kLanguageNames.entries)
+          CheckedPopupMenuItem(value: e.key, checked: e.key == current, child: Text(e.value)),
+      ],
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Icon(Icons.translate_rounded, color: Colors.white, size: 20),
+            const SizedBox(width: 6),
+            Text(kLanguageNames[current] ?? current, style: const TextStyle(color: Colors.white)),
+            const Icon(Icons.arrow_drop_down_rounded, color: Colors.white),
+          ],
+        ),
       ),
     );
   }

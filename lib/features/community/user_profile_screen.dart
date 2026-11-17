@@ -7,6 +7,7 @@ import '../../core/utils/day_key.dart';
 import '../../core/widgets/avatar_badge.dart';
 import '../../providers.dart';
 import 'post_card.dart';
+import '../../l10n/tx.dart';
 
 /// Bir topluluk üyesinin profili (X tarzı): avatar, takma ad, seri, rekor,
 /// paylaşımları; "Arkadaş ekle" / "Cesaret gönder". Gerçek ad, e-posta ve
@@ -25,9 +26,9 @@ class UserProfileScreen extends ConsumerWidget {
     try {
       await ref.read(communityRepositoryProvider).addFriend(me, other);
       ref.read(analyticsProvider).friendAdded();
-      messenger.showSnackBar(SnackBar(content: Text('${other.nickname} artık arkadaşın.')));
+      messenger.showSnackBar(SnackBar(content: Text(tx('{nickname} artık arkadaşın.', {'nickname': other.nickname}))));
     } catch (_) {
-      messenger.showSnackBar(const SnackBar(content: Text('Arkadaş eklenemedi.')));
+      messenger.showSnackBar(SnackBar(content: Text(tx('Arkadaş eklenemedi.'))));
     }
   }
 
@@ -45,7 +46,7 @@ class UserProfileScreen extends ConsumerWidget {
             for (var i = 0; i < kKudosMessages.length; i++)
               ListTile(
                 leading: const Icon(Icons.favorite_border_rounded),
-                title: Text(kKudosMessages[i]),
+                title: Text(tx(kKudosMessages[i])),
                 onTap: () => Navigator.pop(ctx, i),
               ),
           ],
@@ -56,9 +57,9 @@ class UserProfileScreen extends ConsumerWidget {
     try {
       await repo.sendKudos(me, uid, id);
       ref.read(analyticsProvider).kudosSent();
-      messenger.showSnackBar(const SnackBar(content: Text('Cesaret notun gönderildi.')));
+      messenger.showSnackBar(SnackBar(content: Text(tx('Cesaret notun gönderildi.'))));
     } catch (_) {
-      messenger.showSnackBar(const SnackBar(content: Text('Not şu an gönderilemedi.')));
+      messenger.showSnackBar(SnackBar(content: Text(tx('Not şu an gönderilemedi.'))));
     }
   }
 
@@ -108,14 +109,14 @@ class UserProfileScreen extends ConsumerWidget {
                           Icon(Icons.local_fire_department_rounded, color: p.accent, size: 20),
                           const SizedBox(width: 4),
                           Text(
-                            '${profile?.daily.live(today) ?? 0} günlük seri',
+                            tx('{p} günlük seri', {'p': profile?.daily.live(today) ?? 0}),
                             style: t.bodyMedium?.copyWith(color: Colors.white),
                           ),
                           const SizedBox(width: 12),
                           Icon(Icons.emoji_events_outlined, color: p.accent, size: 18),
                           const SizedBox(width: 4),
                           Text(
-                            'Rekor ${profile?.daily.longest ?? 0}',
+                            tx('Rekor {p}', {'p': profile?.daily.longest ?? 0}),
                             style: t.bodyMedium?.copyWith(color: Colors.white),
                           ),
                         ],
@@ -136,12 +137,12 @@ class UserProfileScreen extends ConsumerWidget {
                         ? OutlinedButton.icon(
                             onPressed: null,
                             icon: const Icon(Icons.check_rounded),
-                            label: const Text('Arkadaşsınız'),
+                            label: Text(tx('Arkadaşsınız')),
                           )
                         : FilledButton.icon(
                             onPressed: profile == null ? null : () => _addFriend(context, ref),
                             icon: const Icon(Icons.person_add_alt_1_outlined),
-                            label: const Text('Arkadaş ekle'),
+                            label: Text(tx('Arkadaş ekle')),
                           ),
                   ),
                   const SizedBox(width: 10),
@@ -149,7 +150,7 @@ class UserProfileScreen extends ConsumerWidget {
                     child: FilledButton.tonalIcon(
                       onPressed: () => _kudos(context, ref),
                       icon: const Icon(Icons.favorite_border_rounded),
-                      label: const Text('Cesaret gönder'),
+                      label: Text(tx('Cesaret gönder')),
                     ),
                   ),
                 ],
@@ -157,12 +158,12 @@ class UserProfileScreen extends ConsumerWidget {
             ),
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 18, 16, 4),
-            child: Text('Paylaşımlar', style: t.titleSmall?.copyWith(fontWeight: FontWeight.w700)),
+            child: Text(tx('Paylaşımlar'), style: t.titleSmall?.copyWith(fontWeight: FontWeight.w700)),
           ),
           if (visible.isEmpty)
-            const Padding(
+            Padding(
               padding: EdgeInsets.all(24),
-              child: Text('Henüz paylaşım yok.', textAlign: TextAlign.center),
+              child: Text(tx('Henüz paylaşım yok.'), textAlign: TextAlign.center),
             )
           else
             for (final n in visible) ...[

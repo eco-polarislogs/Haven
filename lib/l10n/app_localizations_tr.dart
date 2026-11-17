@@ -31,16 +31,13 @@ class AppLocalizationsTr extends AppLocalizations {
   String get welcomeSubtitle => 'Yargısız, acelesiz; kendi hızında.';
 
   @override
-  String get welcomeFeaturePrivate =>
-      'Sana özel, gizli bir günlük. Kayıtlarını yalnızca sen görürsün.';
+  String get welcomeFeaturePrivate => 'Sana özel, gizli bir günlük. Kayıtlarını yalnızca sen görürsün.';
 
   @override
-  String get welcomeFeatureCommunity =>
-      'Aynı yolda yürüyenlerden içten destek ve seri arkadaşları.';
+  String get welcomeFeatureCommunity => 'Aynı yolda yürüyenlerden içten destek ve seri arkadaşları.';
 
   @override
-  String get welcomeFeatureCalm =>
-      'Zor anlar için nefes, topraklanma ve kısa sakinleştirici oyunlar.';
+  String get welcomeFeatureCalm => 'Zor anlar için nefes, topraklanma ve kısa sakinleştirici oyunlar.';
 
   @override
   String get welcomeGoogle => 'Google ile kayıt ol / giriş yap';
@@ -122,15 +119,13 @@ class AppLocalizationsTr extends AppLocalizations {
   String get communityJoin => 'Topluluğa katılmak istiyorum';
 
   @override
-  String get communityJoinDesc =>
-      'İstediğin zaman Profil\'den değiştirebilirsin.';
+  String get communityJoinDesc => 'İstediğin zaman Profil\'den değiştirebilirsin.';
 
   @override
   String get consentTitle => 'Son bir adım';
 
   @override
-  String get consentSubtitle =>
-      'Haven\'ın nasıl çalıştığını bilmeni istiyoruz.';
+  String get consentSubtitle => 'Haven\'ın nasıl çalıştığını bilmeni istiyoruz.';
 
   @override
   String get greetingMorning => 'Günaydın';
@@ -156,8 +151,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get streakDoneToday => 'Bugünü kaydettin, serin devam ediyor.';
 
   @override
-  String get streakNotDone =>
-      'Bugün bir kayıt yap, serin devam etsin. Bir günü kaçırmak serini bozmaz.';
+  String get streakNotDone => 'Bugün bir kayıt yap, serin devam etsin. Bir günü kaçırmak serini bozmaz.';
 
   @override
   String get quoteTitle => 'Günün sözü';
@@ -178,8 +172,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get addNote => 'Not ekle';
 
   @override
-  String get noNotesYet =>
-      'Henüz notun yok. Kendine bir not bırakmaya ne dersin?';
+  String get noNotesYet => 'Henüz notun yok. Kendine bir not bırakmaya ne dersin?';
 
   @override
   String get kindDays => 'iyi geçen gün';
@@ -249,8 +242,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get emergencyTitle => 'Acil destek';
 
   @override
-  String get emergencyBody =>
-      'Kendini güvende hissetmiyorsan hemen ara. Bunu yapmak güç gerektirir.';
+  String get emergencyBody => 'Kendini güvende hissetmiyorsan hemen ara. Bunu yapmak güç gerektirir.';
 
   @override
   String get breathingTitle => 'Nefes al · tut · ver';
@@ -364,8 +356,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get journeyStart => 'Yolculuğun bugün başlayabilir.';
 
   @override
-  String get recordReached =>
-      'Rekoruna ulaştın! Yarın yeni bir rekor olabilir.';
+  String get recordReached => 'Rekoruna ulaştın! Yarın yeni bir rekor olabilir.';
 
   @override
   String comebackShort(int best) {

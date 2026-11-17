@@ -1,4 +1,6 @@
+import '../../l10n/tx.dart';
 import '../constants/struggle_catalog.dart';
+import 'intl_terms.dart';
 
 /// Topluluk notlarının ve takma adların denetimi.
 ///
@@ -21,11 +23,15 @@ class ModerationResult {
 
   bool get isOk => verdict == ModerationVerdict.ok;
 
-  String get message => switch (verdict) {
+  /// Kullanıcıya gösterilen açıklama (etkin dilde).
+  String get message => messageTr.isEmpty ? '' : tx(messageTr, {'max': ContentModerator.maxNoteLength});
+
+  /// Türkçe kaynak metin (çeviri anahtarı).
+  String get messageTr => switch (verdict) {
     ModerationVerdict.ok => '',
     ModerationVerdict.empty => 'Bir şeyler yazmayı dener misin?',
     ModerationVerdict.tooShort => 'Biraz daha uzun yazmayı dener misin?',
-    ModerationVerdict.tooLong => 'Notlar en fazla ${ContentModerator.maxNoteLength} karakter olabilir.',
+    ModerationVerdict.tooLong => 'Notlar en fazla {max} karakter olabilir.',
     ModerationVerdict.crisis =>
       'Yazdıkların şu an çok zorlandığını gösteriyor. Bu notu paylaşmak yerine '
           'sana destek olmak istiyoruz.',
@@ -168,32 +174,41 @@ class ContentModerator {
     // harflik ardışık parçalar; "yara kapandı" gibi cümleler etkilenmez).
     final merged = _mergeSingleLetters(toks);
 
+    final lower = text.toLowerCase();
+
     String? hit(List<String> terms) {
       for (final t in terms) {
+        // Çince / Hintçe terimler: kelime sınırı olmadığından metin içinde aranır.
+        if (IntlTerms.isScriptTerm(t)) {
+          if (lower.contains(t)) return t;
+          continue;
+        }
         if (containsTerm(toks, t) || containsTerm(merged, t)) return t;
       }
       return null;
     }
 
-    final crisis = hit(_crisis);
+    final crisis = hit(_crisis) ?? hit(IntlTerms.crisis);
     if (crisis != null) return ModerationResult(ModerationVerdict.crisis, crisis);
 
-    final lower = text.toLowerCase();
     if (_url.hasMatch(lower) || _email.hasMatch(lower) || _handle.hasMatch(lower) || _phone.hasMatch(lower)) {
       return const ModerationResult(ModerationVerdict.personalInfo);
     }
 
-    final prof = hit(_profanity);
+    final prof = hit(_profanity) ?? hit(IntlTerms.profanity);
     if (prof != null) return ModerationResult(ModerationVerdict.profanity, prof);
 
-    final ins = hit(_insults);
+    final ins = hit(_insults) ?? hit(IntlTerms.insults);
     if (ins != null) return ModerationResult(ModerationVerdict.insult, ins);
 
-    // Rakam + birim ("5 kilo", "500 tl") rakamlar harfe çevrilmeden önce aranır.
-    if (_numberUnit.hasMatch(lower)) {
+    // Rakam + birim ("5 kilo", "500 tl", "10 lbs", "5斤") rakamlar harfe çevrilmeden önce aranır.
+    if (_numberUnit.hasMatch(lower) || IntlTerms.numberUnit.hasMatch(lower)) {
       return const ModerationResult(ModerationVerdict.trigger, 'sayı');
     }
-    final trig = hit(_triggers) ?? (circle == null ? null : hit(circle.avoidWords));
+    final trig =
+        hit(_triggers) ??
+        hit(IntlTerms.triggers) ??
+        (circle == null ? null : hit([...circle.avoidWords, ...?IntlTerms.byCategory[circle]]));
     if (trig != null) return ModerationResult(ModerationVerdict.trigger, trig);
 
     return const ModerationResult(ModerationVerdict.ok);
@@ -205,7 +220,11 @@ class ContentModerator {
   /// alanları için tetikleyici olabilecek ifadeleri ("diyet", "kalori",
   /// "5 kilo" gibi) metinden çıkarıp yerine "•••" koyar.
   static MaskedText maskFor(String text, Iterable<StruggleCategory> readerCategories) {
-    final terms = <String>[..._triggers, for (final c in readerCategories) ...c.avoidWords];
+    final terms = <String>[
+      ..._triggers,
+      ...IntlTerms.triggers,
+      for (final c in readerCategories) ...[...c.avoidWords, ...?IntlTerms.byCategory[c]],
+    ];
     // Uzunluğu koruyan küçük harf: Dart'ta 'İ'.toLowerCase() iki karakter olur.
     final lower = text.replaceAll('İ', 'i').replaceAll('I', 'ı').toLowerCase();
 
@@ -215,8 +234,22 @@ class ContentModerator {
       if (toks.isNotEmpty) spans.add((m.start, m.end, toks.join()));
     }
 
-    final ranges = <(int, int)>[for (final m in _numberUnit.allMatches(lower)) (m.start, m.end)];
+    final ranges = <(int, int)>[
+      for (final m in _numberUnit.allMatches(lower)) (m.start, m.end),
+      for (final m in IntlTerms.numberUnit.allMatches(lower)) (m.start, m.end),
+    ];
     for (final raw in terms) {
+      // Çince / Hintçe: metin içinde her geçtiği yer gizlenir.
+      if (IntlTerms.isScriptTerm(raw)) {
+        var from = 0;
+        while (true) {
+          final i = lower.indexOf(raw, from);
+          if (i < 0) break;
+          ranges.add((i, i + raw.length));
+          from = i + raw.length;
+        }
+        continue;
+      }
       final exact = raw.startsWith('=');
       final parts = tokenize(normalize(exact ? raw.substring(1) : raw));
       if (parts.isEmpty) continue;
@@ -281,6 +314,13 @@ class ContentModerator {
       'ş': 's',
       'ü': 'u',
       'â': 'a',
+      // İspanyolca aksanlar
+      'á': 'a',
+      'é': 'e',
+      'í': 'i',
+      'ó': 'o',
+      'ú': 'u',
+      'ñ': 'n',
       'î': 'i',
       'û': 'u',
     };

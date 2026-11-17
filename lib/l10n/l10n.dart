@@ -10,10 +10,4 @@ extension L10nX on BuildContext {
 }
 
 /// Desteklenen diller: Türkçe + dünyada en çok konuşulan 4 dil.
-const kLanguageNames = {
-  'tr': 'Türkçe',
-  'en': 'English',
-  'es': 'Español',
-  'zh': '中文',
-  'hi': 'हिन्दी',
-};
+const kLanguageNames = {'tr': 'Türkçe', 'en': 'English', 'es': 'Español', 'zh': '中文', 'hi': 'हिन्दी'};

@@ -78,3 +78,14 @@ test("bildirim kutusu push metinleri: hazır mesajlar, takma ad kırpılır", ()
 test("cesaret mesajı listesi istemciyle aynı uzunlukta (8)", () => {
   assert.equal(KUDOS.length, 8);
 });
+
+test("bildirim kutusu push metinleri 5 dilde ve hazır mesaj listeleri eşit uzunlukta", () => {
+  const { KUDOS_I18N } = require("./inbox_messages");
+  for (const lang of ["tr", "en", "es", "zh", "hi"]) {
+    assert.equal(KUDOS_I18N[lang].length, KUDOS.length, lang);
+  }
+  assert.equal(inboxText({ type: "note_reply", fromNickname: "Ada" }, "en"),
+    "Ada replied to your post. You can read it in the Community tab.");
+  assert.equal(inboxText({ type: "kudos", messageId: 1 }, "es"), "Una amistad: " + KUDOS_I18N.es[1]);
+  assert.equal(inboxText({ type: "login" }, "xx"), inboxText({ type: "login" }, "tr"));
+});

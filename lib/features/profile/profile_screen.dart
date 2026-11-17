@@ -21,7 +21,9 @@ import '../../core/theme/app_theme.dart';
 import '../../l10n/l10n.dart';
 import '../ads/rewarded_unlock.dart';
 import '../rewards/gifts_screen.dart';
+import 'badges.dart';
 import '../support/professional_support_screen.dart';
+import '../../l10n/tx.dart';
 
 class ProfileScreen extends ConsumerWidget {
   const ProfileScreen({super.key});
@@ -49,12 +51,15 @@ class ProfileScreen extends ConsumerWidget {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Her şeyi silmek istediğine emin misin?'),
-        content: const Text('Seçtiğin alanlar, tüm kayıtların, topluluk notların, arkadaşlıkların ve '
-            'hesabın kalıcı olarak silinecek. Bu işlem geri alınamaz.'),
+        title: Text(tx('Her şeyi silmek istediğine emin misin?')),
+        content: Text(
+          tx(
+            'Seçtiğin alanlar, tüm kayıtların, topluluk notların, arkadaşlıkların ve hesabın kalıcı olarak silinecek. Bu işlem geri alınamaz.',
+          ),
+        ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Vazgeç')),
-          FilledButton(onPressed: () => Navigator.pop(ctx, true), child: const Text('Evet, sil')),
+          TextButton(onPressed: () => Navigator.pop(ctx, false), child: Text(tx('Vazgeç'))),
+          FilledButton(onPressed: () => Navigator.pop(ctx, true), child: Text(tx('Evet, sil'))),
         ],
       ),
     );
@@ -69,8 +74,11 @@ class ProfileScreen extends ConsumerWidget {
     } on AuthFailure catch (e) {
       messenger.showSnackBar(SnackBar(content: Text(e.message)));
     } catch (e) {
-      messenger.showSnackBar(const SnackBar(
-          content: Text('Silme işlemi için internet bağlantısı gerekiyor. Bağlantın gelince tekrar dener misin?')));
+      messenger.showSnackBar(
+        SnackBar(
+          content: Text(tx('Silme işlemi için internet bağlantısı gerekiyor. Bağlantın gelince tekrar dener misin?')),
+        ),
+      );
     }
   }
 
@@ -90,50 +98,61 @@ class ProfileScreen extends ConsumerWidget {
     final currentTheme = ref.watch(themePresetProvider);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Profil'), actions: const [NotificationBell(), SizedBox(width: 4)]),
+      appBar: AppBar(title: Text(tx('Profil')), actions: const [NotificationBell(), SizedBox(width: 4)]),
       body: ListView(
         padding: const EdgeInsets.fromLTRB(16, 4, 16, 32),
         children: [
           Card(
             child: Padding(
               padding: const EdgeInsets.all(18),
-              child: Column(children: [
-                Row(children: [
-                  AvatarBadge(index: user.avatar, radius: 32),
-                  const SizedBox(width: 14),
-                  Expanded(
-                    child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                      Text(user.nickname ?? '', style: t.titleLarge?.copyWith(fontWeight: FontWeight.w700)),
-                      const SizedBox(height: 2),
-                      InkWell(
-                        onTap: profile == null
-                            ? null
-                            : () {
-                                Clipboard.setData(ClipboardData(text: profile.friendCode));
-                                ScaffoldMessenger.of(context)
-                                    .showSnackBar(const SnackBar(content: Text('Arkadaş kodun kopyalandı.')));
-                              },
-                        child: Row(children: [
-                          Text('Arkadaş kodu: ${profile?.friendCode ?? '…'}', style: t.bodySmall),
-                          const SizedBox(width: 4),
-                          const Icon(Icons.copy_rounded, size: 14),
-                        ]),
+              child: Column(
+                children: [
+                  Row(
+                    children: [
+                      AvatarBadge(index: user.avatar, radius: 32),
+                      const SizedBox(width: 14),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(user.nickname ?? '', style: t.titleLarge?.copyWith(fontWeight: FontWeight.w700)),
+                            const SizedBox(height: 2),
+                            InkWell(
+                              onTap: profile == null
+                                  ? null
+                                  : () {
+                                      Clipboard.setData(ClipboardData(text: profile.friendCode));
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(SnackBar(content: Text(tx('Arkadaş kodun kopyalandı.'))));
+                                    },
+                              child: Row(
+                                children: [
+                                  Text(tx('Arkadaş kodu: {p}', {'p': profile?.friendCode ?? '…'}), style: t.bodySmall),
+                                  const SizedBox(width: 4),
+                                  const Icon(Icons.copy_rounded, size: 14),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
-                    ]),
+                      IconButton(
+                        tooltip: tx('Profili düzenle'),
+                        icon: const Icon(Icons.edit_outlined),
+                        onPressed: () => _editProfile(context, ref, user),
+                      ),
+                    ],
                   ),
-                  IconButton(
-                    tooltip: 'Profili düzenle',
-                    icon: const Icon(Icons.edit_outlined),
-                    onPressed: () => _editProfile(context, ref, user),
+                  const SizedBox(height: 16),
+                  Row(
+                    children: [
+                      _Stat('${user.daily.live(todayKey())}', tx('günlük seri'), Icons.local_fire_department_rounded),
+                      _Stat('${user.daily.longest}', tx('en uzun seri'), Icons.emoji_events_outlined),
+                      _Stat('$totalKind', tx('iyi geçen gün'), Icons.light_mode_outlined),
+                    ],
                   ),
-                ]),
-                const SizedBox(height: 16),
-                Row(children: [
-                  _Stat('${user.daily.live(todayKey())}', 'günlük seri', Icons.local_fire_department_rounded),
-                  _Stat('${user.daily.longest}', 'en uzun seri', Icons.emoji_events_outlined),
-                  _Stat('$totalKind', 'iyi geçen gün', Icons.light_mode_outlined),
-                ]),
-              ]),
+                ],
+              ),
             ),
           ),
           const SizedBox(height: 14),
@@ -142,132 +161,160 @@ class ProfileScreen extends ConsumerWidget {
             child: ListTile(
               contentPadding: const EdgeInsets.symmetric(horizontal: 18, vertical: 6),
               leading: Icon(Icons.volunteer_activism_outlined, color: scheme.tertiary),
-              title: const Text('Destek al', style: TextStyle(fontWeight: FontWeight.w700)),
-              subtitle: const Text('Kriz hatları ve profesyonel desteğe nasıl ulaşılır'),
+              title: Text(tx('Destek al'), style: TextStyle(fontWeight: FontWeight.w700)),
+              subtitle: Text(tx('Kriz hatları ve profesyonel desteğe nasıl ulaşılır')),
               trailing: const Icon(Icons.chevron_right_rounded),
               onTap: () => pushScreen(context, 'professional_support', const ProfessionalSupportScreen()),
             ),
           ),
-          const SectionTitle('Yolculuğum'),
+          const SizedBox(height: 12),
+          const BadgesSection(),
+          SectionTitle(tx('Yolculuğum')),
           Card(
-            child: Column(children: [
-              ListTile(
-                leading: const Icon(Icons.tune_rounded),
-                title: const Text('Mücadele alanlarım'),
-                trailing: const Icon(Icons.chevron_right_rounded),
-                onTap: () => pushScreen(context, 'edit_struggles', const StrugglePickerScreen()),
-              ),
-              ListTile(
-                leading: const Icon(Icons.card_giftcard_outlined),
-                title: Text(context.l10n.giftsTitle),
-                subtitle: const Text('Seriyle açılan temalar ve avatarlar'),
-                trailing: const Icon(Icons.chevron_right_rounded),
-                onTap: () => pushScreen(context, 'gifts', const GiftsScreen()),
-              ),
-            ]),
+            child: Column(
+              children: [
+                ListTile(
+                  leading: const Icon(Icons.tune_rounded),
+                  title: Text(tx('Mücadele alanlarım')),
+                  trailing: const Icon(Icons.chevron_right_rounded),
+                  onTap: () => pushScreen(context, 'edit_struggles', const StrugglePickerScreen()),
+                ),
+                ListTile(
+                  leading: const Icon(Icons.card_giftcard_outlined),
+                  title: Text(context.l10n.giftsTitle),
+                  subtitle: Text(tx('Seriyle açılan temalar ve avatarlar')),
+                  trailing: const Icon(Icons.chevron_right_rounded),
+                  onTap: () => pushScreen(context, 'gifts', const GiftsScreen()),
+                ),
+              ],
+            ),
           ),
-          const SectionTitle('Topluluk ve bildirimler'),
+          SectionTitle(tx('Topluluk ve bildirimler')),
           Card(
-            child: Column(children: [
-              SwitchListTile(
-                value: user.communityJoined,
-                onChanged: (v) {
-                  repo.setCommunityJoined(uid, v);
-                  ref.read(analyticsProvider).communityJoined(v);
-                  if (v) {
-                    unawaited(ref
-                        .read(communityRepositoryProvider)
-                        .ensureProfile(uid, nickname: user.nickname ?? 'Haven üyesi', avatar: user.avatar, daily: user.daily)
-                        .catchError((Object e) => debugPrint('Profil: $e')));
-                  }
-                },
-                secondary: const Icon(Icons.groups_outlined),
-                title: const Text('Topluluğa katıl'),
-                subtitle: const Text('Takma adın, avatarın ve serin görünür.'),
-              ),
-              SwitchListTile(
-                value: user.notificationsEnabled,
-                onChanged: (v) => repo.setNotificationsEnabled(uid, v),
-                secondary: const Icon(Icons.notifications_active_outlined),
-                title: const Text('Hatırlatmalar'),
-                subtitle: const Text('Her gün 13.00\'te kısa bir motivasyon mesajı; bir süre görünmediğinde de '
-                    'hal hatır sorarız. Yalnızca 10:00–21:00 arası.'),
-              ),
-              SwitchListTile(
-                value: user.analyticsEnabled,
-                onChanged: (v) {
-                  repo.setAnalyticsEnabled(uid, v);
-                  ref.read(analyticsProvider).setEnabled(v);
-                },
-                secondary: const Icon(Icons.insights_outlined),
-                title: const Text('Anonim kullanım istatistikleri'),
-                subtitle: const Text('Not içeriklerin ve kimliğin asla paylaşılmaz.'),
-              ),
-              SwitchListTile(
-                value: user.adsAllowed,
-                onChanged: (v) => repo.setAdsOptIn(uid, v),
-                secondary: const Icon(Icons.verified_user_outlined),
-                title: const Text('Filtreli reklamlar'),
-                subtitle: const Text('Alt çubukta küçük bir reklam; temaları ve hediyeleri reklamla açabilme. '
-                    'Hassas alanlarda varsayılan kapalı; Sakinleş ekranında asla reklam yok.'),
-              ),
-            ]),
+            child: Column(
+              children: [
+                SwitchListTile(
+                  value: user.communityJoined,
+                  onChanged: (v) {
+                    repo.setCommunityJoined(uid, v);
+                    ref.read(analyticsProvider).communityJoined(v);
+                    if (v) {
+                      unawaited(
+                        ref
+                            .read(communityRepositoryProvider)
+                            .ensureProfile(
+                              uid,
+                              nickname: user.nickname ?? tx('Haven üyesi'),
+                              avatar: user.avatar,
+                              daily: user.daily,
+                            )
+                            .catchError((Object e) => debugPrint('Profil: $e')),
+                      );
+                    }
+                  },
+                  secondary: const Icon(Icons.groups_outlined),
+                  title: Text(tx('Topluluğa katıl')),
+                  subtitle: Text(tx('Takma adın, avatarın ve serin görünür.')),
+                ),
+                SwitchListTile(
+                  value: user.notificationsEnabled,
+                  onChanged: (v) => repo.setNotificationsEnabled(uid, v),
+                  secondary: const Icon(Icons.notifications_active_outlined),
+                  title: Text(tx('Hatırlatmalar')),
+                  subtitle: Text(
+                    tx(
+                      'Her gün 13.00\'te kısa bir motivasyon mesajı; bir süre görünmediğinde de hal hatır sorarız. Yalnızca 10:00–21:00 arası.',
+                    ),
+                  ),
+                ),
+                SwitchListTile(
+                  value: user.analyticsEnabled,
+                  onChanged: (v) {
+                    repo.setAnalyticsEnabled(uid, v);
+                    ref.read(analyticsProvider).setEnabled(v);
+                  },
+                  secondary: const Icon(Icons.insights_outlined),
+                  title: Text(tx('Anonim kullanım istatistikleri')),
+                  subtitle: Text(tx('Not içeriklerin ve kimliğin asla paylaşılmaz.')),
+                ),
+                SwitchListTile(
+                  value: user.adsAllowed,
+                  onChanged: (v) => repo.setAdsOptIn(uid, v),
+                  secondary: const Icon(Icons.verified_user_outlined),
+                  title: const Text('Filtreli reklamlar'),
+                  subtitle: Text(
+                    tx(
+                      'Alt çubukta küçük bir reklam; temaları ve hediyeleri reklamla açabilme. Hassas alanlarda varsayılan kapalı; Sakinleş ekranında asla reklam yok.',
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
           SectionTitle(context.l10n.themes),
-          Wrap(spacing: 10, runSpacing: 10, children: [
-            for (final p in ThemePreset.values)
-              Builder(builder: (context) {
-                final open = isGiftUnlocked(
-                    unlockStreak: p.unlockStreak, id: p.name, best: best, user: user);
-                return ChoiceChip(
-                  // Kilitli temada reklam izni varsa "reklamla aç" simgesi.
-                  avatar: open
-                      ? CircleAvatar(backgroundColor: p.primary, radius: 8)
-                      : Icon(user.adsAllowed ? Icons.ondemand_video_rounded : Icons.lock_outline_rounded,
-                          size: 16),
-                  label: Text(p.label),
-                  selected: currentTheme == p,
-                  onSelected: open ? (_) => repo.setTheme(uid, p.name) : (_) => offerThemeUnlock(context, ref, p),
-                );
-              }),
-          ]),
+          Wrap(
+            spacing: 10,
+            runSpacing: 10,
+            children: [
+              for (final p in ThemePreset.values)
+                Builder(
+                  builder: (context) {
+                    final open = isGiftUnlocked(unlockStreak: p.unlockStreak, id: p.name, best: best, user: user);
+                    return ChoiceChip(
+                      // Kilitli temada reklam izni varsa "reklamla aç" simgesi.
+                      avatar: open
+                          ? CircleAvatar(backgroundColor: p.primary, radius: 8)
+                          : Icon(user.adsAllowed ? Icons.ondemand_video_rounded : Icons.lock_outline_rounded, size: 16),
+                      label: Text(p.label),
+                      selected: currentTheme == p,
+                      onSelected: open ? (_) => repo.setTheme(uid, p.name) : (_) => offerThemeUnlock(context, ref, p),
+                    );
+                  },
+                ),
+            ],
+          ),
           SectionTitle(context.l10n.language),
           DropdownButtonFormField<String?>(
-            initialValue: kLanguageCodes.contains(user.language) ? user.language : 'tr',
+            initialValue: ref.watch(localeProvider).languageCode,
             decoration: const InputDecoration(prefixIcon: Icon(Icons.translate_rounded)),
-            items: [
-              for (final e in kLanguageNames.entries) DropdownMenuItem(value: e.key, child: Text(e.value)),
-            ],
+            items: [for (final e in kLanguageNames.entries) DropdownMenuItem(value: e.key, child: Text(e.value))],
             onChanged: (code) => repo.setLanguage(uid, code),
           ),
           Padding(
             padding: const EdgeInsets.fromLTRB(4, 6, 4, 0),
-            child: Text('Psikolojik içerik metinleri şimdilik Türkçedir; çevirileri uzman gözden geçirmesiyle eklenecek.',
-                style: t.bodySmall),
+            child: Text(
+              tx('Tüm içerik 5 dilde. Çeviriler özenle hazırlandı; yine de bir uzmanın tavsiyesinin yerini tutmaz.'),
+              style: t.bodySmall,
+            ),
           ),
-          const SectionTitle('Hesap'),
+          SectionTitle(tx('Hesap')),
           Card(
-            child: Column(children: [
-              ListTile(
-                leading: const Icon(Icons.privacy_tip_outlined),
-                title: const Text('Gizlilik politikası'),
-                onTap: () => launchUrl(Uri.parse(kPrivacyPolicyUrl)),
-              ),
-              ListTile(
-                leading: const Icon(Icons.logout_rounded),
-                title: const Text('Çıkış yap'),
-                onTap: () => _signOut(context, ref),
-              ),
-              ListTile(
-                leading: Icon(Icons.delete_outline_rounded, color: scheme.error),
-                title: Text('Hesabımı ve tüm verilerimi sil', style: TextStyle(color: scheme.error)),
-                onTap: () => _deleteAccount(context, ref),
-              ),
-            ]),
+            child: Column(
+              children: [
+                ListTile(
+                  leading: const Icon(Icons.privacy_tip_outlined),
+                  title: Text(tx('Gizlilik politikası')),
+                  onTap: () => launchUrl(Uri.parse(kPrivacyPolicyUrl)),
+                ),
+                ListTile(
+                  leading: const Icon(Icons.logout_rounded),
+                  title: Text(tx('Çıkış yap')),
+                  onTap: () => _signOut(context, ref),
+                ),
+                ListTile(
+                  leading: Icon(Icons.delete_outline_rounded, color: scheme.error),
+                  title: Text(tx('Hesabımı ve tüm verilerimi sil'), style: TextStyle(color: scheme.error)),
+                  onTap: () => _deleteAccount(context, ref),
+                ),
+              ],
+            ),
           ),
           const SizedBox(height: 16),
-          Text('Haven bir tedavi aracı değildir; profesyonel desteğin yerini tutmaz.',
-              textAlign: TextAlign.center, style: t.bodySmall),
+          Text(
+            tx('Haven bir tedavi aracı değildir; profesyonel desteğin yerini tutmaz.'),
+            textAlign: TextAlign.center,
+            style: t.bodySmall,
+          ),
         ],
       ),
     );
@@ -290,85 +337,140 @@ class ProfileScreen extends ConsumerWidget {
           child: SafeArea(
             child: Padding(
               padding: const EdgeInsets.fromLTRB(20, 0, 20, 16),
-              child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-                Text('Profilini düzenle', style: Theme.of(ctx).textTheme.titleLarge),
-                const SizedBox(height: 16),
-                TextField(
-                  controller: controller,
-                  maxLength: 24,
-                  onChanged: (_) => setSheet(() => error = null),
-                  decoration: InputDecoration(labelText: 'Takma ad', errorText: error),
-                ),
-                Row(children: [
-                  AvatarBadge(index: avatar, radius: 14),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: Text('Varsayılan adı: ${defaultNickname(avatar)}',
-                        style: Theme.of(ctx).textTheme.bodyMedium),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Text(tx('Profilini düzenle'), style: Theme.of(ctx).textTheme.titleLarge),
+                  const SizedBox(height: 16),
+                  TextField(
+                    controller: controller,
+                    maxLength: 24,
+                    onChanged: (_) => setSheet(() => error = null),
+                    decoration: InputDecoration(labelText: 'Takma ad', errorText: error),
                   ),
-                  if (controller.text.trim() != defaultNickname(avatar))
-                    TextButton(
-                      onPressed: () => setSheet(() {
-                        controller.text = defaultNickname(avatar);
-                        error = null;
-                      }),
-                      child: const Text('Bu adı kullan'),
-                    ),
-                ]),
-                const SizedBox(height: 8),
-                Wrap(spacing: 10, runSpacing: 10, children: [
-                  for (var i = 0; i < kAvatars.length; i++)
-                    if (isGiftUnlocked(
-                        unlockStreak: kAvatars[i].unlockStreak,
-                        id: 'avatar_$i',
-                        best: best,
-                        user: user))
-                    GestureDetector(
-                      onTap: () => setSheet(() {
-                        // Ad hâlâ bir avatarın varsayılan adıysa (ya da boşsa) yeni
-                        // avatarın adı gelir; kullanıcının kendi yazdığı ada dokunulmaz.
-                        final current = controller.text.trim();
-                        if (current.isEmpty || kAvatars.any((a) => a.nick == current)) {
-                          controller.text = defaultNickname(i);
-                        }
-                        avatar = i;
-                        error = null;
-                      }),
-                      child: Container(
-                        padding: const EdgeInsets.all(2),
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          border: Border.all(
-                              color: i == avatar ? Theme.of(ctx).colorScheme.primary : Colors.transparent,
-                              width: 2.5),
+                  Row(
+                    children: [
+                      AvatarBadge(index: avatar, radius: 14),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Text(
+                          tx('Varsayılan adı: {p}', {'p': defaultNickname(avatar)}),
+                          style: Theme.of(ctx).textTheme.bodyMedium,
                         ),
-                        child: AvatarBadge(index: i, radius: 22),
                       ),
-                    ),
-                ]),
-                const SizedBox(height: 8),
-                Text('Seri ilerledikçe Hediyelerim\'de yeni avatarlar açılır.',
-                    style: Theme.of(ctx).textTheme.bodySmall),
-                const SizedBox(height: 12),
-                FilledButton(
-                  onPressed: () {
-                    final r = ContentModerator.check(controller.text, minLength: 2, maxLength: 24);
-                    if (!r.isOk) {
-                      setSheet(() => error = 'Bu takma ad kullanılamıyor.');
-                      return;
-                    }
-                    if (uid != null) {
-                      final nick = controller.text.trim();
-                      repo.updateIdentity(uid, nickname: nick, avatar: avatar);
-                      unawaited(community
-                          .ensureProfile(uid, nickname: nick, avatar: avatar, daily: user.daily)
-                          .catchError((Object e) => debugPrint('Profil: $e')));
-                    }
-                    Navigator.pop(ctx);
-                  },
-                  child: const Text('Kaydet'),
-                ),
-              ]),
+                      if (controller.text.trim() != defaultNickname(avatar))
+                        TextButton(
+                          onPressed: () => setSheet(() {
+                            controller.text = defaultNickname(avatar);
+                            error = null;
+                          }),
+                          child: Text(tx('Bu adı kullan')),
+                        ),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  Wrap(
+                    spacing: 10,
+                    runSpacing: 10,
+                    children: [
+                      for (var i = 0; i < kAvatars.length; i++)
+                        if (isGiftUnlocked(
+                          unlockStreak: kAvatars[i].unlockStreak,
+                          id: 'avatar_$i',
+                          best: best,
+                          user: user,
+                        ))
+                          GestureDetector(
+                            onTap: () => setSheet(() {
+                              // Ad hâlâ bir avatarın varsayılan adıysa (ya da boşsa) yeni
+                              // avatarın adı gelir; kullanıcının kendi yazdığı ada dokunulmaz.
+                              final current = controller.text.trim();
+                              if (current.isEmpty || kAvatars.any((a) => a.nick == current)) {
+                                controller.text = defaultNickname(i);
+                              }
+                              avatar = i;
+                              error = null;
+                            }),
+                            child: Container(
+                              padding: const EdgeInsets.all(2),
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                border: Border.all(
+                                  color: i == avatar ? Theme.of(ctx).colorScheme.primary : Colors.transparent,
+                                  width: 2.5,
+                                ),
+                              ),
+                              child: AvatarBadge(index: i, radius: 22),
+                            ),
+                          ),
+                      // Kilitli hediye avatarlar: dokununca seriyle açılma bilgisi
+                      // ve isteğe bağlı "reklam izle ve aç".
+                      for (var i = 0; i < kAvatars.length; i++)
+                        if (!isGiftUnlocked(
+                          unlockStreak: kAvatars[i].unlockStreak,
+                          id: 'avatar_$i',
+                          best: best,
+                          user: user,
+                        ))
+                          GestureDetector(
+                            onTap: () => offerAvatarUnlock(
+                              ctx,
+                              ref,
+                              i,
+                              onUnlocked: () {
+                                if (!ctx.mounted) return;
+                                setSheet(() {
+                                  avatar = i;
+                                  final current = controller.text.trim();
+                                  if (current.isEmpty || kAvatars.any((a) => a.nick == current)) {
+                                    controller.text = defaultNickname(i);
+                                  }
+                                });
+                              },
+                            ),
+                            child: Container(
+                              padding: const EdgeInsets.all(2),
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                border: Border.all(
+                                  color: i == avatar ? Theme.of(ctx).colorScheme.primary : Colors.transparent,
+                                  width: 2.5,
+                                ),
+                              ),
+                              child: AvatarBadge(index: i, radius: 22, locked: i != avatar),
+                            ),
+                          ),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    tx('Seri ilerledikçe Hediyelerim\'de yeni avatarlar açılır.'),
+                    style: Theme.of(ctx).textTheme.bodySmall,
+                  ),
+                  const SizedBox(height: 12),
+                  FilledButton(
+                    onPressed: () {
+                      final r = ContentModerator.check(controller.text, minLength: 2, maxLength: 24);
+                      if (!r.isOk) {
+                        setSheet(() => error = tx('Bu takma ad kullanılamıyor.'));
+                        return;
+                      }
+                      if (uid != null) {
+                        final nick = controller.text.trim();
+                        repo.updateIdentity(uid, nickname: nick, avatar: avatar);
+                        unawaited(
+                          community
+                              .ensureProfile(uid, nickname: nick, avatar: avatar, daily: user.daily)
+                              .catchError((Object e) => debugPrint('Profil: $e')),
+                        );
+                      }
+                      Navigator.pop(ctx);
+                    },
+                    child: Text(tx('Kaydet')),
+                  ),
+                ],
+              ),
             ),
           ),
         ),
@@ -388,12 +490,14 @@ class _Stat extends StatelessWidget {
     final t = Theme.of(context).textTheme;
     final scheme = Theme.of(context).colorScheme;
     return Expanded(
-      child: Column(children: [
-        Icon(icon, color: scheme.tertiary),
-        const SizedBox(height: 4),
-        Text(value, style: t.titleLarge?.copyWith(fontWeight: FontWeight.w700)),
-        Text(label, style: t.labelSmall, textAlign: TextAlign.center),
-      ]),
+      child: Column(
+        children: [
+          Icon(icon, color: scheme.tertiary),
+          const SizedBox(height: 4),
+          Text(value, style: t.titleLarge?.copyWith(fontWeight: FontWeight.w700)),
+          Text(label, style: t.labelSmall, textAlign: TextAlign.center),
+        ],
+      ),
     );
   }
 }

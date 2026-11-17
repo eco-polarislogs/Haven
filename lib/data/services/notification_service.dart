@@ -67,8 +67,7 @@ class NotificationService {
   /// Uygulama açıkken gelen bildirimler.
   Stream<RemoteMessage> get foregroundMessages => FirebaseMessaging.onMessage;
 
-  void _onOpened(RemoteMessage message) =>
-      _analytics.nudgeOpened(message.data['level'] as String?);
+  void _onOpened(RemoteMessage message) => _analytics.nudgeOpened(message.data['level'] as String?);
 
   /// Çıkış / hesap silme öncesi: bu cihaz artık bu kullanıcının bildirimlerini
   /// almasın.
@@ -85,9 +84,7 @@ class NotificationService {
       }
       // FID kaydı silinemese bile unregister sonrası sunucu
       // "installation-id-not-registered" alır ve onu kendisi temizler.
-      await FirebaseMessaging.instance
-          .unregister()
-          .timeout(const Duration(seconds: 5));
+      await FirebaseMessaging.instance.unregister().timeout(const Duration(seconds: 5));
     } catch (e) {
       debugPrint('FCM kaydı temizlenemedi: $e');
     }

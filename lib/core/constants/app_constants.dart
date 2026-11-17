@@ -2,6 +2,8 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 
+import '../../l10n/tx.dart';
+
 /// Kaynak: site/gizlilik.html → `firebase deploy --only hosting`
 /// Play Console'a da aynı link ve `/hesap-silme` linki girilir.
 const kPrivacyPolicyUrl = 'https://ecren-7050e.web.app/gizlilik';
@@ -9,10 +11,14 @@ const kPrivacyPolicyUrl = 'https://ecren-7050e.web.app/gizlilik';
 // ------------------------------------------------------------ kriz & destek
 
 class SupportLine {
-  const SupportLine({required this.name, required this.number, required this.description});
-  final String name;
+  const SupportLine({required String name, required this.number, required String description})
+    : nameTr = name,
+      descriptionTr = description;
+  final String nameTr;
   final String number;
-  final String description;
+  final String descriptionTr;
+  String get name => tx(nameTr);
+  String get description => tx(descriptionTr);
 }
 
 /// Türkiye için. Yayından önce numaraları resmi kaynaklardan tekrar doğrula.
@@ -25,32 +31,46 @@ const kSupportLines = <SupportLine>[
   SupportLine(
     name: 'Yeşilay Danışma Hattı (YEDAM)',
     number: '115',
-    description: 'Sigara, alkol, madde, kumar ve teknoloji bağımlılığı için '
+    description:
+        'Sigara, alkol, madde, kumar ve teknoloji bağımlılığı için '
         'ücretsiz ve gizli destek.',
   ),
 ];
 
 class HelpResource {
-  const HelpResource(this.icon, this.title, this.description);
+  const HelpResource(this.icon, String title, String description) : titleTr = title, descriptionTr = description;
   final IconData icon;
-  final String title;
-  final String description;
+  final String titleTr;
+  final String descriptionTr;
+  String get title => tx(titleTr);
+  String get description => tx(descriptionTr);
 }
 
 /// "Profesyonel destek nasıl alınır?" (Türkiye).
 const kHelpResources = <HelpResource>[
-  HelpResource(Icons.local_hospital_outlined, 'Aile hekimin',
-      'Seni ücretsiz olarak bir psikiyatri polikliniğine yönlendirebilir.'),
-  HelpResource(Icons.event_available_outlined, 'MHRS (182 veya mhrs.gov.tr)',
-      'Devlet hastanelerinin psikiyatri bölümlerinden randevu alabilirsin.'),
-  HelpResource(Icons.diversity_3_outlined, 'Toplum Ruh Sağlığı Merkezleri',
-      'Birçok ilde ücretsiz ruh sağlığı desteği sunan kamu merkezleri.'),
-  HelpResource(Icons.school_outlined, 'Üniversiten',
-      'Öğrenciysen üniversitenin psikolojik danışmanlık merkezinden ücretsiz destek alabilirsin.'),
+  HelpResource(
+    Icons.local_hospital_outlined,
+    'Aile hekimin',
+    'Seni ücretsiz olarak bir psikiyatri polikliniğine yönlendirebilir.',
+  ),
+  HelpResource(
+    Icons.event_available_outlined,
+    'MHRS (182 veya mhrs.gov.tr)',
+    'Devlet hastanelerinin psikiyatri bölümlerinden randevu alabilirsin.',
+  ),
+  HelpResource(
+    Icons.diversity_3_outlined,
+    'Toplum Ruh Sağlığı Merkezleri',
+    'Birçok ilde ücretsiz ruh sağlığı desteği sunan kamu merkezleri.',
+  ),
+  HelpResource(
+    Icons.school_outlined,
+    'Üniversiten',
+    'Öğrenciysen üniversitenin psikolojik danışmanlık merkezinden ücretsiz destek alabilirsin.',
+  ),
 ];
 
-const kGlobalFact =
-    'Dünyada 1 milyardan fazla insan bir ruh sağlığı sorunuyla yaşıyor. Yalnız değilsin.';
+const kGlobalFact = 'Dünyada 1 milyardan fazla insan bir ruh sağlığı sorunuyla yaşıyor. Yalnız değilsin.';
 const kGlobalFactSource = 'WHO, 2025';
 
 // ------------------------------------------------------------ günün sözleri
@@ -80,7 +100,7 @@ const kGeneralAffirmations = <String>[
 ];
 
 String noteOfTheDay(List<String> pool, DateTime day, {int offset = 0}) {
-  if (pool.isEmpty) return kGeneralAffirmations.first;
+  if (pool.isEmpty) return tx(kGeneralAffirmations.first);
   final dayOfYear = day.difference(DateTime(day.year)).inDays;
   return pool[(dayOfYear + offset) % pool.length];
 }
@@ -114,12 +134,19 @@ const kNotePrompts = <String>[
 /// ("Sevimli Kurbağa" gibi); kullanıcı isterse değiştirir.
 /// Adlarda bedene/ağırlığa dair sıfat YOK (yeme bozukluğu tetikleyicisi olmasın).
 class AvatarOption {
-  const AvatarOption(this.emoji, this.name, this.nick, this.color, {this.unlockStreak = 0});
+  const AvatarOption(this.emoji, String name, String nick, this.color, {this.unlockStreak = 0})
+    : nameTr = name,
+      nickTr = nick;
   final String emoji;
-  final String name;
+  final String nameTr;
 
-  /// Varsayılan takma ad.
-  final String nick;
+  /// Varsayılan takma ad (Türkçe kaynak).
+  final String nickTr;
+
+  String get name => tx(nameTr);
+
+  /// Varsayılan takma ad, etkin dilde ("Cute Frog", "Rana Simpática"…).
+  String get nick => tx(nickTr);
   final Color color;
 
   /// 0 = ücretsiz; N = en iyi serin N güne ulaşınca açılır.
@@ -170,16 +197,28 @@ const kFreeAvatarCount = 18;
 /// Avatarın varsayılan adı: panda → "Sevimli Panda".
 String defaultNickname(int avatar) => avatarAt(avatar).nick;
 
-const _nickAdjectives = [
-  'Sevimli', 'Cesur', 'Sakin', 'Usul', 'Sabırlı', 'Neşeli',
-  'Dingin', 'Umutlu', 'Meraklı', 'Kararlı', 'Şefkatli', 'Bilge',
+const kNickAdjectives = [
+  'Sevimli',
+  'Cesur',
+  'Sakin',
+  'Usul',
+  'Sabırlı',
+  'Neşeli',
+  'Dingin',
+  'Umutlu',
+  'Meraklı',
+  'Kararlı',
+  'Şefkatli',
+  'Bilge',
 ];
 
-/// Zar düğmesi için alternatif öneri: aynı avatar, farklı sıfat.
+/// Zar düğmesi için alternatif öneri: aynı avatar, farklı sıfat. Kelime
+/// sırası dile göre şablondan gelir (es: "Panda Sabio", zh: "睿智的熊猫").
 String suggestNickname({int? avatar, Random? random}) {
   final r = random ?? Random();
   final a = avatarAt(avatar ?? r.nextInt(kAvatars.length));
-  return '${_nickAdjectives[r.nextInt(_nickAdjectives.length)]} ${a.name}';
+  final adj = tx(kNickAdjectives[r.nextInt(kNickAdjectives.length)]);
+  return tx('{adj} {animal}', {'adj': adj, 'animal': a.name});
 }
 
 const _codeChars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';

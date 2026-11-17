@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../providers.dart';
+import '../../../l10n/tx.dart';
 
 /// 5-4-3-2-1 topraklanma: kaygı/panik anında zihni şimdiye getirir.
 /// Haven uyarlaması: klasik "tadını alabildiğin 1 şey" adımı yerine
@@ -15,12 +16,38 @@ class GroundingGame extends ConsumerStatefulWidget {
 }
 
 class _GroundingGameState extends ConsumerState<GroundingGame> {
-  static const _steps = [
-    (5, 'şey gör', Icons.visibility_outlined, 'Etrafında görebildiğin 5 şeyi fark et. Her biri için dokun.'),
-    (4, 'şeye dokun', Icons.pan_tool_outlined, 'Dokunabildiğin 4 şeyi hisset: kumaş, masa, kendi ellerin…'),
-    (3, 'ses duy', Icons.hearing_outlined, 'Duyabildiğin 3 sese kulak ver: uzaktan bir araba, nefesin…'),
-    (2, 'koku fark et', Icons.air_rounded, 'Fark edebildiğin 2 kokuyu ara. Bulamazsan en sevdiğin kokuyu hayal et.'),
-    (1, 'iyi dilek', Icons.favorite_border_rounded, 'Kendine iyi gelen bir cümle söyle: "Şu an güvendeyim."'),
+  // Her adım: sayı, ekranda görünen etiket, simge, açıklama. Getter: dil değişince yenilenir.
+  static List<(int, String, IconData, String)> get _steps => [
+    (
+      5,
+      tx('{n} şey gör', {'n': 5}),
+      Icons.visibility_outlined,
+      tx('Etrafında görebildiğin 5 şeyi fark et. Her biri için dokun.'),
+    ),
+    (
+      4,
+      tx('{n} şeye dokun', {'n': 4}),
+      Icons.pan_tool_outlined,
+      tx('Dokunabildiğin 4 şeyi hisset: kumaş, masa, kendi ellerin…'),
+    ),
+    (
+      3,
+      tx('{n} ses duy', {'n': 3}),
+      Icons.hearing_outlined,
+      tx('Duyabildiğin 3 sese kulak ver: uzaktan bir araba, nefesin…'),
+    ),
+    (
+      2,
+      tx('{n} koku fark et', {'n': 2}),
+      Icons.air_rounded,
+      tx('Fark edebildiğin 2 kokuyu ara. Bulamazsan en sevdiğin kokuyu hayal et.'),
+    ),
+    (
+      1,
+      tx('{n} iyi dilek', {'n': 1}),
+      Icons.favorite_border_rounded,
+      tx('Kendine iyi gelen bir cümle söyle: "Şu an güvendeyim."'),
+    ),
   ];
 
   int _step = 0;
@@ -53,26 +80,32 @@ class _GroundingGameState extends ConsumerState<GroundingGame> {
         padding: const EdgeInsets.all(24),
         child: Column(
           children: [
-            Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-              for (var i = 0; i < _steps.length; i++)
-                Container(
-                  width: 36,
-                  height: 6,
-                  margin: const EdgeInsets.symmetric(horizontal: 3),
-                  decoration: BoxDecoration(
-                    color: i < _step || _done ? scheme.primary : scheme.outlineVariant,
-                    borderRadius: BorderRadius.circular(9),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                for (var i = 0; i < _steps.length; i++)
+                  Container(
+                    width: 36,
+                    height: 6,
+                    margin: const EdgeInsets.symmetric(horizontal: 3),
+                    decoration: BoxDecoration(
+                      color: i < _step || _done ? scheme.primary : scheme.outlineVariant,
+                      borderRadius: BorderRadius.circular(9),
+                    ),
                   ),
-                ),
-            ]),
+              ],
+            ),
             const Spacer(),
             if (_done) ...[
               Icon(Icons.self_improvement_rounded, size: 72, color: primary),
               const SizedBox(height: 16),
-              Text('Şu andasın.', style: t.headlineSmall, textAlign: TextAlign.center),
+              Text(tx('Şu andasın.'), style: t.headlineSmall, textAlign: TextAlign.center),
               const SizedBox(height: 8),
-              Text('Zihnini nazikçe şimdiye getirdin. Bu bir beceri ve her denemede güçleniyor.',
-                  style: t.bodyLarge, textAlign: TextAlign.center),
+              Text(
+                tx('Zihnini nazikçe şimdiye getirdin. Bu bir beceri ve her denemede güçleniyor.'),
+                style: t.bodyLarge,
+                textAlign: TextAlign.center,
+              ),
               const SizedBox(height: 24),
               FilledButton.icon(
                 onPressed: () => setState(() {
@@ -83,8 +116,7 @@ class _GroundingGameState extends ConsumerState<GroundingGame> {
                 label: const Text('Yeniden yap'),
               ),
             ] else ...[
-              Text('${_steps[_step].$1} ${_steps[_step].$2}',
-                  style: t.headlineMedium?.copyWith(fontWeight: FontWeight.w700)),
+              Text(_steps[_step].$2, style: t.headlineMedium?.copyWith(fontWeight: FontWeight.w700)),
               const SizedBox(height: 12),
               Text(_steps[_step].$4, style: t.bodyLarge, textAlign: TextAlign.center),
               const SizedBox(height: 32),
@@ -98,16 +130,21 @@ class _GroundingGameState extends ConsumerState<GroundingGame> {
                     color: primary.withValues(alpha: 0.12),
                     border: Border.all(color: primary, width: 3),
                   ),
-                  child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-                    Icon(_steps[_step].$3, size: 48, color: primary),
-                    const SizedBox(height: 8),
-                    Text('${_steps[_step].$1 - _count}',
-                        style: t.displaySmall?.copyWith(color: primary, fontWeight: FontWeight.w700)),
-                  ]),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(_steps[_step].$3, size: 48, color: primary),
+                      const SizedBox(height: 8),
+                      Text(
+                        '${_steps[_step].$1 - _count}',
+                        style: t.displaySmall?.copyWith(color: primary, fontWeight: FontWeight.w700),
+                      ),
+                    ],
+                  ),
                 ),
               ),
               const SizedBox(height: 16),
-              Text('Fark ettikçe dokun', style: t.bodySmall),
+              Text(tx('Fark ettikçe dokun'), style: t.bodySmall),
             ],
             const Spacer(),
           ],

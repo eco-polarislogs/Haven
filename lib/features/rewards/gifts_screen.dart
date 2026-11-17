@@ -11,6 +11,7 @@ import '../../data/models/app_user.dart';
 import '../../data/services/ad_service.dart';
 import '../../l10n/l10n.dart';
 import '../../providers.dart';
+import '../../l10n/tx.dart';
 
 /// "Hediyelerim": temalar ve hediye avatarlar SERİYLE kendiliğinden açılır —
 /// kendine her gün geri dönmenin küçük ödülleri. Kısa bir ödüllü reklam
@@ -74,15 +75,17 @@ class _GiftsScreenState extends ConsumerState<GiftsScreen> {
         _loadAd();
       },
     );
-    ad.show(onUserEarnedReward: (_, _) {
-      earned = true;
-      if (giftId == 'extra_note') {
-        repo.unlockDailyQuote(uid, todayKey());
-      } else {
-        repo.unlockGift(uid, giftId);
-      }
-      analytics.rewardEarned(giftId);
-    });
+    ad.show(
+      onUserEarnedReward: (_, _) {
+        earned = true;
+        if (giftId == 'extra_note') {
+          repo.unlockDailyQuote(uid, todayKey());
+        } else {
+          repo.unlockGift(uid, giftId);
+        }
+        analytics.rewardEarned(giftId);
+      },
+    );
   }
 
   @override
@@ -103,13 +106,12 @@ class _GiftsScreenState extends ConsumerState<GiftsScreen> {
     _maybeLoadAd(user);
     final repo = ref.read(repositoryProvider);
 
-    bool unlocked(int streak, String id) =>
-        isGiftUnlocked(unlockStreak: streak, id: id, best: best, user: user);
+    bool unlocked(int streak, String id) => isGiftUnlocked(unlockStreak: streak, id: id, best: best, user: user);
 
     // Sıradaki hediye: en yakın kilitli eşik.
     final thresholds = <(int, String)>[
       for (final p in ThemePreset.values)
-        if (p.isGift && !unlocked(p.unlockStreak, p.name)) (p.unlockStreak, '${p.label} teması'),
+        if (p.isGift && !unlocked(p.unlockStreak, p.name)) (p.unlockStreak, tx('{label} teması', {'label': p.label})),
       for (var i = 0; i < kAvatars.length; i++)
         if (kAvatars[i].isGift && !unlocked(kAvatars[i].unlockStreak, 'avatar_$i'))
           (kAvatars[i].unlockStreak, '${kAvatars[i].emoji} ${kAvatars[i].name}'),
@@ -136,44 +138,55 @@ class _GiftsScreenState extends ConsumerState<GiftsScreen> {
                 best: best,
                 adReady: adReady,
                 onUse: () => repo.setTheme(uid, p.name),
-                onAd: () => _unlockWithAd(p.name, '${p.label} teması açıldı. Teşekkürler!'),
+                onAd: () => _unlockWithAd(p.name, tx('{label} teması açıldı. Teşekkürler!', {'label': p.label})),
               ),
             ),
           SectionTitle(l.avatars),
-          Wrap(spacing: 14, runSpacing: 14, children: [
-            for (var i = 0; i < kAvatars.length; i++)
-              _AvatarGift(
-                index: i,
-                unlocked: unlocked(kAvatars[i].unlockStreak, 'avatar_$i'),
-                selected: user.avatar == i,
-                best: best,
-                adReady: adReady,
-                onUse: () {
-                  repo.updateIdentity(uid, nickname: user.nickname ?? kAvatars[i].name, avatar: i);
-                  final profile = ref.read(myProfileProvider).value;
-                  if (profile != null) {
-                    ref.read(communityRepositoryProvider).ensureProfile(uid,
-                        nickname: profile.nickname, avatar: i, daily: user.daily).catchError((Object _) {});
-                  }
-                },
-                onAd: () => _unlockWithAd('avatar_$i', '${kAvatars[i].name} avatarı açıldı. Teşekkürler!'),
-              ),
-          ]),
+          Wrap(
+            spacing: 14,
+            runSpacing: 14,
+            children: [
+              for (var i = 0; i < kAvatars.length; i++)
+                _AvatarGift(
+                  index: i,
+                  unlocked: unlocked(kAvatars[i].unlockStreak, 'avatar_$i'),
+                  selected: user.avatar == i,
+                  best: best,
+                  adReady: adReady,
+                  onUse: () {
+                    repo.updateIdentity(uid, nickname: user.nickname ?? kAvatars[i].name, avatar: i);
+                    final profile = ref.read(myProfileProvider).value;
+                    if (profile != null) {
+                      ref
+                          .read(communityRepositoryProvider)
+                          .ensureProfile(uid, nickname: profile.nickname, avatar: i, daily: user.daily)
+                          .catchError((Object _) {});
+                    }
+                  },
+                  onAd: () =>
+                      _unlockWithAd('avatar_$i', tx('{p} avatarı açıldı. Teşekkürler!', {'p': kAvatars[i].name})),
+                ),
+            ],
+          ),
           if (user.adsAllowed) ...[
-            const SectionTitle('Günün ek sözü'),
+            SectionTitle(tx('Günün ek sözü')),
             Card(
               child: Padding(
                 padding: const EdgeInsets.all(16),
                 child: user.quoteUnlockedDay == todayKey()
-                    ? Text('“${noteOfTheDay(kGeneralAffirmations, DateTime.now(), offset: 7)}”',
-                        style: t.titleMedium?.copyWith(fontStyle: FontStyle.italic))
-                    : Row(children: [
-                        const Expanded(child: Text('Günün sözüne ek olarak bugüne özel bir cümle.')),
-                        FilledButton.tonal(
-                          onPressed: adReady ? () => _unlockWithAd('extra_note', 'Günün ek sözü açıldı.') : null,
-                          child: Text(adReady ? 'Reklamla aç' : 'Hazırlanıyor…'),
-                        ),
-                      ]),
+                    ? Text(
+                        '“${noteOfTheDay(txList(kGeneralAffirmations), DateTime.now(), offset: 7)}”',
+                        style: t.titleMedium?.copyWith(fontStyle: FontStyle.italic),
+                      )
+                    : Row(
+                        children: [
+                          Expanded(child: Text(tx('Günün sözüne ek olarak bugüne özel bir cümle.'))),
+                          FilledButton.tonal(
+                            onPressed: adReady ? () => _unlockWithAd('extra_note', tx('Günün ek sözü açıldı.')) : null,
+                            child: Text(adReady ? tx('Reklamla aç') : tx('Hazırlanıyor…')),
+                          ),
+                        ],
+                      ),
               ),
             ),
           ],
@@ -201,32 +214,42 @@ class _NextGiftCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(24),
         gradient: LinearGradient(colors: [p.deep, p.primary]),
       ),
-      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Row(children: [
-          const Icon(Icons.card_giftcard_rounded, color: Colors.white),
-          const SizedBox(width: 10),
-          Text('En iyi serin: $best gün', style: t.titleMedium?.copyWith(color: Colors.white, fontWeight: FontWeight.w700)),
-        ]),
-        const SizedBox(height: 10),
-        if (n == null)
-          Text('Bütün hediyeleri açtın! Kendine gösterdiğin özen gerçekten değerli.',
-              style: t.bodyMedium?.copyWith(color: Colors.white))
-        else ...[
-          Text('Sıradaki hediye: ${n.$2}', style: t.bodyMedium?.copyWith(color: Colors.white)),
-          const SizedBox(height: 8),
-          ClipRRect(
-            borderRadius: BorderRadius.circular(9),
-            child: LinearProgressIndicator(
-              value: (best / n.$1).clamp(0, 1).toDouble(),
-              minHeight: 10,
-              color: p.accent,
-              backgroundColor: Colors.white24,
-            ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              const Icon(Icons.card_giftcard_rounded, color: Colors.white),
+              const SizedBox(width: 10),
+              Text(
+                tx('En iyi serin: {best} gün', {'best': best}),
+                style: t.titleMedium?.copyWith(color: Colors.white, fontWeight: FontWeight.w700),
+              ),
+            ],
           ),
-          const SizedBox(height: 6),
-          Text(context.l10n.giftDaysLeft(n.$1 - best), style: t.labelMedium?.copyWith(color: Colors.white70)),
+          const SizedBox(height: 10),
+          if (n == null)
+            Text(
+              tx('Bütün hediyeleri açtın! Kendine gösterdiğin özen gerçekten değerli.'),
+              style: t.bodyMedium?.copyWith(color: Colors.white),
+            )
+          else ...[
+            Text(tx('Sıradaki hediye: {p}', {'p': n.$2}), style: t.bodyMedium?.copyWith(color: Colors.white)),
+            const SizedBox(height: 8),
+            ClipRRect(
+              borderRadius: BorderRadius.circular(9),
+              child: LinearProgressIndicator(
+                value: (best / n.$1).clamp(0, 1).toDouble(),
+                minHeight: 10,
+                color: p.accent,
+                backgroundColor: Colors.white24,
+              ),
+            ),
+            const SizedBox(height: 6),
+            Text(context.l10n.giftDaysLeft(n.$1 - best), style: t.labelMedium?.copyWith(color: Colors.white70)),
+          ],
         ],
-      ]),
+      ),
     );
   }
 }
@@ -257,45 +280,50 @@ class _ThemeTile extends StatelessWidget {
     return Card(
       child: Padding(
         padding: const EdgeInsets.fromLTRB(14, 12, 12, 12),
-        child: Row(children: [
-          // tema önizleme: zemin + ana renk + vurgu
-          Container(
-            width: 52,
-            height: 52,
-            decoration: BoxDecoration(
-              color: preset.surface,
-              shape: BoxShape.circle,
-              border: Border.all(color: preset.primary, width: 3),
-            ),
-            child: Center(
-              child: Container(
-                width: 18,
-                height: 18,
-                decoration: BoxDecoration(color: preset.accent, shape: BoxShape.circle),
+        child: Row(
+          children: [
+            // tema önizleme: zemin + ana renk + vurgu
+            Container(
+              width: 52,
+              height: 52,
+              decoration: BoxDecoration(
+                color: preset.surface,
+                shape: BoxShape.circle,
+                border: Border.all(color: preset.primary, width: 3),
+              ),
+              child: Center(
+                child: Container(
+                  width: 18,
+                  height: 18,
+                  decoration: BoxDecoration(color: preset.accent, shape: BoxShape.circle),
+                ),
               ),
             ),
-          ),
-          const SizedBox(width: 14),
-          Expanded(
-            child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              Text(preset.label, style: t.titleSmall?.copyWith(fontWeight: FontWeight.w700)),
-              Text(
-                unlocked
-                    ? (preset.isGift ? 'Açıldı 🎉' : 'Herkese açık')
-                    : '${l.giftUnlockAt(preset.unlockStreak)} · ${l.giftDaysLeft(preset.unlockStreak - best)}',
-                style: t.bodySmall,
+            const SizedBox(width: 14),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(preset.label, style: t.titleSmall?.copyWith(fontWeight: FontWeight.w700)),
+                  Text(
+                    unlocked
+                        ? (preset.isGift ? tx('Açıldı 🎉') : tx('Herkese açık'))
+                        : '${l.giftUnlockAt(preset.unlockStreak)} · ${l.giftDaysLeft(preset.unlockStreak - best)}',
+                    style: t.bodySmall,
+                  ),
+                ],
               ),
-            ]),
-          ),
-          if (selected)
-            const Icon(Icons.check_circle_rounded)
-          else if (unlocked)
-            FilledButton.tonal(onPressed: onUse, child: const Text('Kullan'))
-          else if (adReady)
-            OutlinedButton(onPressed: onAd, child: const Text('Reklamla aç'))
-          else
-            const Icon(Icons.lock_outline_rounded),
-        ]),
+            ),
+            if (selected)
+              const Icon(Icons.check_circle_rounded)
+            else if (unlocked)
+              FilledButton.tonal(onPressed: onUse, child: const Text('Kullan'))
+            else if (adReady)
+              OutlinedButton(onPressed: onAd, child: Text(tx('Reklamla aç')))
+            else
+              const Icon(Icons.lock_outline_rounded),
+          ],
+        ),
       ),
     );
   }
@@ -327,23 +355,28 @@ class _AvatarGift extends StatelessWidget {
     final scheme = Theme.of(context).colorScheme;
     return SizedBox(
       width: 74,
-      child: Column(children: [
-        GestureDetector(
-          onTap: unlocked ? onUse : (adReady ? onAd : null),
-          child: Container(
-            padding: const EdgeInsets.all(3),
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              border: Border.all(color: selected ? scheme.primary : Colors.transparent, width: 2.5),
+      child: Column(
+        children: [
+          GestureDetector(
+            onTap: unlocked ? onUse : (adReady ? onAd : null),
+            child: Container(
+              padding: const EdgeInsets.all(3),
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                border: Border.all(color: selected ? scheme.primary : Colors.transparent, width: 2.5),
+              ),
+              child: AvatarBadge(index: index, radius: 28, locked: !unlocked),
             ),
-            child: AvatarBadge(index: index, radius: 28, locked: !unlocked),
           ),
-        ),
-        const SizedBox(height: 4),
-        Text(a.name, style: t.labelSmall, textAlign: TextAlign.center),
-        if (!unlocked)
-          Text('${a.unlockStreak} gün', style: t.labelSmall?.copyWith(color: scheme.outline)),
-      ]),
+          const SizedBox(height: 4),
+          Text(a.name, style: t.labelSmall, textAlign: TextAlign.center),
+          if (!unlocked)
+            Text(
+              tx('{unlockStreak} gün', {'unlockStreak': a.unlockStreak}),
+              style: t.labelSmall?.copyWith(color: scheme.outline),
+            ),
+        ],
+      ),
     );
   }
 }
@@ -360,28 +393,35 @@ class _AdSafetyCard extends StatelessWidget {
     return Card(
       child: Padding(
         padding: const EdgeInsets.fromLTRB(16, 14, 8, 8),
-        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Row(children: [
-            const Icon(Icons.verified_user_outlined),
-            const SizedBox(width: 8),
-            Text('Reklam güvenliği', style: t.titleSmall?.copyWith(fontWeight: FontWeight.w700)),
-          ]),
-          const SizedBox(height: 6),
-          Text(
-            sensitive
-                ? 'Seçtiğin alanlar nedeniyle, tetikleyici olabilecek reklamlardan (ör. zayıflama, bahis, alkol) '
-                    'korunman için reklamları varsayılan olarak kapalı tuttuk. Hediyelerin hepsi serinle açılabilir.'
-                : 'Reklamlar yalnızca bu ekranda, sen istediğinde gösterilir; kişiselleştirilmemiş ve genel '
-                    'izleyiciye uygun içerikle sınırlıdır.',
-            style: t.bodySmall,
-          ),
-          SwitchListTile(
-            contentPadding: const EdgeInsets.only(right: 8),
-            value: user.adsAllowed,
-            onChanged: onAllow,
-            title: const Text('Filtreli reklamlara izin ver'),
-          ),
-        ]),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                const Icon(Icons.verified_user_outlined),
+                const SizedBox(width: 8),
+                Text(tx('Reklam güvenliği'), style: t.titleSmall?.copyWith(fontWeight: FontWeight.w700)),
+              ],
+            ),
+            const SizedBox(height: 6),
+            Text(
+              sensitive
+                  ? tx(
+                      'Seçtiğin alanlar nedeniyle, tetikleyici olabilecek reklamlardan (ör. zayıflama, bahis, alkol) korunman için reklamları varsayılan olarak kapalı tuttuk. Hediyelerin hepsi serinle açılabilir.',
+                    )
+                  : tx(
+                      'Reklamlar yalnızca bu ekranda, sen istediğinde gösterilir; kişiselleştirilmemiş ve genel izleyiciye uygun içerikle sınırlıdır.',
+                    ),
+              style: t.bodySmall,
+            ),
+            SwitchListTile(
+              contentPadding: const EdgeInsets.only(right: 8),
+              value: user.adsAllowed,
+              onChanged: onAllow,
+              title: const Text('Filtreli reklamlara izin ver'),
+            ),
+          ],
+        ),
       ),
     );
   }

@@ -15,6 +15,7 @@ import 'compose_note_sheet.dart';
 import 'friends_tab.dart';
 import 'post_card.dart';
 import 'user_profile_screen.dart';
+import '../../l10n/tx.dart';
 
 /// Topluluk, X (Twitter) düzeninde: üstte avatarın ve sekmeler
 /// (Senin için · Arkadaşlar · Kişiler), akışın başında "paylaş" satırı,
@@ -33,7 +34,7 @@ class CommunityScreen extends ConsumerWidget {
 
     if (!joined) {
       return Scaffold(
-        appBar: AppBar(title: const Text('Topluluk'), actions: const [NotificationBell()]),
+        appBar: AppBar(title: Text(tx('Topluluk')), actions: const [NotificationBell()]),
         body: const _JoinView(),
       );
     }
@@ -60,20 +61,20 @@ class CommunityScreen extends ConsumerWidget {
                     ),
                   ),
                 ),
-          title: const Text('Topluluk'),
+          title: Text(tx('Topluluk')),
           actions: const [NotificationBell(), SizedBox(width: 4)],
-          bottom: const TabBar(
+          bottom: TabBar(
             tabs: [
-              Tab(text: 'Senin için'),
-              Tab(text: 'Arkadaşlar'),
-              Tab(text: 'Kişiler'),
+              Tab(text: tx('Senin için')),
+              Tab(text: tx('Arkadaşlar')),
+              Tab(text: tx('Kişiler')),
             ],
           ),
         ),
         floatingActionButton: Builder(
           builder: (context) => FloatingActionButton(
             heroTag: 'fab_community',
-            tooltip: 'Paylaş',
+            tooltip: tx('Paylaş'),
             shape: const CircleBorder(),
             onPressed: () => showComposeNoteSheet(context),
             child: const Icon(Icons.add_rounded, size: 30),
@@ -107,23 +108,24 @@ class _JoinView extends ConsumerWidget {
         ),
         const SizedBox(height: 20),
         Text(
-          'Aynı yolda yürüyenlerle buluş',
+          tx('Aynı yolda yürüyenlerle buluş'),
           textAlign: TextAlign.center,
           style: t.headlineSmall?.copyWith(fontWeight: FontWeight.w600),
         ),
         const SizedBox(height: 12),
         Text(
-          'Kısa paylaşımlar yap, başkalarının paylaşımlarına destek ver ve yanıt yaz, '
-          'arkadaşlarının serisini gör. Toplulukta yalnızca takma adın, avatarın ve serin görünür.',
+          tx(
+            'Kısa paylaşımlar yap, başkalarının paylaşımlarına destek ver ve yanıt yaz, arkadaşlarının serisini gör. Toplulukta yalnızca takma adın, avatarın ve serin görünür.',
+          ),
           textAlign: TextAlign.center,
           style: t.bodyLarge,
         ),
         const SizedBox(height: 16),
-        const _RuleLine(icon: Icons.shield_outlined, text: 'Her paylaşım ve yanıt yayınlanmadan önce denetlenir.'),
-        const _RuleLine(icon: Icons.visibility_off_outlined, text: 'Takipçi ve beğeni yarışı yok; kimse puanlanmaz.'),
-        const _RuleLine(
+        _RuleLine(icon: Icons.shield_outlined, text: tx('Her paylaşım ve yanıt yayınlanmadan önce denetlenir.')),
+        _RuleLine(icon: Icons.visibility_off_outlined, text: tx('Takipçi ve beğeni yarışı yok; kimse puanlanmaz.')),
+        _RuleLine(
           icon: Icons.flag_outlined,
-          text: 'Rahatsız eden bir şeyi bildirdiğinde senin için hemen gizlenir.',
+          text: tx('Rahatsız eden bir şeyi bildirdiğinde senin için hemen gizlenir.'),
         ),
         const SizedBox(height: 24),
         FilledButton.icon(
@@ -136,12 +138,17 @@ class _JoinView extends ConsumerWidget {
             unawaited(
               ref
                   .read(communityRepositoryProvider)
-                  .ensureProfile(uid, nickname: user.nickname ?? 'Haven üyesi', avatar: user.avatar, daily: user.daily)
+                  .ensureProfile(
+                    uid,
+                    nickname: user.nickname ?? tx('Haven üyesi'),
+                    avatar: user.avatar,
+                    daily: user.daily,
+                  )
                   .catchError((Object e) => debugPrint('Profil: $e')),
             );
           },
           icon: const Icon(Icons.login_rounded),
-          label: const Text('Topluluğa katıl'),
+          label: Text(tx('Topluluğa katıl')),
         ),
       ],
     );
@@ -201,7 +208,7 @@ class _ForYouTabState extends ConsumerState<_ForYouTab> with AutomaticKeepAliveC
                 scrollDirection: Axis.horizontal,
                 padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                 children: [
-                  _TopicChip(label: 'Tümü', selected: filter == null, onTap: () => setState(() => _filter = null)),
+                  _TopicChip(label: tx('Tümü'), selected: filter == null, onTap: () => setState(() => _filter = null)),
                   for (final c in circles)
                     _TopicChip(
                       label: c.shortTitle,
@@ -212,10 +219,10 @@ class _ForYouTabState extends ConsumerState<_ForYouTab> with AutomaticKeepAliveC
                 ],
               ),
             ),
-      empty: const _Message(
+      empty: _Message(
         icon: Icons.light_mode_outlined,
-        title: 'İlk ışığı sen yak',
-        body: 'Çemberlerinde henüz paylaşım yok. Seni güçlendiren küçük bir şeyi paylaşarak başlayabilirsin.',
+        title: tx('İlk ışığı sen yak'),
+        body: tx('Çemberlerinde henüz paylaşım yok. Seni güçlendiren küçük bir şeyi paylaşarak başlayabilirsin.'),
       ),
     );
   }
@@ -242,16 +249,16 @@ class _FriendsFeedTabState extends ConsumerState<_FriendsFeedTab> with Automatic
       where: (_) => true,
       empty: _Message(
         icon: Icons.people_outline_rounded,
-        title: hasFriends ? 'Arkadaşların henüz paylaşmadı' : 'Arkadaşlarının paylaşımları burada',
+        title: hasFriends ? tx('Arkadaşların henüz paylaşmadı') : tx('Arkadaşlarının paylaşımları burada'),
         body: hasFriends
-            ? 'Bir şey paylaştıklarında ilk burada görürsün.'
-            : 'Bir paylaşımda avatara dokunup ya da arkadaş koduyla birini ekleyebilirsin.',
+            ? tx('Bir şey paylaştıklarında ilk burada görürsün.')
+            : tx('Bir paylaşımda avatara dokunup ya da arkadaş koduyla birini ekleyebilirsin.'),
         action: hasFriends
             ? null
             : TextButton.icon(
                 onPressed: () => DefaultTabController.of(context).animateTo(2),
                 icon: const Icon(Icons.person_add_alt_1_outlined),
-                label: const Text('Kişiler'),
+                label: Text(tx('Kişiler')),
               ),
       ),
     );
@@ -271,10 +278,10 @@ class _Feed extends ConsumerWidget {
     final user = ref.watch(appUserProvider).value;
     return async.when(
       loading: () => const Center(child: CircularProgressIndicator()),
-      error: (e, _) => const _Message(
+      error: (e, _) => _Message(
         icon: Icons.hourglass_top_rounded,
-        title: 'Akış hazırlanıyor',
-        body: 'Topluluk akışı ilk kez kuruluyor olabilir. Birkaç dakika içinde tekrar bak.',
+        title: tx('Akış hazırlanıyor'),
+        body: tx('Topluluk akışı ilk kez kuruluyor olabilir. Birkaç dakika içinde tekrar bak.'),
       ),
       data: (notes) {
         final visible = notes
@@ -321,7 +328,7 @@ class _ComposerRow extends ConsumerWidget {
                 const SizedBox(width: 12),
                 Expanded(
                   child: Text(
-                    'Bugün neyi paylaşmak istersin?',
+                    tx('Bugün neyi paylaşmak istersin?'),
                     style: Theme.of(context).textTheme.bodyLarge?.copyWith(color: scheme.outline),
                   ),
                 ),

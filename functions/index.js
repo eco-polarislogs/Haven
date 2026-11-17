@@ -131,12 +131,13 @@ exports.inboxPush = onDocumentCreated(
   async (event) => {
     const item = event.data && event.data.data();
     if (!item) return;
-    const body = inboxText(item);
-    if (!body) return;
 
     const uid = event.params.uid;
     const user = await db.doc(`users/${uid}`).get();
     const u = user.data() || {};
+    // Bildirim, kullanıcının uygulama dilinde (tr, en, es, zh, hi).
+    const body = inboxText(item, u.language || u.locale);
+    if (!body) return;
     const fids = Array.isArray(u.fcmFids) ? u.fcmFids : [];
     if (u.notificationsEnabled === false || fids.length === 0) return;
 

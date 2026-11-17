@@ -67,6 +67,5 @@ class _ShieldPainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(covariant _ShieldPainter old) =>
-      old.color != color || old.door != door || old.light != light;
+  bool shouldRepaint(covariant _ShieldPainter old) => old.color != color || old.door != door || old.light != light;
 }

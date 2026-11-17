@@ -12,6 +12,7 @@ import 'features/onboarding/onboarding_flow.dart';
 import 'features/session/session_bootstrap.dart';
 import 'features/shell/home_shell.dart';
 import 'l10n/l10n.dart';
+import 'l10n/tx.dart';
 import 'providers.dart';
 
 /// Bildirime dokunulunca doğru ekrana gitmek için.
@@ -39,22 +40,28 @@ class _HavenAppState extends ConsumerState<HavenApp> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final nav = rootNavigatorKey.currentState;
       if (nav == null || ref.read(uidProvider) == null) return;
-      nav.push(MaterialPageRoute(
-        settings: const RouteSettings(name: 'notifications'),
-        builder: (_) => const ScreenView(name: 'notifications', child: NotificationsScreen()),
-      ));
+      nav.push(
+        MaterialPageRoute(
+          settings: const RouteSettings(name: 'notifications'),
+          builder: (_) => const ScreenView(name: 'notifications', child: NotificationsScreen()),
+        ),
+      );
     });
   }
 
   @override
   Widget build(BuildContext context) {
     final preset = ref.watch(themePresetProvider);
+    final locale = ref.watch(localeProvider);
+    // Koddaki metinler (tx) bu dili kullanır. Dil değişince ağacın tamamı
+    // yeniden kurulsun diye ana sayfa dile göre anahtarlanır.
+    Tx.code = locale.languageCode;
     return MaterialApp(
       navigatorKey: rootNavigatorKey,
       title: 'Haven',
       debugShowCheckedModeBanner: false,
       theme: buildTheme(preset),
-      locale: ref.watch(localeProvider),
+      locale: locale,
       supportedLocales: AppLocalizations.supportedLocales,
       localizationsDelegates: const [
         AppLocalizations.delegate,
@@ -62,7 +69,7 @@ class _HavenAppState extends ConsumerState<HavenApp> {
         GlobalWidgetsLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,
       ],
-      home: const AuthGate(),
+      home: KeyedSubtree(key: ValueKey(locale.languageCode), child: const AuthGate()),
     );
   }
 }
@@ -79,16 +86,16 @@ class AuthGate extends ConsumerWidget {
     final auth = ref.watch(authStateProvider);
     return auth.when(
       loading: () => const GentleLoading(),
-      error: (e, _) => const GentleError(
-          message: 'Bir şeyler ters gitti. Uygulamayı yeniden açmayı dener misin?'),
+      error: (e, _) => GentleError(message: tx('Bir şeyler ters gitti. Uygulamayı yeniden açmayı dener misin?')),
       data: (user) {
         if (user == null) {
           return const ScreenView(name: 'welcome', child: WelcomeScreen());
         }
-        return ref.watch(appUserProvider).when(
+        return ref
+            .watch(appUserProvider)
+            .when(
               loading: () => const GentleLoading(),
-              error: (e, _) => const GentleError(
-                  message: 'Verilerine şu an ulaşamadık. Biraz sonra tekrar dener misin?'),
+              error: (e, _) => GentleError(message: tx('Verilerine şu an ulaşamadık. Biraz sonra tekrar dener misin?')),
               data: (appUser) => (appUser == null || !appUser.isOnboarded)
                   ? const ScreenView(name: 'onboarding', child: OnboardingFlow())
                   : const SessionBootstrap(child: HomeShell()),

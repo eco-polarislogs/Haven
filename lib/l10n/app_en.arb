@@ -43,7 +43,7 @@
   "greetingEvening": "Good evening",
   "greetingNight": "Good night",
   "dailyStreak": "day streak",
-  "bestStreak": "Best: {days} days",
+  "bestStreak": "Best: {days, plural, =1{1 day} other{{days} days}}",
   "@bestStreak": {
     "placeholders": {
       "days": {
@@ -72,7 +72,7 @@
   "wentWell": "It went well",
   "wasHard": "It was hard",
   "comebackTitle": "This is just a small bump",
-  "comebackBody": "Last time you made beautiful progress for {past} days. Those days are still yours. Now we're racing your own record ({best} days)!",
+  "comebackBody": "Last time you made beautiful progress for {past, plural, =1{1 day} other{{past} days}}. Those days are still yours. Now we're racing your own record ({best} days)!",
   "@comebackBody": {
     "placeholders": {
       "past": {
@@ -84,7 +84,7 @@
     }
   },
   "raceTitle": "Racing your own record",
-  "raceBody": "{left} days to your record. No rush — at your own pace.",
+  "raceBody": "{left, plural, =1{1 day} other{{left} days}} to your record. No rush — at your own pace.",
   "@raceBody": {
     "placeholders": {
       "left": {
@@ -93,7 +93,7 @@
     }
   },
   "newRecordTitle": "New record!",
-  "newRecordBody": "{days} days! You beat your own record. Be proud of yourself.",
+  "newRecordBody": "{days, plural, =1{1 day} other{{days} days}}! You beat your own record. Be proud of yourself.",
   "@newRecordBody": {
     "placeholders": {
       "days": {
@@ -133,7 +133,7 @@
       }
     }
   },
-  "giftDaysLeft": "{left} days to go",
+  "giftDaysLeft": "{left, plural, =1{1 day} other{{left} days}} to go",
   "@giftDaysLeft": {
     "placeholders": {
       "left": {
@@ -150,11 +150,11 @@
   "save": "Save",
   "cancel": "Cancel",
   "close": "Close",
-  "daysCount": "{count} days",
-  "recordLabel": "Record: {count} days",
+  "daysCount": "{count, plural, =1{1 day} other{{count} days}}",
+  "recordLabel": "Record: {count, plural, =1{1 day} other{{count} days}}",
   "journeyStart": "Your journey can begin today.",
   "recordReached": "You reached your record! Tomorrow could be a new one.",
-  "comebackShort": "Your record is {best} days. A good day to begin again.",
+  "comebackShort": "Your record is {best, plural, =1{1 day} other{{best} days}}. A good day to begin again.",
   "seeAll": "All",
   "beginning": "Beginning"
 }

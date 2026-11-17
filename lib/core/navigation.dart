@@ -6,10 +6,12 @@ import '../providers.dart';
 /// Ekranı açar ve Analytics'e `screen_view` olarak kaydeder.
 /// Uygulamadaki TÜM sayfa geçişleri bu fonksiyondan geçmeli.
 Future<T?> pushScreen<T>(BuildContext context, String name, Widget page) {
-  return Navigator.of(context).push<T>(MaterialPageRoute(
-    settings: RouteSettings(name: name),
-    builder: (_) => ScreenView(name: name, child: page),
-  ));
+  return Navigator.of(context).push<T>(
+    MaterialPageRoute(
+      settings: RouteSettings(name: name),
+      builder: (_) => ScreenView(name: name, child: page),
+    ),
+  );
 }
 
 /// Ekran ilk kez göründüğünde bir kez `screen_view` kaydeder

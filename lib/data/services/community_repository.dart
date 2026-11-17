@@ -6,6 +6,7 @@ import 'package:flutter/foundation.dart';
 import '../../core/constants/app_constants.dart';
 import '../../core/constants/struggle_catalog.dart';
 import '../../core/utils/streak.dart';
+import '../../l10n/tx.dart';
 import '../models/community.dart';
 
 /// Topluluk: profiller, notlar, destekler, bildirimler, arkadaşlıklar.
@@ -28,14 +29,16 @@ class CommunityRepository {
 
   // ---------------------------------------------------------------- profil
 
-  Stream<PublicProfile?> watchProfile(String uid) => _profiles
-      .doc(uid)
-      .snapshots()
-      .map((d) => d.exists ? PublicProfile.fromDoc(d) : null);
+  Stream<PublicProfile?> watchProfile(String uid) =>
+      _profiles.doc(uid).snapshots().map((d) => d.exists ? PublicProfile.fromDoc(d) : null);
 
   /// Kayıtta ve profil düzenlemede. Arkadaş kodu ilk oluşturmada atanır, değişmez.
-  Future<void> ensureProfile(String uid,
-      {required String nickname, required int avatar, required DailyStreak daily}) async {
+  Future<void> ensureProfile(
+    String uid, {
+    required String nickname,
+    required int avatar,
+    required DailyStreak daily,
+  }) async {
     final ref = _profiles.doc(uid);
     final snap = await ref.get();
     if (snap.exists) {
@@ -60,30 +63,27 @@ class CommunityRepository {
   }
 
   /// Arkadaşların seriyi görebilmesi için herkese açık profile yansıt.
-  void syncStreak(String uid, PublicProfile profile, DailyStreak daily) =>
-      _fireAndForget(_profiles.doc(uid).set({
-        'nickname': profile.nickname,
-        'friendCode': profile.friendCode,
-        'dailyStreak': daily.current,
-        'longestDailyStreak': daily.longest,
-        'lastActivityDay': daily.lastDay,
-        'updatedAt': FieldValue.serverTimestamp(),
-      }, SetOptions(merge: true)));
+  void syncStreak(String uid, PublicProfile profile, DailyStreak daily) => _fireAndForget(
+    _profiles.doc(uid).set({
+      'nickname': profile.nickname,
+      'friendCode': profile.friendCode,
+      'dailyStreak': daily.current,
+      'longestDailyStreak': daily.longest,
+      'lastActivityDay': daily.lastDay,
+      'updatedAt': FieldValue.serverTimestamp(),
+    }, SetOptions(merge: true)),
+  );
 
   Stream<List<PublicProfile>> watchProfiles(List<String> uids) {
     if (uids.isEmpty) return Stream.value(const []);
     return _profiles
         .where(FieldPath.documentId, whereIn: uids.take(30).toList())
         .snapshots()
-        .map((q) => q.docs.map(PublicProfile.fromDoc).toList()
-          ..sort((a, b) => b.daily.current - a.daily.current));
+        .map((q) => q.docs.map(PublicProfile.fromDoc).toList()..sort((a, b) => b.daily.current - a.daily.current));
   }
 
   Future<PublicProfile?> findByFriendCode(String code) async {
-    final q = await _profiles
-        .where('friendCode', isEqualTo: code.trim().toUpperCase())
-        .limit(1)
-        .get();
+    final q = await _profiles.where('friendCode', isEqualTo: code.trim().toUpperCase()).limit(1).get();
     return q.docs.isEmpty ? null : PublicProfile.fromDoc(q.docs.first);
   }
 
@@ -117,17 +117,13 @@ class CommunityRepository {
       'createdAt': FieldValue.serverTimestamp(),
       'supportCount': 0,
       'reportCount': 0,
+      // Okuyan farklı dildeyse "Çevir" düğmesi için.
+      'lang': Tx.code,
     };
     final batch = _db.batch();
     if (anonymous) {
       batch
-        ..set(ref, {
-          ...common,
-          'anonymous': true,
-          'nickname': CommunityNote.anonymousName,
-          'avatar': -1,
-          'streak': 0,
-        })
+        ..set(ref, {...common, 'anonymous': true, 'nickname': CommunityNote.anonymousName, 'avatar': -1, 'streak': 0})
         ..set(_myNotes(author.uid).doc(ref.id), {'at': FieldValue.serverTimestamp()});
     } else {
       batch.set(ref, {
@@ -154,7 +150,7 @@ class CommunityRepository {
       ..set(ref.collection('supports').doc(me.uid), {'at': FieldValue.serverTimestamp()})
       ..update(ref, {'supportCount': FieldValue.increment(1)})
       ..set(_user(me.uid), {
-        'supportedNotes': FieldValue.arrayUnion([note.id])
+        'supportedNotes': FieldValue.arrayUnion([note.id]),
       }, SetOptions(merge: true));
     // Anonim gönderinin yazarı bilinmez → bildirim gönderilmez.
     if (note.authorUid.isNotEmpty && note.authorUid != me.uid) {
@@ -169,17 +165,18 @@ class CommunityRepository {
       ..set(ref.collection('reports').doc(myUid), {'reason': reason, 'at': FieldValue.serverTimestamp()})
       ..update(ref, {'reportCount': FieldValue.increment(1)})
       ..set(_user(myUid), {
-        'reportedNotes': FieldValue.arrayUnion([note.id])
+        'reportedNotes': FieldValue.arrayUnion([note.id]),
       }, SetOptions(merge: true));
     return batch.commit().timeout(const Duration(seconds: 15));
   }
 
   /// Gönderiyi ve (anonimse) yazarın özel sahiplik kaydını birlikte siler.
-  Future<void> deleteNote(String noteId, String myUid) => (_db.batch()
-        ..delete(_notes.doc(noteId))
-        ..delete(_myNotes(myUid).doc(noteId)))
-      .commit()
-      .timeout(const Duration(seconds: 15));
+  Future<void> deleteNote(String noteId, String myUid) =>
+      (_db.batch()
+            ..delete(_notes.doc(noteId))
+            ..delete(_myNotes(myUid).doc(noteId)))
+          .commit()
+          .timeout(const Duration(seconds: 15));
 
   /// "Arkadaşlar" akışı: arkadaşlarının (ve senin) son paylaşımları.
   Stream<List<CommunityNote>> watchAuthorsFeed(List<String> authorIds) {
@@ -210,6 +207,7 @@ class CommunityRepository {
         'avatar': me.avatar,
         'text': text.trim().replaceAll(RegExp(r'\s+'), ' '),
         'createdAt': FieldValue.serverTimestamp(),
+        'lang': Tx.code,
       })
       ..update(ref, {'replyCount': FieldValue.increment(1)});
     if (note.authorUid.isNotEmpty && note.authorUid != me.uid) {
@@ -254,9 +252,8 @@ class CommunityRepository {
     return batch.commit().timeout(const Duration(seconds: 15));
   }
 
-  Future<void> sendKudos(PublicProfile me, String friendUid, int messageId) => _inbox(friendUid)
-      .add(_fromMe(me, InboxType.kudos, messageId: messageId))
-      .timeout(const Duration(seconds: 15));
+  Future<void> sendKudos(PublicProfile me, String friendUid, int messageId) =>
+      _inbox(friendUid).add(_fromMe(me, InboxType.kudos, messageId: messageId)).timeout(const Duration(seconds: 15));
 
   void notifyFriendsOfMilestone(PublicProfile me, List<String> friendIds, int days) {
     if (friendIds.isEmpty) return;
@@ -268,26 +265,26 @@ class CommunityRepository {
   }
 
   Map<String, Object> _fromMe(PublicProfile me, InboxType type, {int? messageId, int? value}) => {
-        'type': type.wire,
-        'fromUid': me.uid,
-        'fromNickname': me.nickname,
-        'fromAvatar': me.avatar,
-        'messageId': ?messageId,
-        'value': ?value,
-        'createdAt': FieldValue.serverTimestamp(),
-        'read': false,
-      };
+    'type': type.wire,
+    'fromUid': me.uid,
+    'fromNickname': me.nickname,
+    'fromAvatar': me.avatar,
+    'messageId': ?messageId,
+    'value': ?value,
+    'createdAt': FieldValue.serverTimestamp(),
+    'read': false,
+  };
 
   // ---------------------------------------------------------------- bildirim kutusu
 
-  Stream<List<InboxItem>> watchInbox(String uid) => _inbox(uid)
-      .orderBy('createdAt', descending: true)
-      .limit(100)
-      .snapshots()
-      .map((q) => q.docs.map(InboxItem.fromDoc).toList());
+  Stream<List<InboxItem>> watchInbox(String uid) =>
+      _inbox(uid)
+          .orderBy('createdAt', descending: true)
+          .limit(100)
+          .snapshots()
+          .map((q) => q.docs.map(InboxItem.fromDoc).toList());
 
-  void markRead(String uid, String itemId) =>
-      _fireAndForget(_inbox(uid).doc(itemId).update({'read': true}));
+  void markRead(String uid, String itemId) => _fireAndForget(_inbox(uid).doc(itemId).update({'read': true}));
 
   void markAllRead(String uid, Iterable<String> ids) {
     final batch = _db.batch();

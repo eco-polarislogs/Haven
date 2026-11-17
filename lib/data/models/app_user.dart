@@ -19,6 +19,7 @@ class AppUser {
     this.anonymous = true,
     this.adsOptIn,
     this.language,
+    this.country,
     this.quoteUnlockedDay,
     this.lastSupportSuggestionDay,
   });
@@ -32,6 +33,9 @@ class AppUser {
   /// 'tr' | 'en' | 'es' | 'zh' | 'hi' — null ise cihaz dili.
   final String? language;
 
+  /// Destek hatları için seçilen ülke (ISO kodu); null = telefondan tahmin.
+  final String? country;
+
   /// Bu kategoriler için reklamlar varsayılan olarak kapalıdır: zayıflama,
   /// bahis, alkol gibi reklamlar tetikleyici olabilir.
   static const sensitiveForAds = {'eating', 'selfHarm', 'substance', 'behavioral'};
@@ -39,8 +43,7 @@ class AppUser {
   bool get adsAllowed => adsOptIn ?? !categoryIds.any(sensitiveForAds.contains);
 
   /// Tüm alanlardaki ve günlük serideki en iyi seri (hediyeleri açar).
-  int bestStreak(Iterable<int> struggleBests) =>
-      [daily.longest, ...struggleBests].fold(0, (a, b) => a > b ? a : b);
+  int bestStreak(Iterable<int> struggleBests) => [daily.longest, ...struggleBests].fold(0, (a, b) => a > b ? a : b);
 
   final String uid;
   final List<String> struggleIds;
@@ -85,6 +88,7 @@ class AppUser {
       anonymous: m['anonymous'] as bool? ?? true,
       adsOptIn: m['adsOptIn'] as bool?,
       language: m['language'] as String?,
+      country: m['country'] as String?,
       quoteUnlockedDay: m['quoteUnlockedDay'] as String?,
       lastSupportSuggestionDay: m['lastSupportSuggestionDay'] as String?,
     );

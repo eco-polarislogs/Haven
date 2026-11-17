@@ -28,10 +28,7 @@ class Struggle {
         totalKindDays: (m['totalKindDays'] as num?)?.toInt() ?? 0,
         lastKindDay: m['lastKindDay'] as String?,
         lastCheckInDay: m['lastCheckInDay'] as String?,
-        history: [
-          for (final h in (m['history'] as List? ?? const []))
-            ?PastStreak.fromMap(h),
-        ],
+        history: [for (final h in (m['history'] as List? ?? const [])) ?PastStreak.fromMap(h)],
       ),
       lastResult: CheckInResult.values.asNameMap()[m['lastResult']],
     );

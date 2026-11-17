@@ -10,6 +10,7 @@ import '../../data/models/community.dart';
 import '../../providers.dart';
 import '../support/hard_day_sheet.dart';
 import 'community_screen.dart';
+import '../../l10n/tx.dart';
 
 Future<void> showComposeNoteSheet(BuildContext context) =>
     showModalBottomSheet<void>(context: context, isScrollControlled: true, builder: (_) => const _ComposeNoteSheet());
@@ -72,8 +73,8 @@ class _ComposeNoteSheetState extends ConsumerState<_ComposeNoteSheet> {
         SnackBar(
           content: Text(
             _anonymous
-                ? 'Anonim olarak paylaşıldı. Birinin gününe ışık olabilir. 💙'
-                : 'Paylaşıldı. Birinin gününe ışık olabilir. 💙',
+                ? tx('Anonim olarak paylaşıldı. Birinin gününe ışık olabilir. 💙')
+                : tx('Paylaşıldı. Birinin gününe ışık olabilir. 💙'),
           ),
         ),
       );
@@ -81,13 +82,13 @@ class _ComposeNoteSheetState extends ConsumerState<_ComposeNoteSheet> {
       setState(() {
         _sending = false;
         _problem = e.code == 'permission-denied'
-            ? 'Bu not topluluk kurallarına takıldı. Daha yumuşak bir ifadeyle tekrar dener misin?'
-            : 'Not şu an paylaşılamadı. İnternet bağlantını kontrol eder misin?';
+            ? tx('Bu not topluluk kurallarına takıldı. Daha yumuşak bir ifadeyle tekrar dener misin?')
+            : tx('Not şu an paylaşılamadı. İnternet bağlantını kontrol eder misin?');
       });
     } catch (_) {
       setState(() {
         _sending = false;
-        _problem = 'Not şu an paylaşılamadı. İnternet bağlantını kontrol eder misin?';
+        _problem = tx('Not şu an paylaşılamadı. İnternet bağlantını kontrol eder misin?');
       });
     }
   }
@@ -110,15 +111,16 @@ class _ComposeNoteSheetState extends ConsumerState<_ComposeNoteSheet> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text('Bir şey paylaş', style: t.titleLarge),
+              Text(tx('Bir şey paylaş'), style: t.titleLarge),
               const SizedBox(height: 4),
               Text(
-                'Seni güçlendiren bir şeyi paylaş. Ayrıntılara (sayılar, yöntemler) girmeden, '
-                'hislerinin üzerinden yazmak herkes için daha güvenli.',
+                tx(
+                  'Seni güçlendiren bir şeyi paylaş. Ayrıntılara (sayılar, yöntemler) girmeden, hislerinin üzerinden yazmak herkes için daha güvenli.',
+                ),
                 style: t.bodySmall,
               ),
               const SizedBox(height: 14),
-              Text('Hangi çembere?', style: t.labelLarge),
+              Text(tx('Hangi çembere?'), style: t.labelLarge),
               const SizedBox(height: 6),
               Wrap(
                 spacing: 8,
@@ -134,16 +136,16 @@ class _ComposeNoteSheetState extends ConsumerState<_ComposeNoteSheet> {
                 ],
               ),
               const SizedBox(height: 14),
-              Text('Nasıl görünsün?', style: t.labelLarge),
+              Text(tx('Nasıl görünsün?'), style: t.labelLarge),
               const SizedBox(height: 6),
               SegmentedButton<bool>(
                 segments: [
                   ButtonSegment(
                     value: false,
                     icon: const Icon(Icons.person_outline_rounded),
-                    label: Text(me?.nickname ?? 'İsmimle', overflow: TextOverflow.ellipsis),
+                    label: Text(me?.nickname ?? tx('İsmimle'), overflow: TextOverflow.ellipsis),
                   ),
-                  const ButtonSegment(value: true, icon: Icon(Icons.visibility_off_outlined), label: Text('Anonim')),
+                  ButtonSegment(value: true, icon: Icon(Icons.visibility_off_outlined), label: Text(tx('Anonim'))),
                 ],
                 selected: {_anonymous},
                 showSelectedIcon: false,
@@ -152,9 +154,11 @@ class _ComposeNoteSheetState extends ConsumerState<_ComposeNoteSheet> {
               const SizedBox(height: 6),
               Text(
                 _anonymous
-                    ? 'Adın, avatarın ve serin görünmez; "${CommunityNote.anonymousName}" olarak paylaşılır. '
-                          'Yalnızca hangi alanda paylaştığın görünür.'
-                    : 'Takma adın, avatarın ve serin görünür; hangi alanda paylaştığın da yazar.',
+                    ? tx(
+                        'Adın, avatarın ve serin görünmez; "{anonymousName}" olarak paylaşılır. Yalnızca hangi alanda paylaştığın görünür.',
+                        {'anonymousName': tx(CommunityNote.anonymousName)},
+                      )
+                    : tx('Takma adın, avatarın ve serin görünür; hangi alanda paylaştığın da yazar.'),
                 style: t.bodySmall,
               ),
               const SizedBox(height: 14),
@@ -166,13 +170,13 @@ class _ComposeNoteSheetState extends ConsumerState<_ComposeNoteSheet> {
                 onChanged: (_) {
                   if (_problem != null) setState(() => _problem = null);
                 },
-                decoration: const InputDecoration(hintText: 'Bugün kendim için yaptığım küçük bir şey…'),
+                decoration: InputDecoration(hintText: tx('Bugün kendim için yaptığım küçük bir şey…')),
               ),
               Wrap(
                 spacing: 8,
                 runSpacing: 4,
                 children: [
-                  for (final p in kNotePrompts)
+                  for (final p in txList(kNotePrompts))
                     ActionChip(
                       label: Text(p.trim(), style: t.labelSmall),
                       onPressed: () => setState(() => _controller.text = p),
@@ -206,7 +210,7 @@ class _ComposeNoteSheetState extends ConsumerState<_ComposeNoteSheet> {
                         child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
                       )
                     : const Icon(Icons.send_rounded),
-                label: Text(profileReady ? 'Paylaş' : 'Profil hazırlanıyor…'),
+                label: Text(profileReady ? tx('Paylaş') : tx('Profil hazırlanıyor…')),
               ),
             ],
           ),

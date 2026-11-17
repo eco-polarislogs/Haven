@@ -33,41 +33,38 @@ class HavenColors {
 
 /// Her mücadele kategorisinin kart tonu: ayırt edilebilir, soluk ve nötr.
 Color categoryTint(StruggleCategory c) => switch (c) {
-      StruggleCategory.bfrb => const Color(0xFFE2EEEF), // sis
-      StruggleCategory.ocd => const Color(0xFFE6EBF2), // buz mavisi
-      StruggleCategory.anxiety => const Color(0xFFDFEDF2), // açık deniz
-      StruggleCategory.mood => const Color(0xFFEDE9E3), // sıcak gri
-      StruggleCategory.eating => const Color(0xFFF2EADF), // kum
-      StruggleCategory.behavioral => const Color(0xFFE3E9F5), // gök
-      StruggleCategory.substance => const Color(0xFFE4EFE8), // adaçayı
-      StruggleCategory.selfHarm => const Color(0xFFE7E9EF), // arduvaz
-      StruggleCategory.anger => const Color(0xFFF1E6DE), // kil
-      StruggleCategory.trauma => const Color(0xFFEAE7E1), // taş
-      StruggleCategory.sleep => const Color(0xFFE4E6F1), // gece mavisi
-    };
+  StruggleCategory.bfrb => const Color(0xFFE2EEEF), // sis
+  StruggleCategory.ocd => const Color(0xFFE6EBF2), // buz mavisi
+  StruggleCategory.anxiety => const Color(0xFFDFEDF2), // açık deniz
+  StruggleCategory.mood => const Color(0xFFEDE9E3), // sıcak gri
+  StruggleCategory.eating => const Color(0xFFF2EADF), // kum
+  StruggleCategory.behavioral => const Color(0xFFE3E9F5), // gök
+  StruggleCategory.substance => const Color(0xFFE4EFE8), // adaçayı
+  StruggleCategory.selfHarm => const Color(0xFFE7E9EF), // arduvaz
+  StruggleCategory.anger => const Color(0xFFF1E6DE), // kil
+  StruggleCategory.trauma => const Color(0xFFEAE7E1), // taş
+  StruggleCategory.sleep => const Color(0xFFE4E6F1), // gece mavisi
+};
 
 /// Kategori ikonunun vurgu rengi.
 Color categoryAccent(StruggleCategory c) => switch (c) {
-      StruggleCategory.bfrb => const Color(0xFF3F7F86),
-      StruggleCategory.ocd => const Color(0xFF55709A),
-      StruggleCategory.anxiety => const Color(0xFF2F7C93),
-      StruggleCategory.mood => const Color(0xFF8A7458),
-      StruggleCategory.eating => const Color(0xFF9A7A4F),
-      StruggleCategory.behavioral => const Color(0xFF4F6FA8),
-      StruggleCategory.substance => const Color(0xFF4E8063),
-      StruggleCategory.selfHarm => const Color(0xFF5A6684),
-      StruggleCategory.anger => const Color(0xFFA06A4C),
-      StruggleCategory.trauma => const Color(0xFF7A6E5E),
-      StruggleCategory.sleep => const Color(0xFF5B6299),
-    };
+  StruggleCategory.bfrb => const Color(0xFF3F7F86),
+  StruggleCategory.ocd => const Color(0xFF55709A),
+  StruggleCategory.anxiety => const Color(0xFF2F7C93),
+  StruggleCategory.mood => const Color(0xFF8A7458),
+  StruggleCategory.eating => const Color(0xFF9A7A4F),
+  StruggleCategory.behavioral => const Color(0xFF4F6FA8),
+  StruggleCategory.substance => const Color(0xFF4E8063),
+  StruggleCategory.selfHarm => const Color(0xFF5A6684),
+  StruggleCategory.anger => const Color(0xFFA06A4C),
+  StruggleCategory.trauma => const Color(0xFF7A6E5E),
+  StruggleCategory.sleep => const Color(0xFF5B6299),
+};
 
 /// Kart zemini: açık temada soluk ton, gece temasında tonun çok hafif izi.
 Color categoryCardColor(StruggleCategory c, ColorScheme scheme) {
   final dark = scheme.brightness == Brightness.dark;
-  return Color.alphaBlend(
-    categoryTint(c).withValues(alpha: dark ? 0.08 : 0.9),
-    scheme.surfaceContainerLow,
-  );
+  return Color.alphaBlend(categoryTint(c).withValues(alpha: dark ? 0.08 : 0.9), scheme.surfaceContainerLow);
 }
 
 /// Seçilen tema ön ayarından tam bir Material 3 teması üretir.
@@ -99,11 +96,7 @@ ThemeData _base(ColorScheme scheme, HavenPalette palette) {
       surfaceTintColor: Colors.transparent,
       elevation: 0,
       centerTitle: false,
-      titleTextStyle: TextStyle(
-        fontSize: 22,
-        fontWeight: FontWeight.w600,
-        color: scheme.onSurface,
-      ),
+      titleTextStyle: TextStyle(fontSize: 22, fontWeight: FontWeight.w600, color: scheme.onSurface),
     ),
     cardTheme: CardThemeData(
       elevation: 0,
@@ -129,23 +122,17 @@ ThemeData _base(ColorScheme scheme, HavenPalette palette) {
       backgroundColor: scheme.surfaceContainerLow,
       indicatorColor: scheme.primaryContainer,
       elevation: 0,
-      labelTextStyle: WidgetStateProperty.all(
-        const TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
-      ),
+      labelTextStyle: WidgetStateProperty.all(const TextStyle(fontSize: 12, fontWeight: FontWeight.w600)),
     ),
     bottomSheetTheme: const BottomSheetThemeData(
       showDragHandle: true,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(radius)),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(radius))),
     ),
     snackBarTheme: SnackBarThemeData(
       behavior: SnackBarBehavior.floating,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
     ),
-    dialogTheme: DialogThemeData(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(radius)),
-    ),
+    dialogTheme: DialogThemeData(shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(radius))),
     inputDecorationTheme: InputDecorationTheme(
       filled: true,
       fillColor: scheme.surfaceContainerLow,

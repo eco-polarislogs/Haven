@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import '../../core/constants/app_constants.dart';
 import '../../core/constants/struggle_catalog.dart';
 import '../../core/utils/streak.dart';
+import '../../l10n/tx.dart';
 
 DateTime? _date(Object? v) => v is Timestamp ? v.toDate() : null;
 
@@ -29,7 +30,7 @@ class PublicProfile {
     final m = d.data() ?? const {};
     return PublicProfile(
       uid: d.id,
-      nickname: m['nickname'] as String? ?? 'Haven üyesi',
+      nickname: m['nickname'] as String? ?? tx('Haven üyesi'),
       avatar: (m['avatar'] as num?)?.toInt() ?? 0,
       friendCode: m['friendCode'] as String? ?? '------',
       daily: DailyStreak(
@@ -56,7 +57,11 @@ class CommunityNote {
     required this.reportCount,
     this.replyCount = 0,
     this.anonymous = false,
+    this.lang = 'tr',
   });
+
+  /// Yazıldığı dil (eski paylaşımlarda alan yok → Türkçe).
+  final String lang;
 
   /// Anonim gönderilerde görünen ad.
   static const anonymousName = 'Anonim üye';
@@ -85,7 +90,7 @@ class CommunityNote {
     return CommunityNote(
       id: d.id,
       authorUid: m['authorUid'] as String? ?? '',
-      nickname: m['nickname'] as String? ?? 'Haven üyesi',
+      nickname: m['nickname'] as String? ?? tx('Haven üyesi'),
       avatar: (m['avatar'] as num?)?.toInt() ?? 0,
       streak: (m['streak'] as num?)?.toInt() ?? 0,
       circle: categoryByName(m['circleId'] as String?),
@@ -95,6 +100,7 @@ class CommunityNote {
       reportCount: (m['reportCount'] as num?)?.toInt() ?? 0,
       replyCount: (m['replyCount'] as num?)?.toInt() ?? 0,
       anonymous: m['anonymous'] == true,
+      lang: m['lang'] as String? ?? 'tr',
     );
   }
 }
@@ -102,6 +108,7 @@ class CommunityNote {
 /// `notes/{noteId}/replies/{id}` — bir gönderiye yanıt (aynı sıkı denetimden geçer).
 class NoteReply {
   const NoteReply({
+    this.lang = 'tr',
     required this.id,
     required this.authorUid,
     required this.nickname,
@@ -117,15 +124,19 @@ class NoteReply {
   final String text;
   final DateTime? createdAt;
 
+  /// Yazıldığı dil.
+  final String lang;
+
   factory NoteReply.fromDoc(DocumentSnapshot<Map<String, dynamic>> d) {
     final m = d.data() ?? const {};
     return NoteReply(
       id: d.id,
       authorUid: m['authorUid'] as String? ?? '',
-      nickname: m['nickname'] as String? ?? 'Haven üyesi',
+      nickname: m['nickname'] as String? ?? tx('Haven üyesi'),
       avatar: (m['avatar'] as num?)?.toInt() ?? 0,
       text: m['text'] as String? ?? '',
       createdAt: _date(m['createdAt']),
+      lang: m['lang'] as String? ?? 'tr',
     );
   }
 }
@@ -146,8 +157,7 @@ enum InboxType {
   const InboxType(this.wire);
   final String wire;
 
-  static InboxType parse(String? s) =>
-      InboxType.values.firstWhere((t) => t.wire == s, orElse: () => InboxType.unknown);
+  static InboxType parse(String? s) => InboxType.values.firstWhere((t) => t.wire == s, orElse: () => InboxType.unknown);
 }
 
 /// `users/{uid}/inbox/{id}` — uygulama içi bildirim merkezi.
@@ -191,50 +201,52 @@ class InboxItem {
     );
   }
 
-  String get _who => fromNickname ?? 'Bir arkadaşın';
+  String get _who => fromNickname ?? tx('Bir arkadaşın');
 
   String get title => switch (type) {
-        InboxType.welcome => 'Haven\'a hoş geldin',
-        InboxType.login => 'Hesabına giriş yapıldı',
-        InboxType.logout => 'Hesabından çıkış yapıldı',
-        InboxType.friendAdded => '$_who seni arkadaş olarak ekledi',
-        InboxType.kudos => '$_who sana bir not gönderdi',
-        InboxType.noteSupport => '$_who paylaşımına destek verdi',
-        InboxType.noteReply => '$_who paylaşımına yanıt verdi',
-        InboxType.friendStreak => '$_who ${value ?? ''} günlük seriye ulaştı',
-        InboxType.streakMilestone => '${value ?? ''} günlük seri!',
-        InboxType.supportSuggestion => 'Seni düşünüyoruz',
-        InboxType.unknown => 'Haven',
-      };
+    InboxType.welcome => tx('Haven\'a hoş geldin'),
+    InboxType.login => tx('Hesabına giriş yapıldı'),
+    InboxType.logout => tx('Hesabından çıkış yapıldı'),
+    InboxType.friendAdded => tx('{who} seni arkadaş olarak ekledi', {'who': _who}),
+    InboxType.kudos => tx('{who} sana bir not gönderdi', {'who': _who}),
+    InboxType.noteSupport => tx('{who} paylaşımına destek verdi', {'who': _who}),
+    InboxType.noteReply => tx('{who} paylaşımına yanıt verdi', {'who': _who}),
+    InboxType.friendStreak => tx('{who} {p} günlük seriye ulaştı', {'who': _who, 'p': value ?? ''}),
+    InboxType.streakMilestone => tx('{p} günlük seri!', {'p': value ?? ''}),
+    InboxType.supportSuggestion => tx('Seni düşünüyoruz'),
+    InboxType.unknown => 'Haven',
+  };
 
   String get body => switch (type) {
-        InboxType.welcome => 'Burası senin güvenli limanın. Kendi hızında, yargısız.',
-        InboxType.login => 'Bu sen değilsen hemen Profil → Çıkış yap\'a dokun.',
-        InboxType.logout => 'Bir dahaki sefere görüşmek üzere.',
-        InboxType.friendAdded => 'Artık birbirinizin serisini görebilir, cesaret notu gönderebilirsiniz.',
-        InboxType.kudos => (messageId != null && messageId! < kKudosMessages.length)
-            ? kKudosMessages[messageId!]
-            : 'Seni düşünüyor.',
-        InboxType.noteSupport => 'Paylaştığın not birine iyi geldi. 💙',
-        InboxType.noteReply => 'Topluluk sekmesinden yanıtı okuyabilirsin.',
-        InboxType.friendStreak => 'Ona bir cesaret notu göndermeye ne dersin?',
-        InboxType.streakMilestone => 'Kendine her gün geri döndün. Bu çok değerli.',
-        InboxType.supportSuggestion =>
-          'Son günlerin zor geçmiş görünüyor. Bir uzmanla konuşmak iyi gelebilir; Destek al bölümüne göz at.',
-        InboxType.unknown => '',
-      };
+    InboxType.welcome => tx('Burası senin güvenli limanın. Kendi hızında, yargısız.'),
+    InboxType.login => tx('Bu sen değilsen hemen Profil → Çıkış yap\'a dokun.'),
+    InboxType.logout => tx('Bir dahaki sefere görüşmek üzere.'),
+    InboxType.friendAdded => tx('Artık birbirinizin serisini görebilir, cesaret notu gönderebilirsiniz.'),
+    InboxType.kudos =>
+      (messageId != null && messageId! < kKudosMessages.length)
+          ? tx(kKudosMessages[messageId!])
+          : tx('Seni düşünüyor.'),
+    InboxType.noteSupport => tx('Paylaştığın not birine iyi geldi. 💙'),
+    InboxType.noteReply => tx('Topluluk sekmesinden yanıtı okuyabilirsin.'),
+    InboxType.friendStreak => tx('Ona bir cesaret notu göndermeye ne dersin?'),
+    InboxType.streakMilestone => tx('Kendine her gün geri döndün. Bu çok değerli.'),
+    InboxType.supportSuggestion => tx(
+      'Son günlerin zor geçmiş görünüyor. Bir uzmanla konuşmak iyi gelebilir; Destek al bölümüne göz at.',
+    ),
+    InboxType.unknown => '',
+  };
 
   IconData get icon => switch (type) {
-        InboxType.welcome => Icons.waving_hand_outlined,
-        InboxType.login => Icons.login_rounded,
-        InboxType.logout => Icons.logout_rounded,
-        InboxType.friendAdded => Icons.person_add_alt_1_outlined,
-        InboxType.kudos => Icons.favorite_border_rounded,
-        InboxType.noteSupport => Icons.volunteer_activism_outlined,
-        InboxType.noteReply => Icons.chat_bubble_outline_rounded,
-        InboxType.friendStreak => Icons.local_fire_department_outlined,
-        InboxType.streakMilestone => Icons.local_fire_department_rounded,
-        InboxType.supportSuggestion => Icons.volunteer_activism_outlined,
-        InboxType.unknown => Icons.notifications_none_rounded,
-      };
+    InboxType.welcome => Icons.waving_hand_outlined,
+    InboxType.login => Icons.login_rounded,
+    InboxType.logout => Icons.logout_rounded,
+    InboxType.friendAdded => Icons.person_add_alt_1_outlined,
+    InboxType.kudos => Icons.favorite_border_rounded,
+    InboxType.noteSupport => Icons.volunteer_activism_outlined,
+    InboxType.noteReply => Icons.chat_bubble_outline_rounded,
+    InboxType.friendStreak => Icons.local_fire_department_outlined,
+    InboxType.streakMilestone => Icons.local_fire_department_rounded,
+    InboxType.supportSuggestion => Icons.volunteer_activism_outlined,
+    InboxType.unknown => Icons.notifications_none_rounded,
+  };
 }

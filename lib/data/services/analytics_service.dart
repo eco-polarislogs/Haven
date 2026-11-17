@@ -19,11 +19,7 @@ class AnalyticsService {
 
   Future<void> setEnabled(bool enabled) => _analytics.setAnalyticsCollectionEnabled(enabled);
 
-  Future<void> onboardingCompleted({
-    required int struggleCount,
-    required int categoryCount,
-    required bool community,
-  }) =>
+  Future<void> onboardingCompleted({required int struggleCount, required int categoryCount, required bool community}) =>
       _log('onboarding_completed', {
         'struggle_count': struggleCount,
         'category_count': categoryCount,
@@ -45,13 +41,11 @@ class AnalyticsService {
   Future<void> supportOpened(String source) => _log('support_opened', {'source': source});
   Future<void> professionalSupportOpened() => _log('professional_support_opened', {});
   Future<void> breathingFinished(int cycles) => _log('breathing_finished', {'cycles': cycles});
-  Future<void> gameFinished(String game, int score) =>
-      _log('game_finished', {'game': game, 'score': score});
+  Future<void> gameFinished(String game, int score) => _log('game_finished', {'game': game, 'score': score});
   Future<void> rewardEarned(String reward) => _log('reward_earned', {'reward': reward});
   Future<void> nudgeOpened(String? level) => _log('nudge_opened', {'level': level ?? 'unknown'});
   Future<void> notificationShownInApp() => _log('notification_in_app', {});
-  Future<void> notificationCenterOpened(int unread) =>
-      _log('notification_center_opened', {'unread': unread});
+  Future<void> notificationCenterOpened(int unread) => _log('notification_center_opened', {'unread': unread});
 
   // Topluluk (içerik ASLA gönderilmez)
   Future<void> communityJoined(bool joined) => _log('community_joined', {'joined': joined ? 1 : 0});

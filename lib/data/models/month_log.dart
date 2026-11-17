@@ -36,8 +36,6 @@ class MonthLog {
   DayStatus statusOf(int day) {
     final entries = days[day];
     if (entries == null || entries.isEmpty) return DayStatus.none;
-    return entries.values.contains(CheckInResult.hard)
-        ? DayStatus.hard
-        : DayStatus.kind;
+    return entries.values.contains(CheckInResult.hard) ? DayStatus.hard : DayStatus.kind;
   }
 }

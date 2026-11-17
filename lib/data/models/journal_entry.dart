@@ -12,10 +12,6 @@ class JournalEntry {
   factory JournalEntry.fromDoc(DocumentSnapshot<Map<String, dynamic>> d) {
     final m = d.data() ?? const {};
     final ts = m['createdAt'];
-    return JournalEntry(
-      id: d.id,
-      text: m['text'] as String? ?? '',
-      createdAt: ts is Timestamp ? ts.toDate() : null,
-    );
+    return JournalEntry(id: d.id, text: m['text'] as String? ?? '', createdAt: ts is Timestamp ? ts.toDate() : null);
   }
 }

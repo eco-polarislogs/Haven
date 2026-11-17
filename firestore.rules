@@ -157,7 +157,7 @@ service cloud.firestore {
         allow read: if signedIn();
         allow create: if signedIn()
           && request.resource.data.authorUid == me()
-          && request.resource.data.keys().hasOnly(['authorUid', 'nickname', 'avatar', 'text', 'createdAt'])
+          && request.resource.data.keys().hasOnly(['authorUid', 'nickname', 'avatar', 'text', 'createdAt', 'lang'])
           && request.resource.data.text is string
           && request.resource.data.text.size() >= 1
           && request.resource.data.text.size() <= 280

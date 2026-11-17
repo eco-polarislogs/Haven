@@ -1,5 +1,8 @@
 import '../constants/app_constants.dart';
 import '../constants/struggle_catalog.dart';
+import '../../l10n/tx.dart';
+
+import 'package:flutter/foundation.dart';
 
 /// Günün sözü: saate, güne, mevsime, özel günlere ve seri durumuna göre değişir.
 /// Aynı saat diliminde aynı söz kalır (sayfa her açıldığında değişip
@@ -57,6 +60,19 @@ class QuoteEngine {
     'Değişim yavaş olur; mevsimler bile acele etmez.',
   ];
 
+  /// Testler: çevrilmesi gereken tüm söz havuzları (Türkçe kaynak).
+  @visibleForTesting
+  static List<String> get allPoolTexts => [
+    ..._morning,
+    ..._afternoon,
+    ..._evening,
+    ..._night,
+    ..._winter,
+    ..._spring,
+    ..._summer,
+    ..._autumn,
+  ];
+
   static DailyQuote pick({
     required DateTime now,
     required int liveStreak,
@@ -65,40 +81,53 @@ class QuoteEngine {
   }) {
     final h = now.hour;
     final (timePool, timeLabel) = switch (h) {
-      >= 5 && < 12 => (_morning, 'Günaydın'),
-      >= 12 && < 18 => (_afternoon, 'Gün ortası'),
-      >= 18 && < 23 => (_evening, 'İyi akşamlar'),
-      _ => (_night, 'Gece'),
+      >= 5 && < 12 => (_morning, tx('Günaydın')),
+      >= 12 && < 18 => (_afternoon, tx('Gün ortası')),
+      >= 18 && < 23 => (_evening, tx('İyi akşamlar')),
+      _ => (_night, tx('Gece')),
     };
     final (seasonPool, seasonLabel) = switch (now.month) {
-      12 || 1 || 2 => (_winter, 'Kış'),
-      3 || 4 || 5 => (_spring, 'İlkbahar'),
-      6 || 7 || 8 => (_summer, 'Yaz'),
-      _ => (_autumn, 'Sonbahar'),
+      12 || 1 || 2 => (_winter, tx('Kış')),
+      3 || 4 || 5 => (_spring, tx('İlkbahar')),
+      6 || 7 || 8 => (_summer, tx('Yaz')),
+      _ => (_autumn, tx('Sonbahar')),
     };
 
     // Seri durumu her şeyden önce gelir: kişiye özel ve en motive edici.
     if (bestStreak > 0 && liveStreak == 0) {
-      return DailyQuote('Daha önce $bestStreak gün boyunca harika ilerledin. O güç hâlâ sende; '
-          'bugün yeniden başlamak için güzel bir gün.', '$timeLabel · Yeniden başlangıç');
+      return DailyQuote(
+        tx(
+          'Daha önce {best} gün boyunca harika ilerledin. O güç hâlâ sende; bugün yeniden başlamak için güzel bir gün.',
+          {'best': bestStreak},
+        ),
+        '$timeLabel · ${tx('Yeniden başlangıç')}',
+      );
     }
     if (liveStreak > 0 && liveStreak >= bestStreak && bestStreak >= 3) {
-      return DailyQuote('Yeni bir rekor yazıyorsun: $liveStreak gün! Kendinle gurur duyabilirsin.',
-          '$timeLabel · Yeni rekor');
+      return DailyQuote(
+        tx('Yeni bir rekor yazıyorsun: {n} gün! Kendinle gurur duyabilirsin.', {'n': liveStreak}),
+        '$timeLabel · ${tx('Yeni rekor')}',
+      );
     }
     if (liveStreak > 0 && bestStreak - liveStreak > 0 && bestStreak - liveStreak <= 2) {
-      return DailyQuote('Rekoruna ${bestStreak - liveStreak} gün kaldı. Acele yok; '
-          'kendi hızında, adım adım.', '$timeLabel · Rekora yakın');
+      return DailyQuote(
+        tx('Rekoruna {n} gün kaldı. Acele yok; kendi hızında, adım adım.', {'n': bestStreak - liveStreak}),
+        '$timeLabel · ${tx('Rekora yakın')}',
+      );
     }
 
     // Özel günler
     if (now.month == 1 && now.day == 1) {
-      return DailyQuote('Yeni yıl, yeni sayfalar. Geçen yılın her zor gününü de taşıyarak buraya geldin.',
-          'Yeni yıl');
+      return DailyQuote(
+        tx('Yeni yıl, yeni sayfalar. Geçen yılın her zor gününü de taşıyarak buraya geldin.'),
+        tx('Yeni yıl'),
+      );
     }
     if (now.weekday == DateTime.monday && h < 12) {
-      return const DailyQuote('Haftanın ilk günü. Büyük hedefler yerine tek bir küçük adım yeter.',
-          'Pazartesi sabahı');
+      return DailyQuote(
+        tx('Haftanın ilk günü. Büyük hedefler yerine tek bir küçük adım yeter.'),
+        tx('Pazartesi sabahı'),
+      );
     }
 
     final dayOfYear = now.difference(DateTime(now.year)).inDays;
@@ -106,11 +135,11 @@ class QuoteEngine {
     final pools = <List<String>>[
       timePool,
       seasonPool,
-      [for (final c in categories) ...c.affirmations],
+      [for (final c in categories) ...c.affirmationsTr],
       kGeneralAffirmations,
     ].where((p) => p.isNotEmpty).toList();
     final pool = pools[slot % pools.length];
     final label = identical(pool, seasonPool) ? '$timeLabel · $seasonLabel' : timeLabel;
-    return DailyQuote(pool[(slot ~/ pools.length) % pool.length], label);
+    return DailyQuote(tx(pool[(slot ~/ pools.length) % pool.length]), label);
   }
 }

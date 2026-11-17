@@ -160,7 +160,7 @@ flutter build appbundle --release
 
 ## Reklam güvenliği (AdMob'da ZORUNLU ayarlar)
 
-Kod tarafında: alt çubuğun üstünde ince bir banner (Sakinleş sekmesinde gizli), kilitli tema düğmelerinde ve Hediyelerim'de isteğe bağlı ödüllü reklam; kriz, nefes ve oyun ekranlarında reklam yok; kişiselleştirilmemiş; `maxAdContentRating: G`; **yeme, kendine zarar, madde ve davranışsal bağımlılık seçen kullanıcılarda varsayılan KAPALI** (kullanıcı isterse açar). Tüm hediyeler seriyle de açılabilir.
+Kod tarafında: alt çubuğun üstünde ince bir banner (Sakinleş sekmesinde gizli), ana sayfada günlük kartların altında bir reklam kartı (320×100), kilitli tema ve avatarlarda ve Hediyelerim'de isteğe bağlı ödüllü reklam; kriz, nefes ve oyun ekranlarında reklam yok; kişiselleştirilmemiş; `maxAdContentRating: G`; **yeme, kendine zarar, madde ve davranışsal bağımlılık seçen kullanıcılarda varsayılan KAPALI** (kullanıcı isterse açar). Tüm hediyeler seriyle de açılabilir.
 
 AdMob konsolunda (Uygulamalar → Haven → **Engelleme kontrolleri**):
 1. **İçerik derecelendirmesi:** maksimum **G** (Genel izleyici).
@@ -169,7 +169,21 @@ AdMob konsolunda (Uygulamalar → Haven → **Engelleme kontrolleri**):
 
 ## Dil desteği
 
-Arayüz 5 dilde: Türkçe, İngilizce, İspanyolca, Çince (Mandarin), Hintçe (`lib/l10n/*.arb`, `flutter gen-l10n`). Profil → Dil'den seçilir; seçilmezse Türkçe açılır. **Psikolojik içerik metinleri (kategori bilgileri, günün sözleri, ipuçları) şimdilik yalnızca Türkçe**; bu metinlerin çevirisi anadili konuşan biri ve tercihen bir ruh sağlığı uzmanı tarafından gözden geçirilmelidir.
+**Her şey 5 dilde:** Türkçe, İngilizce, İspanyolca, Çince (Mandarin), Hintçe. Arayüz, 11 alanın bilgi metinleri, ipuçları ve olumlu sözler, günün sözleri, rozetler, hata mesajları, telefon bildirimleri (yerel + Cloud Functions push) dahil.
+
+- Dil seçimi: Profil → Dil ya da kayıt olmadan önce karşılama ekranındaki dil menüsü. Seçilmediyse **telefonun dili** (destekleniyorsa), değilse İngilizce.
+- Kısa arayüz etiketleri: `lib/l10n/*.arb` (`flutter gen-l10n`). Uzun içerik: `tx('Türkçe metin')` → `lib/l10n/tables/*.dart` (Türkçe metin anahtar, [en, es, zh, hi]). `test/translation_test.dart` koddaki her metnin 4 dilde çevirisi olduğunu ve `{yer tutucu}`ların korunduğunu denetler; yeni metin eklenince eksikleri listeler.
+- **Kullanıcı paylaşımlarının çevirisi:** paylaşımlar yazıldığı dili saklar; okuyanın dili farklıysa "Çevir" düğmesi çıkar. Çeviri **cihaz üstünde** (Google ML Kit) yapılır, metin sunucuya gönderilmez; dil modeli ilk seferde indirilir (~30 MB).
+- **Çok dilli denetim:** kriz, küfür, küçümseme ve tetikleyici ifade listeleri Türkçe + İngilizce, İspanyolca, Çince, Hintçe (`lib/core/moderation/intl_terms.dart`). Okuyan tarafı gizleme de bu dilleri kapsar.
+- Çeviriler özenle hazırlandı; yayından önce anadili konuşan biri ve tercihen bir ruh sağlığı uzmanı tarafından gözden geçirilmesi önerilir.
+
+## Evrensel destek hatları
+
+Acil ve kriz hatları **ülkeye göre** gösterilir (`lib/core/constants/country_support.dart`): Türkiye 112 / Yeşilay 115, ABD 911 / 988, Birleşik Krallık 999 / Samaritans 116 123, İspanya 112 / 024, Meksika 911 / Línea de la Vida, Hindistan 112 / Tele-MANAS 14416, Çin 120 / 12356, Almanya 112 / TelefonSeelsorge, Fransa 112 / 3114; diğer ülkeler için 112 + findahelpline.com. Ülke telefonun bölgesinden tahmin edilir, destek kartından değiştirilebilir. **Numaraları yayından önce resmi kaynaklardan yeniden doğrula.**
+
+## Motivasyon: rozetler
+
+Profil → Rozetlerim: ilk iyi gün, 3/7/14/30/100 günlük seri, 50 iyi gün, yeniden başlama, ilk paylaşım, destek verme, günlük yazma, ilk arkadaş. Rozetler hiçbir zaman silinmez (zor bir gün emeği götürmez).
 
 ## Güvenlik ve etik notları
 

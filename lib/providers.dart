@@ -1,9 +1,13 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+
+import 'dart:ui' show PlatformDispatcher;
+
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'core/constants/country_support.dart';
 import 'core/constants/struggle_catalog.dart';
 import 'core/theme/theme_presets.dart';
 import 'data/models/app_user.dart';
@@ -24,14 +28,13 @@ import 'data/services/notification_service.dart';
 // ------------------------------------------------------------ servisler
 final authServiceProvider = Provider<AuthService>((ref) => AuthService(FirebaseAuth.instance));
 
-final repositoryProvider =
-    Provider<HavenRepository>((ref) => HavenRepository(FirebaseFirestore.instance));
+final repositoryProvider = Provider<HavenRepository>((ref) => HavenRepository(FirebaseFirestore.instance));
 
-final communityRepositoryProvider =
-    Provider<CommunityRepository>((ref) => CommunityRepository(FirebaseFirestore.instance));
+final communityRepositoryProvider = Provider<CommunityRepository>(
+  (ref) => CommunityRepository(FirebaseFirestore.instance),
+);
 
-final analyticsProvider =
-    Provider<AnalyticsService>((ref) => AnalyticsService(FirebaseAnalytics.instance));
+final analyticsProvider = Provider<AnalyticsService>((ref) => AnalyticsService(FirebaseAnalytics.instance));
 
 final notificationServiceProvider = Provider<NotificationService>((ref) {
   final service = NotificationService(ref.watch(repositoryProvider), ref.watch(analyticsProvider));
@@ -40,8 +43,7 @@ final notificationServiceProvider = Provider<NotificationService>((ref) {
 });
 
 // ------------------------------------------------------------ oturum
-final authStateProvider =
-    StreamProvider<User?>((ref) => ref.watch(authServiceProvider).authStateChanges());
+final authStateProvider = StreamProvider<User?>((ref) => ref.watch(authServiceProvider).authStateChanges());
 
 final uidProvider = Provider<String?>((ref) => ref.watch(authStateProvider).value?.uid);
 
@@ -81,18 +83,45 @@ final themePresetProvider = Provider<ThemePreset>((ref) {
   final user = ref.watch(appUserProvider).value;
   final preset = ThemePreset.parse(user?.themeId);
   final unlocked = isGiftUnlocked(
-      unlockStreak: preset.unlockStreak, id: preset.name, best: ref.watch(bestStreakProvider), user: user);
+    unlockStreak: preset.unlockStreak,
+    id: preset.name,
+    best: ref.watch(bestStreakProvider),
+    user: user,
+  );
   return unlocked ? preset : ThemePreset.ocean;
 });
 
-/// Kullanıcının seçtiği dil. Seçilmediyse Türkçe (hedef kitle ve psikolojik
-/// içerik metinleri Türkçe; karışık dilli ekranı önler).
+/// Giriş yapmadan önce karşılama ekranında seçilen dil (hesap açılınca kaydedilir).
+final languageOverrideProvider = NotifierProvider<LanguageOverride, String?>(LanguageOverride.new);
+
+class LanguageOverride extends Notifier<String?> {
+  @override
+  String? build() => null;
+  void select(String? code) => state = code;
+}
+
+/// Uygulama dili: kullanıcının seçimi → karşılama ekranındaki seçim →
+/// telefonun dili (destekleniyorsa) → İngilizce. Tüm içerik 5 dilde.
 final localeProvider = Provider<Locale>((ref) {
-  final code = ref.watch(appUserProvider).value?.language;
-  return Locale(kLanguageCodes.contains(code) ? code! : 'tr');
+  final code = ref.watch(appUserProvider).value?.language ?? ref.watch(languageOverrideProvider) ?? deviceLanguage();
+  return Locale(kLanguageCodes.contains(code) ? code : 'en');
 });
 
 const kLanguageCodes = {'tr', 'en', 'es', 'zh', 'hi'};
+
+/// Destek hatları için ülke: kullanıcının seçimi → telefonun bölgesi → dilden tahmin.
+final countryProvider = Provider<CountrySupport>((ref) {
+  final chosen = ref.watch(appUserProvider).value?.country;
+  return countrySupportFor(
+    chosen ?? guessCountry(PlatformDispatcher.instance.locale.countryCode, ref.watch(localeProvider).languageCode),
+  );
+});
+
+/// Telefonun dili Haven'ın desteklediği dillerdense o, değilse İngilizce.
+String deviceLanguage() {
+  final c = PlatformDispatcher.instance.locale.languageCode;
+  return kLanguageCodes.contains(c) ? c : 'en';
+}
 
 /// Kendine yazdığın özel notlar (günlük). Kimseyle paylaşılmaz.
 final journalProvider = StreamProvider<List<JournalEntry>>((ref) {
@@ -125,13 +154,16 @@ final friendsFeedProvider = StreamProvider<List<CommunityNote>>((ref) {
 
 /// Bir kullanıcının profil sayfasındaki paylaşımları.
 final userNotesProvider = StreamProvider.family<List<CommunityNote>, String>(
-    (ref, uid) => ref.watch(communityRepositoryProvider).watchAuthorsFeed([uid]));
+  (ref, uid) => ref.watch(communityRepositoryProvider).watchAuthorsFeed([uid]),
+);
 
 final profileProvider = StreamProvider.family<PublicProfile?, String>(
-    (ref, uid) => ref.watch(communityRepositoryProvider).watchProfile(uid));
+  (ref, uid) => ref.watch(communityRepositoryProvider).watchProfile(uid),
+);
 
 final repliesProvider = StreamProvider.family<List<NoteReply>, String>(
-    (ref, noteId) => ref.watch(communityRepositoryProvider).watchReplies(noteId));
+  (ref, noteId) => ref.watch(communityRepositoryProvider).watchReplies(noteId),
+);
 
 /// Kendi anonim gönderilerimin kimlikleri (silme menüsü için; yalnızca bende).
 final myAnonNoteIdsProvider = StreamProvider<Set<String>>((ref) {
@@ -142,11 +174,12 @@ final myAnonNoteIdsProvider = StreamProvider<Set<String>>((ref) {
 
 /// Okuyanın alanları: başkalarının paylaşımlarında bu alanlar için
 /// tetikleyici olabilecek ifadeler gizlenir (ContentModerator.maskFor).
-final readerCategoriesProvider = Provider<List<StruggleCategory>>((ref) =>
-    (ref.watch(appUserProvider).value?.categoryIds ?? const <String>[])
-        .map(categoryByName)
-        .whereType<StruggleCategory>()
-        .toList());
+final readerCategoriesProvider = Provider<List<StruggleCategory>>(
+  (ref) => (ref.watch(appUserProvider).value?.categoryIds ?? const <String>[])
+      .map(categoryByName)
+      .whereType<StruggleCategory>()
+      .toList(),
+);
 
 final friendIdsProvider = StreamProvider<List<String>>((ref) {
   final uid = ref.watch(uidProvider);
@@ -167,7 +200,8 @@ final inboxProvider = StreamProvider<List<InboxItem>>((ref) {
 });
 
 final unreadCountProvider = Provider<int>(
-    (ref) => (ref.watch(inboxProvider).value ?? const []).where((i) => !i.read).length);
+  (ref) => (ref.watch(inboxProvider).value ?? const []).where((i) => !i.read).length,
+);
 
 // ------------------------------------------------------------ gezinme
 class ShellIndex extends Notifier<int> {

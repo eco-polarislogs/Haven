@@ -37,10 +37,8 @@ class HavenRepository {
   final _lastTouch = <String, DateTime>{};
 
   DocumentReference<Map<String, dynamic>> _user(String uid) => _db.collection('users').doc(uid);
-  CollectionReference<Map<String, dynamic>> _struggles(String uid) =>
-      _user(uid).collection('struggles');
-  CollectionReference<Map<String, dynamic>> _checkins(String uid) =>
-      _user(uid).collection('checkins');
+  CollectionReference<Map<String, dynamic>> _struggles(String uid) => _user(uid).collection('struggles');
+  CollectionReference<Map<String, dynamic>> _checkins(String uid) => _user(uid).collection('checkins');
   CollectionReference<Map<String, dynamic>> _inbox(String uid) => _user(uid).collection('inbox');
 
   static final _merge = SetOptions(merge: true);
@@ -56,11 +54,11 @@ class HavenRepository {
   Stream<List<Struggle>> watchStruggles(String uid) => _struggles(uid)
       .where('active', isEqualTo: true)
       .snapshots()
-      .map((q) => q.docs
-          .map((d) => Struggle.fromMap(d.id, d.data()))
-          .whereType<Struggle>()
-          .toList()
-        ..sort((a, b) => kStruggleTypes.indexOf(a.type) - kStruggleTypes.indexOf(b.type)));
+      .map(
+        (q) =>
+            q.docs.map((d) => Struggle.fromMap(d.id, d.data())).whereType<Struggle>().toList()
+              ..sort((a, b) => kStruggleTypes.indexOf(a.type) - kStruggleTypes.indexOf(b.type)),
+      );
 
   Stream<MonthLog> watchMonth(String uid, String month) =>
       _checkins(uid).doc(month).snapshots().map((s) => MonthLog.fromMap(s.data()));
@@ -68,7 +66,8 @@ class HavenRepository {
   // ---------------------------------------------------------------- oturum
 
   /// Girişten hemen sonra çağrılır (internet zaten var).
-  Future<void> ensureUserDoc(User user) async {
+  /// [language]: karşılama ekranında seçilen ya da telefonun dili.
+  Future<void> ensureUserDoc(User user, {String? language}) async {
     final ref = _user(user.uid);
     final snap = await ref.get();
     if (snap.exists) {
@@ -79,7 +78,8 @@ class HavenRepository {
       'createdAt': FieldValue.serverTimestamp(),
       'lastActiveAt': FieldValue.serverTimestamp(),
       'utcOffsetMinutes': DateTime.now().timeZoneOffset.inMinutes,
-      'locale': 'tr',
+      'locale': language ?? 'tr',
+      'language': ?language,
       'struggleIds': <String>[],
       'categoryIds': <String>[],
       'notificationsEnabled': true,
@@ -96,10 +96,11 @@ class HavenRepository {
     final last = _lastTouch[uid];
     if (!force && last != null && now.difference(last).inMinutes < 15) return;
     _lastTouch[uid] = now;
-    _fireAndForget(_user(uid).set({
-      'lastActiveAt': FieldValue.serverTimestamp(),
-      'utcOffsetMinutes': now.timeZoneOffset.inMinutes,
-    }, _merge));
+    _fireAndForget(
+      _user(
+        uid,
+      ).set({'lastActiveAt': FieldValue.serverTimestamp(), 'utcOffsetMinutes': now.timeZoneOffset.inMinutes}, _merge),
+    );
   }
 
   // ---------------------------------------------------------------- kayıt
@@ -136,45 +137,38 @@ class HavenRepository {
   }
 
   void updateIdentity(String uid, {required String nickname, required int avatar, bool? anonymous}) =>
-      _fireAndForget(_user(uid).set({
-        'nickname': nickname,
-        'avatar': avatar,
-        'anonymous': ?anonymous,
-      }, _merge));
+      _fireAndForget(_user(uid).set({'nickname': nickname, 'avatar': avatar, 'anonymous': ?anonymous}, _merge));
 
-  void setAdsOptIn(String uid, bool value) =>
-      _fireAndForget(_user(uid).set({'adsOptIn': value}, _merge));
+  void setAdsOptIn(String uid, bool value) => _fireAndForget(_user(uid).set({'adsOptIn': value}, _merge));
 
-  void setLanguage(String uid, String? code) =>
-      _fireAndForget(_user(uid).set({'language': code}, _merge));
+  void setLanguage(String uid, String? code) => _fireAndForget(_user(uid).set({'language': code}, _merge));
+
+  void setCountry(String uid, String code) => _fireAndForget(_user(uid).set({'country': code}, _merge));
 
   // ---------------------------------------------------------------- özel notlar (günlük)
 
   CollectionReference<Map<String, dynamic>> _journal(String uid) => _user(uid).collection('journal');
 
-  Stream<List<JournalEntry>> watchJournal(String uid, {int limit = 30}) => _journal(uid)
-      .orderBy('createdAt', descending: true)
-      .limit(limit)
-      .snapshots()
-      .map((q) => q.docs.map(JournalEntry.fromDoc).toList());
+  Stream<List<JournalEntry>> watchJournal(String uid, {int limit = 30}) =>
+      _journal(uid)
+          .orderBy('createdAt', descending: true)
+          .limit(limit)
+          .snapshots()
+          .map((q) => q.docs.map(JournalEntry.fromDoc).toList());
 
-  void addJournal(String uid, String text) => _fireAndForget(_journal(uid).add({
-        'text': text.trim(),
-        'createdAt': FieldValue.serverTimestamp(),
-      }));
+  void addJournal(String uid, String text) =>
+      _fireAndForget(_journal(uid).add({'text': text.trim(), 'createdAt': FieldValue.serverTimestamp()}));
 
   void deleteJournal(String uid, String id) => _fireAndForget(_journal(uid).doc(id).delete());
 
-  void setCommunityJoined(String uid, bool value) =>
-      _fireAndForget(_user(uid).set({'communityJoined': value}, _merge));
+  void setCommunityJoined(String uid, bool value) => _fireAndForget(_user(uid).set({'communityJoined': value}, _merge));
 
   Map<String, Object> _selectionFields(Set<String> selected) => {
-        'struggleIds': selected.toList(),
-        // Cloud Function ve topluluk kuralları alt koleksiyon okumadan
-        // kategoriyi bilsin diye (denormalize).
-        'categoryIds':
-            selected.map((id) => struggleTypeById(id)!.category.name).toSet().toList(),
-      };
+    'struggleIds': selected.toList(),
+    // Cloud Function ve topluluk kuralları alt koleksiyon okumadan
+    // kategoriyi bilsin diye (denormalize).
+    'categoryIds': selected.map((id) => struggleTypeById(id)!.category.name).toSet().toList(),
+  };
 
   void _writeStruggleChanges(WriteBatch batch, String uid, Set<String> selected, Set<String> previous) {
     for (final id in selected.difference(previous)) {
@@ -188,10 +182,7 @@ class HavenRepository {
     }
     for (final id in previous.difference(selected)) {
       // Silinmez, pasifleşir: geri eklenirse geçmiş korunur.
-      batch.set(_struggles(uid).doc(id), {
-        'active': false,
-        'updatedAt': FieldValue.serverTimestamp(),
-      }, _merge);
+      batch.set(_struggles(uid).doc(id), {'active': false, 'updatedAt': FieldValue.serverTimestamp()}, _merge);
     }
   }
 
@@ -199,8 +190,7 @@ class HavenRepository {
 
   /// Tek batch: ay dokümanı + alanın seri sayaçları + günlük seri.
   /// Offline'da kuyruğa alınır. `null` → bu alan için bugün zaten kayıt var.
-  CheckInOutcome? checkIn(String uid, Struggle struggle, CheckInResult result,
-      {required DailyStreak daily}) {
+  CheckInOutcome? checkIn(String uid, Struggle struggle, CheckInResult result, {required DailyStreak daily}) {
     final now = DateTime.now();
     final today = dayKey(now);
     final next = applyCheckIn(struggle.streak, today, result);
@@ -237,29 +227,22 @@ class HavenRepository {
     _fireAndForget(batch.commit());
 
     final last = struggle.streak.lastCheckInDay;
-    return CheckInOutcome(next,
-        gapDays: last == null ? null : daysBetween(last, today), daily: nextDaily);
+    return CheckInOutcome(next, gapDays: last == null ? null : daysBetween(last, today), daily: nextDaily);
   }
 
   // ---------------------------------------------------------------- bildirim kutusu
 
   /// Kullanıcının KENDİ bildirim kutusuna olay ekler (giriş, çıkış, seri…).
-  void addInbox(String uid, InboxType type, {int? value}) =>
-      _fireAndForget(_inbox(uid).add({
-        'type': type.wire,
-        'createdAt': FieldValue.serverTimestamp(),
-        'read': false,
-        'value': ?value,
-      }));
+  void addInbox(String uid, InboxType type, {int? value}) => _fireAndForget(
+    _inbox(uid).add({'type': type.wire, 'createdAt': FieldValue.serverTimestamp(), 'read': false, 'value': ?value}),
+  );
 
   /// Çıkıştan hemen önce: yazmanın sunucuya ulaşmasını kısa süre bekle.
   Future<void> addInboxAndWait(String uid, InboxType type) async {
     try {
-      await _inbox(uid).add({
-        'type': type.wire,
-        'createdAt': FieldValue.serverTimestamp(),
-        'read': false,
-      }).timeout(const Duration(seconds: 3));
+      await _inbox(uid)
+          .add({'type': type.wire, 'createdAt': FieldValue.serverTimestamp(), 'read': false})
+          .timeout(const Duration(seconds: 3));
     } catch (_) {}
   }
 
@@ -268,11 +251,15 @@ class HavenRepository {
 
   // ---------------------------------------------------------------- ayarlar
 
-  void addFcmFid(String uid, String fid) =>
-      _fireAndForget(_user(uid).set({'fcmFids': FieldValue.arrayUnion([fid])}, _merge));
+  void addFcmFid(String uid, String fid) => _fireAndForget(
+    _user(uid).set({
+      'fcmFids': FieldValue.arrayUnion([fid]),
+    }, _merge),
+  );
 
-  Future<void> removeFcmFid(String uid, String fid) =>
-      _user(uid).update({'fcmFids': FieldValue.arrayRemove([fid])});
+  Future<void> removeFcmFid(String uid, String fid) => _user(uid).update({
+    'fcmFids': FieldValue.arrayRemove([fid]),
+  });
 
   void setNotificationsEnabled(String uid, bool value) =>
       _fireAndForget(_user(uid).set({'notificationsEnabled': value}, _merge));
@@ -280,22 +267,25 @@ class HavenRepository {
   void setAnalyticsEnabled(String uid, bool value) =>
       _fireAndForget(_user(uid).set({'analyticsEnabled': value}, _merge));
 
-  void setTheme(String uid, String themeId) =>
-      _fireAndForget(_user(uid).set({'themeId': themeId}, _merge));
+  void setTheme(String uid, String themeId) => _fireAndForget(_user(uid).set({'themeId': themeId}, _merge));
 
   /// Ödüllü reklam sonrası. MVP notu: ödülü istemci yazıyor (sadece bir tema).
-  void unlockTheme(String uid, String themeId) => _fireAndForget(_user(uid).set({
-        'unlocks': {themeId: FieldValue.serverTimestamp()},
-        'themeId': themeId,
-      }, _merge));
+  void unlockTheme(String uid, String themeId) => _fireAndForget(
+    _user(uid).set({
+      'unlocks': {themeId: FieldValue.serverTimestamp()},
+      'themeId': themeId,
+    }, _merge),
+  );
 
   /// Hediye (tema/avatar) reklamla açıldığında. Seriyle açılanlar yazılmaz;
   /// en iyi seriden hesaplanır.
-  void unlockGift(String uid, String id) =>
-      _fireAndForget(_user(uid).set({'unlocks': {id: FieldValue.serverTimestamp()}}, _merge));
+  void unlockGift(String uid, String id) => _fireAndForget(
+    _user(uid).set({
+      'unlocks': {id: FieldValue.serverTimestamp()},
+    }, _merge),
+  );
 
-  void unlockDailyQuote(String uid, String day) =>
-      _fireAndForget(_user(uid).set({'quoteUnlockedDay': day}, _merge));
+  void unlockDailyQuote(String uid, String day) => _fireAndForget(_user(uid).set({'quoteUnlockedDay': day}, _merge));
 
   // ---------------------------------------------------------------- hesap silme
 
@@ -326,8 +316,7 @@ class HavenRepository {
     await unfriend.commit();
 
     // Başkalarının gönderilerine yazdığım yanıtlar (sayaçla birlikte).
-    final replies =
-        await _db.collectionGroup('replies').where('authorUid', isEqualTo: uid).get(server);
+    final replies = await _db.collectionGroup('replies').where('authorUid', isEqualTo: uid).get(server);
     for (final r in replies.docs) {
       final note = r.reference.parent.parent;
       try {

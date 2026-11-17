@@ -6,6 +6,7 @@ import '../../core/widgets/avatar_badge.dart';
 import '../../data/models/community.dart';
 import '../../l10n/l10n.dart';
 import '../../providers.dart';
+import '../../l10n/tx.dart';
 
 /// Bildirim merkezi: arkadaş ekleme, cesaret notları, destekler, seriler,
 /// giriş/çıkış olayları — hepsi tek yerde.
@@ -43,21 +44,26 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
       ),
       body: items.when(
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (e, _) => const Center(child: Text('Bildirimlere şu an ulaşamadık.')),
+        error: (e, _) => Center(child: Text(tx('Bildirimlere şu an ulaşamadık.'))),
         data: (list) {
           if (list.isEmpty) {
             return Center(
               child: Padding(
                 padding: const EdgeInsets.all(32),
-                child: Column(mainAxisSize: MainAxisSize.min, children: [
-                  Icon(Icons.notifications_none_rounded,
-                      size: 56, color: Theme.of(context).colorScheme.outline),
-                  const SizedBox(height: 12),
-                  const Text('Henüz bildirim yok.', textAlign: TextAlign.center),
-                  const SizedBox(height: 4),
-                  Text('Arkadaşların seni eklediğinde ya da notuna destek verdiğinde burada görünecek.',
-                      textAlign: TextAlign.center, style: Theme.of(context).textTheme.bodySmall),
-                ]),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(Icons.notifications_none_rounded, size: 56, color: Theme.of(context).colorScheme.outline),
+                    const SizedBox(height: 12),
+                    Text(tx('Henüz bildirim yok.'), textAlign: TextAlign.center),
+                    const SizedBox(height: 4),
+                    Text(
+                      tx('Arkadaşların seni eklediğinde ya da notuna destek verdiğinde burada görünecek.'),
+                      textAlign: TextAlign.center,
+                      style: Theme.of(context).textTheme.bodySmall,
+                    ),
+                  ],
+                ),
               ),
             );
           }
@@ -99,8 +105,10 @@ class _InboxTile extends StatelessWidget {
               backgroundColor: scheme.primaryContainer,
               child: Icon(item.icon, color: scheme.primary),
             ),
-      title: Text(item.title,
-          style: text.bodyLarge?.copyWith(fontWeight: item.read ? FontWeight.w400 : FontWeight.w600)),
+      title: Text(
+        item.title,
+        style: text.bodyLarge?.copyWith(fontWeight: item.read ? FontWeight.w400 : FontWeight.w600),
+      ),
       subtitle: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -114,7 +122,8 @@ class _InboxTile extends StatelessWidget {
           : Container(
               width: 10,
               height: 10,
-              decoration: BoxDecoration(color: scheme.primary, shape: BoxShape.circle)),
+              decoration: BoxDecoration(color: scheme.primary, shape: BoxShape.circle),
+            ),
     );
   }
 }

@@ -26,5 +26,4 @@ DateTime parseDayKey(String key) {
 }
 
 /// `from` ile `to` arasındaki takvim günü farkı (dün → bugün = 1).
-int daysBetween(String from, String to) =>
-    parseDayKey(to).difference(parseDayKey(from)).inDays;
+int daysBetween(String from, String to) => parseDayKey(to).difference(parseDayKey(from)).inDays;

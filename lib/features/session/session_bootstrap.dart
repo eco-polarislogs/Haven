@@ -54,10 +54,12 @@ class _SessionBootstrapState extends ConsumerState<SessionBootstrap> with Widget
   void _rescheduleNudges() {
     final user = ref.read(appUserProvider).value;
     if (user == null) return;
-    unawaited(LocalNotifier.scheduleGentleNudges(
-      enabled: user.notificationsEnabled,
-      checkedInToday: user.daily.lastDay == todayKey(),
-    ));
+    unawaited(
+      LocalNotifier.scheduleGentleNudges(
+        enabled: user.notificationsEnabled,
+        checkedInToday: user.daily.lastDay == todayKey(),
+      ),
+    );
   }
 
   void _onInbox(List<InboxItem>? items) {

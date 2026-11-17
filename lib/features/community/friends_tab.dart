@@ -7,6 +7,7 @@ import '../../core/utils/day_key.dart';
 import '../../core/widgets/avatar_badge.dart';
 import '../../data/models/community.dart';
 import '../../providers.dart';
+import '../../l10n/tx.dart';
 
 /// Duolingo tarzı seri arkadaşları. Sıralama/lider tablosu YOK: kıyas,
 /// yetersizlik hissi doğurabilir. Sadece birbirini görmek ve cesaret vermek.
@@ -25,16 +26,16 @@ class FriendsTab extends ConsumerWidget {
       builder: (ctx) {
         final c = TextEditingController();
         return AlertDialog(
-          title: const Text('Arkadaş ekle'),
+          title: Text(tx('Arkadaş ekle')),
           content: TextField(
             controller: c,
             autofocus: true,
             textCapitalization: TextCapitalization.characters,
             maxLength: 6,
-            decoration: const InputDecoration(labelText: 'Arkadaş kodu', hintText: 'ör. K7M2QX'),
+            decoration: InputDecoration(labelText: tx('Arkadaş kodu'), hintText: tx('ör. K7M2QX')),
           ),
           actions: [
-            TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Vazgeç')),
+            TextButton(onPressed: () => Navigator.pop(ctx), child: Text(tx('Vazgeç'))),
             FilledButton(onPressed: () => Navigator.pop(ctx, c.text), child: const Text('Ekle')),
           ],
         );
@@ -44,19 +45,23 @@ class FriendsTab extends ConsumerWidget {
     try {
       final other = await repo.findByFriendCode(code);
       if (other == null) {
-        messenger.showSnackBar(const SnackBar(content: Text('Bu koda sahip biri bulunamadı.')));
+        messenger.showSnackBar(SnackBar(content: Text(tx('Bu koda sahip biri bulunamadı.'))));
       } else if (other.uid == me.uid) {
-        messenger.showSnackBar(const SnackBar(content: Text('Bu senin kendi kodun. 🙂')));
+        messenger.showSnackBar(SnackBar(content: Text(tx('Bu senin kendi kodun. 🙂'))));
       } else if (friendIds.contains(other.uid)) {
-        messenger.showSnackBar(SnackBar(content: Text('${other.nickname} zaten arkadaşın.')));
+        messenger.showSnackBar(
+          SnackBar(content: Text(tx('{nickname} zaten arkadaşın.', {'nickname': other.nickname}))),
+        );
       } else {
         await repo.addFriend(me, other);
         analytics.friendAdded();
-        messenger.showSnackBar(SnackBar(content: Text('${other.nickname} artık arkadaşın.')));
+        messenger.showSnackBar(
+          SnackBar(content: Text(tx('{nickname} artık arkadaşın.', {'nickname': other.nickname}))),
+        );
       }
     } catch (e) {
       messenger.showSnackBar(
-        const SnackBar(content: Text('Arkadaş eklenemedi. İnternet bağlantını kontrol eder misin?')),
+        SnackBar(content: Text(tx('Arkadaş eklenemedi. İnternet bağlantını kontrol eder misin?'))),
       );
     }
   }
@@ -75,12 +80,15 @@ class FriendsTab extends ConsumerWidget {
           children: [
             Padding(
               padding: const EdgeInsets.fromLTRB(24, 0, 24, 8),
-              child: Text('${friend.nickname} için bir cesaret notu seç', style: Theme.of(ctx).textTheme.titleMedium),
+              child: Text(
+                tx('{nickname} için bir cesaret notu seç', {'nickname': friend.nickname}),
+                style: Theme.of(ctx).textTheme.titleMedium,
+              ),
             ),
             for (var i = 0; i < kKudosMessages.length; i++)
               ListTile(
                 leading: const Icon(Icons.favorite_border_rounded),
-                title: Text(kKudosMessages[i]),
+                title: Text(tx(kKudosMessages[i])),
                 onTap: () => Navigator.pop(ctx, i),
               ),
           ],
@@ -91,9 +99,11 @@ class FriendsTab extends ConsumerWidget {
     try {
       await repo.sendKudos(me, friend.uid, id);
       analytics.kudosSent();
-      messenger.showSnackBar(SnackBar(content: Text('Notun ${friend.nickname} için gönderildi.')));
+      messenger.showSnackBar(
+        SnackBar(content: Text(tx('Notun {nickname} için gönderildi.', {'nickname': friend.nickname}))),
+      );
     } catch (_) {
-      messenger.showSnackBar(const SnackBar(content: Text('Not şu an gönderilemedi.')));
+      messenger.showSnackBar(SnackBar(content: Text(tx('Not şu an gönderilemedi.'))));
     }
   }
 
@@ -103,10 +113,10 @@ class FriendsTab extends ConsumerWidget {
     final ok = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: Text('${friend.nickname} arkadaşlarından çıkarılsın mı?'),
+        title: Text(tx('{nickname} arkadaşlarından çıkarılsın mı?', {'nickname': friend.nickname})),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Vazgeç')),
-          FilledButton(onPressed: () => Navigator.pop(ctx, true), child: const Text('Çıkar')),
+          TextButton(onPressed: () => Navigator.pop(ctx, false), child: Text(tx('Vazgeç'))),
+          FilledButton(onPressed: () => Navigator.pop(ctx, true), child: Text(tx('Çıkar'))),
         ],
       ),
     );
@@ -131,7 +141,7 @@ class FriendsTab extends ConsumerWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('Arkadaş kodun', style: t.labelLarge),
+                Text(tx('Arkadaş kodun'), style: t.labelLarge),
                 const SizedBox(height: 4),
                 Row(
                   children: [
@@ -147,7 +157,7 @@ class FriendsTab extends ConsumerWidget {
                           : () {
                               Clipboard.setData(ClipboardData(text: me.friendCode));
                               ScaffoldMessenger.of(context)
-                                  .showSnackBar(const SnackBar(content: Text('Arkadaş kodun kopyalandı.')));
+                                  .showSnackBar(SnackBar(content: Text(tx('Arkadaş kodun kopyalandı.'))));
                             },
                       icon: const Icon(Icons.copy_rounded),
                     ),
@@ -155,15 +165,16 @@ class FriendsTab extends ConsumerWidget {
                 ),
                 const SizedBox(height: 6),
                 Text(
-                  'Bu kodu güvendiğin kişilerle paylaş. Arkadaşlar birbirinin serisini görür ve '
-                  'hazır cesaret notları gönderebilir.',
+                  tx(
+                    'Bu kodu güvendiğin kişilerle paylaş. Arkadaşlar birbirinin serisini görür ve hazır cesaret notları gönderebilir.',
+                  ),
                   style: t.bodySmall,
                 ),
                 const SizedBox(height: 12),
                 FilledButton.icon(
                   onPressed: me == null ? null : () => _addFriend(context, ref),
                   icon: const Icon(Icons.person_add_alt_1_outlined),
-                  label: const Text('Arkadaş ekle'),
+                  label: Text(tx('Arkadaş ekle')),
                 ),
               ],
             ),
@@ -177,9 +188,9 @@ class FriendsTab extends ConsumerWidget {
               children: [
                 Icon(Icons.people_outline_rounded, size: 48, color: scheme.primary),
                 const SizedBox(height: 8),
-                Text('Henüz arkadaşın yok', style: t.titleMedium),
+                Text(tx('Henüz arkadaşın yok'), style: t.titleMedium),
                 const SizedBox(height: 4),
-                Text('Yolculuğu birlikte yürümek daha kolay.', style: t.bodyMedium),
+                Text(tx('Yolculuğu birlikte yürümek daha kolay.'), style: t.bodyMedium),
               ],
             ),
           )
@@ -206,13 +217,13 @@ class FriendsTab extends ConsumerWidget {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       IconButton(
-                        tooltip: 'Cesaret gönder',
+                        tooltip: tx('Cesaret gönder'),
                         icon: Icon(Icons.favorite_border_rounded, color: scheme.primary),
                         onPressed: () => _kudos(context, ref, f),
                       ),
                       PopupMenuButton<String>(
                         onSelected: (_) => _remove(context, ref, f),
-                        itemBuilder: (_) => const [PopupMenuItem(value: 'remove', child: Text('Arkadaşlardan çıkar'))],
+                        itemBuilder: (_) => [PopupMenuItem(value: 'remove', child: Text(tx('Arkadaşlardan çıkar')))],
                       ),
                     ],
                   ),

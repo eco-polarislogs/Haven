@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../core/constants/struggle_catalog.dart';
 import '../../core/theme/app_theme.dart';
+import '../../l10n/tx.dart';
 
 /// Kategori kartları içinde seçilebilir alanlar. Kayıtta ve düzenlemede ortak.
 class StruggleSelector extends StatelessWidget {
@@ -41,8 +42,7 @@ class _CategoryCard extends StatelessWidget {
       color: categoryCardColor(category, scheme),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(20),
-        side: BorderSide(
-            color: anySelected ? accent.withValues(alpha: 0.6) : Colors.transparent, width: 1.5),
+        side: BorderSide(color: anySelected ? accent.withValues(alpha: 0.6) : Colors.transparent, width: 1.5),
       ),
       child: Padding(
         padding: const EdgeInsets.fromLTRB(16, 12, 8, 14),
@@ -57,14 +57,13 @@ class _CategoryCard extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(category.title,
-                          style: text.titleSmall?.copyWith(fontWeight: FontWeight.w700)),
+                      Text(category.title, style: text.titleSmall?.copyWith(fontWeight: FontWeight.w700)),
                       Text(category.subtitle, style: text.bodySmall),
                     ],
                   ),
                 ),
                 IconButton(
-                  tooltip: 'Bu alan hakkında',
+                  tooltip: tx('Bu alan hakkında'),
                   icon: Icon(Icons.info_outline_rounded, color: accent),
                   onPressed: () => showCategoryInfo(context, category),
                 ),
@@ -127,11 +126,13 @@ Future<void> showCategoryInfo(BuildContext context, StruggleCategory c) {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Row(children: [
-                CategoryIcon(category: c, size: 44),
-                const SizedBox(width: 12),
-                Expanded(child: Text(c.title, style: text.titleLarge)),
-              ]),
+              Row(
+                children: [
+                  CategoryIcon(category: c, size: 44),
+                  const SizedBox(width: 12),
+                  Expanded(child: Text(c.title, style: text.titleLarge)),
+                ],
+              ),
               const SizedBox(height: 16),
               Text(c.info, style: text.bodyLarge),
               if (c.fact != null) ...[
@@ -142,19 +143,18 @@ Future<void> showCategoryInfo(BuildContext context, StruggleCategory c) {
                     color: categoryAccent(c).withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(16),
                   ),
-                  child: Row(children: [
-                    Icon(Icons.public_rounded, color: categoryAccent(c)),
-                    const SizedBox(width: 10),
-                    Expanded(child: Text(c.fact!, style: text.bodyMedium)),
-                  ]),
+                  child: Row(
+                    children: [
+                      Icon(Icons.public_rounded, color: categoryAccent(c)),
+                      const SizedBox(width: 10),
+                      Expanded(child: Text(c.fact!, style: text.bodyMedium)),
+                    ],
+                  ),
                 ),
               ],
-              if (c.source != null) ...[
-                const SizedBox(height: 10),
-                Text('Kaynak: ${c.source}', style: text.bodySmall),
-              ],
+              if (c.source != null) ...[const SizedBox(height: 10), Text('Kaynak: ${c.source}', style: text.bodySmall)],
               const SizedBox(height: 10),
-              Text('Bu bilgiler tanı koymak için değildir.', style: text.bodySmall),
+              Text(tx('Bu bilgiler tanı koymak için değildir.'), style: text.bodySmall),
             ],
           ),
         ),

@@ -11,7 +11,9 @@ import '../../data/models/community.dart';
 import '../../providers.dart';
 import '../support/hard_day_sheet.dart';
 import 'post_card.dart';
+import 'translatable_text.dart';
 import 'user_profile_screen.dart';
+import '../../l10n/tx.dart';
 
 /// Gönderi + yanıtlar. Yanıtlar, gönderinin çemberine özel tetikleyici
 /// kelimeler dahil aynı denetimden geçer; kriz ifadesi paylaşılmaz, destek
@@ -63,11 +65,11 @@ class _PostDetailScreenState extends ConsumerState<PostDetailScreen> {
     } on FirebaseException catch (e) {
       setState(
         () => _problem = e.code == 'permission-denied'
-            ? 'Bu yanıt topluluk kurallarına takıldı. Daha yumuşak bir ifadeyle tekrar dener misin?'
-            : 'Yanıt şu an gönderilemedi.',
+            ? tx('Bu yanıt topluluk kurallarına takıldı. Daha yumuşak bir ifadeyle tekrar dener misin?')
+            : tx('Yanıt şu an gönderilemedi.'),
       );
     } catch (_) {
-      setState(() => _problem = 'Yanıt şu an gönderilemedi.');
+      setState(() => _problem = tx('Yanıt şu an gönderilemedi.'));
     } finally {
       if (mounted) setState(() => _sending = false);
     }
@@ -90,7 +92,7 @@ class _PostDetailScreenState extends ConsumerState<PostDetailScreen> {
     final myProfile = ref.watch(myProfileProvider).value;
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Paylaşım')),
+      appBar: AppBar(title: Text(tx('Paylaşım'))),
       body: Column(
         children: [
           Expanded(
@@ -101,7 +103,7 @@ class _PostDetailScreenState extends ConsumerState<PostDetailScreen> {
                 Padding(
                   padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
                   child: Text(
-                    replies.isEmpty ? 'Henüz yanıt yok. İlk yanıtı sen yazabilirsin.' : 'Yanıtlar',
+                    replies.isEmpty ? tx('Henüz yanıt yok. İlk yanıtı sen yazabilirsin.') : tx('Yanıtlar'),
                     style: t.labelLarge?.copyWith(color: scheme.outline),
                   ),
                 ),
@@ -130,21 +132,10 @@ class _PostDetailScreenState extends ConsumerState<PostDetailScreen> {
                         ],
                       ),
                     ),
-                    subtitle: Builder(
-                      builder: (context) {
-                        final m = ContentModerator.maskFor(r.text, ref.watch(readerCategoriesProvider));
-                        return Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(m.text, style: t.bodyMedium),
-                            if (m.hidden > 0) const HiddenWordsNote(),
-                          ],
-                        );
-                      },
-                    ),
+                    subtitle: TranslatableText(text: r.text, lang: r.lang, style: t.bodyMedium),
                     trailing: r.authorUid == uid
                         ? IconButton(
-                            tooltip: 'Sil',
+                            tooltip: tx('Sil'),
                             icon: const Icon(Icons.delete_outline_rounded, size: 20),
                             onPressed: () => ref.read(communityRepositoryProvider).deleteReply(widget.note.id, r.id),
                           )
@@ -187,15 +178,15 @@ class _PostDetailScreenState extends ConsumerState<PostDetailScreen> {
                       onChanged: (_) {
                         if (_problem != null) setState(() => _problem = null);
                       },
-                      decoration: const InputDecoration(
-                        hintText: 'Destekleyici bir yanıt yaz…',
+                      decoration: InputDecoration(
+                        hintText: tx('Destekleyici bir yanıt yaz…'),
                         counterText: '',
                         isDense: true,
                       ),
                     ),
                   ),
                   IconButton.filled(
-                    tooltip: 'Gönder',
+                    tooltip: tx('Gönder'),
                     onPressed: (_sending || myProfile == null) ? null : _send,
                     icon: const Icon(Icons.send_rounded),
                   ),

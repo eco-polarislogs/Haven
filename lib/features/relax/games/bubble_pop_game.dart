@@ -7,6 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../data/services/analytics_service.dart';
 import '../../../providers.dart';
+import '../../../l10n/tx.dart';
 
 /// Baloncuk patlat: yavaşça yükselen baloncuklara dokun. Süre yok, kaybetmek
 /// yok. Ellere güvenli bir uğraş (saç/deri yolma dürtüsü anları için).
@@ -33,7 +34,11 @@ class _Pop {
 
 class _BubblePopGameState extends ConsumerState<BubblePopGame> with SingleTickerProviderStateMixin {
   static const _colors = [
-    Color(0xFF2B6B73), Color(0xFF5B7DB1), Color(0xFF3E8E9B), Color(0xFFE3A64F), Color(0xFF6B7F5E),
+    Color(0xFF2B6B73),
+    Color(0xFF5B7DB1),
+    Color(0xFF3E8E9B),
+    Color(0xFFE3A64F),
+    Color(0xFF6B7F5E),
   ];
 
   final _rand = Random();
@@ -114,26 +119,26 @@ class _BubblePopGameState extends ConsumerState<BubblePopGame> with SingleTicker
         children: [
           Padding(
             padding: const EdgeInsets.fromLTRB(20, 4, 20, 8),
-            child: Row(children: [
-              Expanded(
-                child: Text('Acele yok, kaybetmek yok. Sadece dokun ve nefesini izle.',
-                    style: t.bodyMedium),
-              ),
-              Chip(avatar: const Icon(Icons.bubble_chart_outlined, size: 18), label: Text('$_popped')),
-            ]),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Text(tx('Acele yok, kaybetmek yok. Sadece dokun ve nefesini izle.'), style: t.bodyMedium),
+                ),
+                Chip(avatar: const Icon(Icons.bubble_chart_outlined, size: 18), label: Text('$_popped')),
+              ],
+            ),
           ),
           Expanded(
-            child: LayoutBuilder(builder: (context, c) {
-              _size = c.biggest;
-              return GestureDetector(
-                behavior: HitTestBehavior.opaque,
-                onTapDown: (d) => _tap(d.localPosition),
-                child: CustomPaint(
-                  size: Size.infinite,
-                  painter: _BubblePainter(_bubbles, _pops),
-                ),
-              );
-            }),
+            child: LayoutBuilder(
+              builder: (context, c) {
+                _size = c.biggest;
+                return GestureDetector(
+                  behavior: HitTestBehavior.opaque,
+                  onTapDown: (d) => _tap(d.localPosition),
+                  child: CustomPaint(size: Size.infinite, painter: _BubblePainter(_bubbles, _pops)),
+                );
+              },
+            ),
           ),
         ],
       ),
@@ -152,24 +157,29 @@ class _BubblePainter extends CustomPainter {
       final c = Offset(b.x, b.y);
       canvas.drawCircle(c, b.r, Paint()..color = b.color.withValues(alpha: 0.18));
       canvas.drawCircle(
-          c,
-          b.r,
-          Paint()
-            ..style = PaintingStyle.stroke
-            ..strokeWidth = 2
-            ..color = b.color.withValues(alpha: 0.7));
-      canvas.drawCircle(c + Offset(-b.r * 0.35, -b.r * 0.35), b.r * 0.18,
-          Paint()..color = Colors.white.withValues(alpha: 0.7));
+        c,
+        b.r,
+        Paint()
+          ..style = PaintingStyle.stroke
+          ..strokeWidth = 2
+          ..color = b.color.withValues(alpha: 0.7),
+      );
+      canvas.drawCircle(
+        c + Offset(-b.r * 0.35, -b.r * 0.35),
+        b.r * 0.18,
+        Paint()..color = Colors.white.withValues(alpha: 0.7),
+      );
     }
     for (final p in pops) {
       final k = p.age / 0.4;
       canvas.drawCircle(
-          Offset(p.x, p.y),
-          p.r * (1 + k * 0.8),
-          Paint()
-            ..style = PaintingStyle.stroke
-            ..strokeWidth = 3 * (1 - k)
-            ..color = p.color.withValues(alpha: (1 - k) * 0.8));
+        Offset(p.x, p.y),
+        p.r * (1 + k * 0.8),
+        Paint()
+          ..style = PaintingStyle.stroke
+          ..strokeWidth = 3 * (1 - k)
+          ..color = p.color.withValues(alpha: (1 - k) * 0.8),
+      );
     }
   }
 

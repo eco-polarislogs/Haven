@@ -28,20 +28,16 @@ class AppLocalizationsHi extends AppLocalizations {
   String get welcomeTagline => 'आपका सुरक्षित ठिकाना।';
 
   @override
-  String get welcomeSubtitle =>
-      'बिना किसी आलोचना के, बिना जल्दबाज़ी के; अपनी गति से।';
+  String get welcomeSubtitle => 'बिना किसी आलोचना के, बिना जल्दबाज़ी के; अपनी गति से।';
 
   @override
-  String get welcomeFeaturePrivate =>
-      'सिर्फ़ आपके लिए एक निजी डायरी। आपकी प्रविष्टियाँ केवल आप देख सकते हैं।';
+  String get welcomeFeaturePrivate => 'सिर्फ़ आपके लिए एक निजी डायरी। आपकी प्रविष्टियाँ केवल आप देख सकते हैं।';
 
   @override
-  String get welcomeFeatureCommunity =>
-      'उसी राह पर चलने वालों से सौम्य समर्थन और स्ट्रीक साथी।';
+  String get welcomeFeatureCommunity => 'उसी राह पर चलने वालों से सौम्य समर्थन और स्ट्रीक साथी।';
 
   @override
-  String get welcomeFeatureCalm =>
-      'कठिन पलों के लिए श्वास, ग्राउंडिंग और छोटे शांत करने वाले खेल।';
+  String get welcomeFeatureCalm => 'कठिन पलों के लिए श्वास, ग्राउंडिंग और छोटे शांत करने वाले खेल।';
 
   @override
   String get welcomeGoogle => 'Google से साइन अप / साइन इन करें';
@@ -109,8 +105,7 @@ class AppLocalizationsHi extends AppLocalizations {
   String get areasTitle => 'आप किस चीज़ से जूझ रहे हैं?';
 
   @override
-  String get areasSubtitle =>
-      'आप एक से अधिक चुन सकते हैं। यह जानकारी केवल आपकी है और आप इसे कभी भी बदल सकते हैं।';
+  String get areasSubtitle => 'आप एक से अधिक चुन सकते हैं। यह जानकारी केवल आपकी है और आप इसे कभी भी बदल सकते हैं।';
 
   @override
   String get communityTitle => 'उसी राह के साथियों से मिलें';
@@ -129,8 +124,7 @@ class AppLocalizationsHi extends AppLocalizations {
   String get consentTitle => 'एक आख़िरी कदम';
 
   @override
-  String get consentSubtitle =>
-      'हम चाहते हैं कि आप जानें कि Haven कैसे काम करता है।';
+  String get consentSubtitle => 'हम चाहते हैं कि आप जानें कि Haven कैसे काम करता है।';
 
   @override
   String get greetingMorning => 'सुप्रभात';
@@ -156,8 +150,7 @@ class AppLocalizationsHi extends AppLocalizations {
   String get streakDoneToday => 'आज आपने दर्ज कर लिया, आपकी स्ट्रीक जारी है।';
 
   @override
-  String get streakNotDone =>
-      'स्ट्रीक जारी रखने के लिए आज दर्ज करें। एक दिन छूटने से स्ट्रीक नहीं टूटती।';
+  String get streakNotDone => 'स्ट्रीक जारी रखने के लिए आज दर्ज करें। एक दिन छूटने से स्ट्रीक नहीं टूटती।';
 
   @override
   String get quoteTitle => 'आज का विचार';
@@ -178,8 +171,7 @@ class AppLocalizationsHi extends AppLocalizations {
   String get addNote => 'नोट जोड़ें';
 
   @override
-  String get noNotesYet =>
-      'अभी कोई नोट नहीं है। ख़ुद के लिए एक दयालु नोट छोड़ें?';
+  String get noNotesYet => 'अभी कोई नोट नहीं है। ख़ुद के लिए एक दयालु नोट छोड़ें?';
 
   @override
   String get kindDays => 'दयालु दिन';
@@ -249,8 +241,7 @@ class AppLocalizationsHi extends AppLocalizations {
   String get emergencyTitle => 'आपातकालीन सहायता';
 
   @override
-  String get emergencyBody =>
-      'अगर आप सुरक्षित महसूस नहीं कर रहे, तो अभी कॉल करें। मदद माँगना हिम्मत का काम है।';
+  String get emergencyBody => 'अगर आप सुरक्षित महसूस नहीं कर रहे, तो अभी कॉल करें। मदद माँगना हिम्मत का काम है।';
 
   @override
   String get breathingTitle => 'साँस लें · रोकें · छोड़ें';
@@ -364,8 +355,7 @@ class AppLocalizationsHi extends AppLocalizations {
   String get journeyStart => 'आपकी यात्रा आज से शुरू हो सकती है।';
 
   @override
-  String get recordReached =>
-      'आपने अपना रिकॉर्ड छू लिया! कल नया रिकॉर्ड बन सकता है।';
+  String get recordReached => 'आपने अपना रिकॉर्ड छू लिया! कल नया रिकॉर्ड बन सकता है।';
 
   @override
   String comebackShort(int best) {

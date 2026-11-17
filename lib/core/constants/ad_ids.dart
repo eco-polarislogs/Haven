@@ -23,8 +23,14 @@ class AdIds {
   static const _androidBannerTest = 'ca-app-pub-3940256099942544/6300978111';
   static const _iosBannerTest = 'ca-app-pub-3940256099942544/2934735716';
 
-  static String get rewarded =>
-      _pick(_iosRewardedReal, _androidRewardedReal, _iosRewardedTest, _androidRewardedTest);
+  // TODO(Gün 8): AdMob → Reklam birimleri → Banner (ana sayfa kartı, 320x100)
+  static const _androidHomeReal = 'ca-app-pub-XXXXXXXXXXXXXXXX/XXXXXXXXXX';
+  static const _iosHomeReal = 'ca-app-pub-XXXXXXXXXXXXXXXX/XXXXXXXXXX';
+
+  /// Ana sayfadaki reklam kartı (test kimliği banner ile aynı).
+  static String get homeBanner => _pick(_iosHomeReal, _androidHomeReal, _iosBannerTest, _androidBannerTest);
+
+  static String get rewarded => _pick(_iosRewardedReal, _androidRewardedReal, _iosRewardedTest, _androidRewardedTest);
 
   /// Alt çubuğun hemen üstündeki ince banner (320x50).
   static String get banner => _pick(_iosBannerReal, _androidBannerReal, _iosBannerTest, _androidBannerTest);

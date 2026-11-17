@@ -5,9 +5,7 @@ class GentleLoading extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
-      body: Center(child: CircularProgressIndicator(strokeWidth: 3)),
-    );
+    return const Scaffold(body: Center(child: CircularProgressIndicator(strokeWidth: 3)));
   }
 }
 

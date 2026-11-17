@@ -16,6 +16,8 @@ library;
 
 import 'package:flutter/material.dart';
 
+import '../../l10n/tx.dart';
+
 enum StruggleCategory {
   bfrb(
     title: 'Bedene yönelik tekrarlayan davranışlar',
@@ -24,7 +26,8 @@ enum StruggleCategory {
     icon: Icons.back_hand_outlined,
     careLevel: 2,
     checkInQuestion: 'Bugün ellerine ve kendine nazik davranabildin mi?',
-    hardDayMessage: 'Zor bir gün müydü? Ellerinin yorulması senin suçun değil. '
+    hardDayMessage:
+        'Zor bir gün müydü? Ellerinin yorulması senin suçun değil. '
         'İstersen birlikte nefes alalım ya da ellerini kısa bir oyunla meşgul edelim.',
     calmTips: [
       'Ellerini meşgul et: bir stres topu, yumuşak bir kumaş ya da kalem tut.',
@@ -41,7 +44,8 @@ enum StruggleCategory {
       'Yavaş ilerlemek de ilerlemektir.',
     ],
     avoidWords: ['yoldum', 'kopardım', 'koparmak', 'kanattım', 'kabuk', 'sivilce sık'],
-    info: 'Saç yolma (trikotillomani), deri yolma (dermatillomani) ve benzeri '
+    info:
+        'Saç yolma (trikotillomani), deri yolma (dermatillomani) ve benzeri '
         'davranışlar DSM-5-TR\'de "obsesif-kompulsif ve ilişkili bozukluklar" '
         'arasında sınıflanır. Bir irade zayıflığı değildir; alışkanlık tersine '
         'çevirme eğitimi gibi terapilerle iyileşme mümkündür.',
@@ -54,7 +58,8 @@ enum StruggleCategory {
     icon: Icons.repeat_rounded,
     careLevel: 4,
     checkInQuestion: 'Bugün düşüncelerinle biraz mesafe koyabildin mi?',
-    hardDayMessage: 'Takıntılı düşünceler çok yorucu olabilir. Bugün zor geçtiyse '
+    hardDayMessage:
+        'Takıntılı düşünceler çok yorucu olabilir. Bugün zor geçtiyse '
         'bu senin hatan değil; düşüncelerin sen değilsin.',
     calmTips: [
       'Düşünceyi fark et ve adını koy: "Bu bir takıntılı düşünce."',
@@ -71,7 +76,8 @@ enum StruggleCategory {
       'Kusursuz olmak yok; yeterince iyi olmak var.',
     ],
     avoidWords: ['kontrol et', 'emin misin', 'tekrar bak', 'mikrop', 'pislik'],
-    info: 'Obsesif-kompulsif bozukluk (OKB); istenmeyen, tekrarlayan düşünceler ve '
+    info:
+        'Obsesif-kompulsif bozukluk (OKB); istenmeyen, tekrarlayan düşünceler ve '
         'bunları yatıştırmaya yönelik tekrarlayan davranışlarla seyreder. Bilişsel '
         'davranışçı terapi, özellikle maruz bırakma ve tepki önleme, etkili bir tedavidir.',
     fact: 'ABD\'de yetişkinlerin yaklaşık %1,2\'si son bir yılda OKB yaşamış.',
@@ -84,7 +90,8 @@ enum StruggleCategory {
     icon: Icons.air_rounded,
     careLevel: 4,
     checkInQuestion: 'Bugün kaygınla birlikte de olsa kendine alan açabildin mi?',
-    hardDayMessage: 'Kaygı bazen bedeni de yorar. Bugün zor geçtiyse, bu da geçecek. '
+    hardDayMessage:
+        'Kaygı bazen bedeni de yorar. Bugün zor geçtiyse, bu da geçecek. '
         'Birlikte yavaşça nefes alalım mı?',
     calmTips: [
       'Nefes verişini nefes alışından uzun tut: 4 saniye al, 6 saniye ver.',
@@ -101,7 +108,8 @@ enum StruggleCategory {
       'Kendine tanıdığın her mola, sinir sistemine bir hediye.',
     ],
     avoidWords: ['sakin ol', 'abartma', 'boşver', 'takma kafana', 'kalp krizi', 'ölüyorum'],
-    info: 'Kaygı bozuklukları dünyada en yaygın ruh sağlığı sorunlarıdır. Bilişsel '
+    info:
+        'Kaygı bozuklukları dünyada en yaygın ruh sağlığı sorunlarıdır. Bilişsel '
         'davranışçı terapi ve gerektiğinde ilaç tedavisiyle iyileşme mümkündür.',
     fact: 'Dünyada 359 milyon kişi bir kaygı bozukluğuyla yaşıyor (2021 verisi).',
     source: 'WHO, 2025',
@@ -113,7 +121,8 @@ enum StruggleCategory {
     icon: Icons.wb_twilight_rounded,
     careLevel: 8,
     checkInQuestion: 'Bugün kendine küçük de olsa bir iyilik yapabildin mi?',
-    hardDayMessage: 'Bazı günler yataktan kalkmak bile büyük bir iş. Bugün zor '
+    hardDayMessage:
+        'Bazı günler yataktan kalkmak bile büyük bir iş. Bugün zor '
         'geçtiyse, burada olman yeterli. Sadece bir sonraki küçük adıma bak.',
     calmTips: [
       'Bugünü tek bir küçük hedefe indir: bir bardak su, beş dakika pencere önü.',
@@ -131,7 +140,8 @@ enum StruggleCategory {
     ],
     // Emir kipleri tam kelime: "gülümsedim" gibi olumlu paylaşımlar engellenmesin.
     avoidWords: ['=neşelen', 'pozitif düşün', '=gülümse', 'dert etme', 'tembel', '=şükret', 'senden kötüleri'],
-    info: 'Depresyon tedavi edilebilir bir sağlık sorunudur; bir karakter kusuru '
+    info:
+        'Depresyon tedavi edilebilir bir sağlık sorunudur; bir karakter kusuru '
         'değildir. Psikoterapi ve gerektiğinde ilaç tedavisi etkilidir. Tükenmişlik '
         '(burnout) ICD-11\'de mesleki bir olgu olarak tanımlanır.',
     fact: 'Dünyada 280 milyon kişi depresyonla yaşıyor (2019 verisi).',
@@ -144,7 +154,8 @@ enum StruggleCategory {
     icon: Icons.accessibility_new_rounded,
     careLevel: 9,
     checkInQuestion: 'Bugün bedenine şefkatle yaklaşabildin mi?',
-    hardDayMessage: 'Bazı günler bedeninle ilişkin daha zor hissettirir; bu seni '
+    hardDayMessage:
+        'Bazı günler bedeninle ilişkin daha zor hissettirir; bu seni '
         'asla daha az değerli yapmaz. Bugün kendine biraz yumuşaklık göster.',
     calmTips: [
       'Kendine yüksek sesle nazik bir cümle söyle: "Elimden geleni yapıyorum."',
@@ -166,7 +177,8 @@ enum StruggleCategory {
       'diyet', 'zayıf', 'şişman', 'yemek', 'öğün',
       'porsiyon', 'kusma', 'kustum', 'aç kal', 'beden ölçü', '=bmi', 'gram', '=yağ', 'ağır',
     ],
-    info: 'Yeme bozuklukları ICD-11 ve DSM-5-TR\'de tanımlanmış, tedavi edilebilir '
+    info:
+        'Yeme bozuklukları ICD-11 ve DSM-5-TR\'de tanımlanmış, tedavi edilebilir '
         'ruh sağlığı sorunlarıdır. Erken destek iyileşmeyi kolaylaştırır; bir '
         'uzmanla konuşmak güçlü bir adımdır.',
   ),
@@ -177,7 +189,8 @@ enum StruggleCategory {
     icon: Icons.smartphone_outlined,
     careLevel: 3,
     checkInQuestion: 'Bugün zihnine nefes alacak bir alan açabildin mi?',
-    hardDayMessage: 'Zihnin çok yorulmuş olabilir. Tökezlemek yolun bir parçası; '
+    hardDayMessage:
+        'Zihnin çok yorulmuş olabilir. Tökezlemek yolun bir parçası; '
         'önemli olan yeniden denemek.',
     calmTips: [
       'Telefonu başka bir odaya bırakıp beş dakika yürü.',
@@ -194,7 +207,8 @@ enum StruggleCategory {
       'Gerçek dünyadaki küçük anlar da değerlidir.',
     ],
     avoidWords: ['kupon', 'bahis', '=oran', 'jackpot', 'kazandım', 'indirim', 'sepet', 'kampanya'],
-    info: 'Kumar bozukluğu ve oyun bozukluğu (ICD-11: 6C50 ve 6C51), Dünya Sağlık '
+    info:
+        'Kumar bozukluğu ve oyun bozukluğu (ICD-11: 6C50 ve 6C51), Dünya Sağlık '
         'Örgütü tarafından tanınan bağımlılık davranışlarıdır. Ekran ve alışveriş '
         'dürtüleri de benzer yöntemlerle ele alınabilir.',
     fact: 'Dünyada yetişkinlerin yaklaşık %1,2\'si kumar bozukluğu yaşıyor.',
@@ -207,7 +221,8 @@ enum StruggleCategory {
     icon: Icons.smoke_free_rounded,
     careLevel: 6,
     checkInQuestion: 'Bugün kendine iyi gelen seçimler yapabildin mi?',
-    hardDayMessage: 'Bugün zordu ve yine de buraya gelip bunu paylaştın. Bu çok '
+    hardDayMessage:
+        'Bugün zordu ve yine de buraya gelip bunu paylaştın. Bu çok '
         'değerli bir adım. Yarın yeni bir sayfa.',
     calmTips: [
       'İsteğin şiddeti genellikle dalga gibi yükselip azalır; bu nefesle zaman kazan.',
@@ -224,8 +239,21 @@ enum StruggleCategory {
       'Kendine güvenmeyi her gün biraz daha öğreniyorsun.',
     ],
     // "=" tam kelime: "bira" → "biraz", "rakı" → "rakip", "fırt" → "fırtına" engellenmesin.
-    avoidWords: ['içki', 'kadeh', '=bira', '=biralar', 'şarap', '=rakı', 'sarhoş', 'kafam iyi', '=fırt', 'duman', 'nefes çek'],
-    info: 'Madde kullanım bozuklukları tedavi edilebilir. Türkiye\'de Yeşilay '
+    avoidWords: [
+      'içki',
+      'kadeh',
+      '=bira',
+      '=biralar',
+      'şarap',
+      '=rakı',
+      'sarhoş',
+      'kafam iyi',
+      '=fırt',
+      'duman',
+      'nefes çek',
+    ],
+    info:
+        'Madde kullanım bozuklukları tedavi edilebilir. Türkiye\'de Yeşilay '
         'Danışma Hattı (115) ücretsiz ve gizli destek sunar.',
     fact: 'Dünyada 400 milyon kişi alkol kullanım bozukluğuyla yaşıyor.',
     source: 'WHO, 2024',
@@ -237,7 +265,8 @@ enum StruggleCategory {
     icon: Icons.shield_outlined,
     careLevel: 10,
     checkInQuestion: 'Bugün kendini güvende tutabildin mi?',
-    hardDayMessage: 'Bunu paylaştığın için teşekkür ederiz. Yalnız değilsin. '
+    hardDayMessage:
+        'Bunu paylaştığın için teşekkür ederiz. Yalnız değilsin. '
         'Şu an güvende hissetmiyorsan lütfen hemen 112\'yi ara.',
     calmTips: [
       'Elinde bir buz küpü tut: güçlü ama zararsız bir his.',
@@ -254,7 +283,8 @@ enum StruggleCategory {
       'Sen önemlisin; bugün de, zor günlerde de.',
     ],
     avoidWords: ['jilet', 'kesik', 'kestim', '=kan', 'yara izi', 'bıçak', '=hap', 'intihar', 'ölmek'],
-    info: 'Kendine zarar verme çoğu zaman yoğun duygularla baş etme çabasıdır. '
+    info:
+        'Kendine zarar verme çoğu zaman yoğun duygularla baş etme çabasıdır. '
         'Profesyonel destekle duygularla baş etmenin başka yolları öğrenilebilir; '
         'bir uzmanla konuşmak çok önemli.',
   ),
@@ -265,7 +295,8 @@ enum StruggleCategory {
     icon: Icons.thermostat_outlined,
     careLevel: 5,
     checkInQuestion: 'Bugün öfkeni fark edip kendine bir an tanıyabildin mi?',
-    hardDayMessage: 'Öfke bazen bizi de şaşırtır. Bugün zor geçtiyse kendini '
+    hardDayMessage:
+        'Öfke bazen bizi de şaşırtır. Bugün zor geçtiyse kendini '
         'yargılamadan, olanı fark etmek bile bir adım.',
     calmTips: [
       'Ortamdan birkaç dakikalığına uzaklaş; bu kaçmak değil, kendine alan açmak.',
@@ -282,7 +313,8 @@ enum StruggleCategory {
       'Kendine sabırlı ol; değişim zaman alır.',
     ],
     avoidWords: ['intikam', 'kır geçir', 'patlat', '=döv', '=vur'],
-    info: 'DSM-5-TR\'de aralıklı patlayıcı bozukluk olarak tanımlanan tekrarlayan '
+    info:
+        'DSM-5-TR\'de aralıklı patlayıcı bozukluk olarak tanımlanan tekrarlayan '
         'öfke patlamaları, öfke yönetimi ve bilişsel davranışçı terapiyle yönetilebilir.',
     source: 'APA, DSM-5-TR',
   ),
@@ -293,7 +325,8 @@ enum StruggleCategory {
     icon: Icons.healing_outlined,
     careLevel: 7,
     checkInQuestion: 'Bugün kendine güvenli bir alan yaratabildin mi?',
-    hardDayMessage: 'Geçmiş bazen beklenmedik anlarda yoklar. Bugün zor geçtiyse, '
+    hardDayMessage:
+        'Geçmiş bazen beklenmedik anlarda yoklar. Bugün zor geçtiyse, '
         'şu an güvende olduğunu kendine hatırlat: buradasın, şimdi.',
     calmTips: [
       'Etrafındaki beş şeyin adını yüksek sesle söyle; seni şimdiye getirir.',
@@ -310,7 +343,8 @@ enum StruggleCategory {
       'Kendine nazik olmak, yaraları sarmanın ilk adımı.',
     ],
     avoidWords: ['taciz', 'saldırı', 'şiddet', 'kaza anı', 'detaylı anlat', '=kan'],
-    info: 'Travma sonrası stres belirtileri, yaşananlara verilen anlaşılır tepkilerdir. '
+    info:
+        'Travma sonrası stres belirtileri, yaşananlara verilen anlaşılır tepkilerdir. '
         'Dünya Sağlık Örgütü travma odaklı terapileri önerir; iyileşme mümkündür.',
   ),
   sleep(
@@ -320,7 +354,8 @@ enum StruggleCategory {
     icon: Icons.bedtime_outlined,
     careLevel: 1,
     checkInQuestion: 'Bugün bedenine dinlenme fırsatı verebildin mi?',
-    hardDayMessage: 'Uykusuz geceler her şeyi daha zor gösterir. Bugün kendine '
+    hardDayMessage:
+        'Uykusuz geceler her şeyi daha zor gösterir. Bugün kendine '
         'yüklenme; dinlenmek de bir beceri.',
     calmTips: [
       'Yatmadan bir saat önce ekran ışığını azalt.',
@@ -337,51 +372,81 @@ enum StruggleCategory {
       'Sessizlik de iyileştirir.',
     ],
     avoidWords: ['uyku ilacı', '=hap'],
-    info: 'Uykusuzluk ruh sağlığını derinden etkiler. Uykusuzluk için bilişsel '
+    info:
+        'Uykusuzluk ruh sağlığını derinden etkiler. Uykusuzluk için bilişsel '
         'davranışçı terapi (BDT-U) kanıtlanmış bir yöntemdir.',
   );
 
   const StruggleCategory({
-    required this.title,
-    required this.shortTitle,
-    required this.subtitle,
+    required String title,
+    required String shortTitle,
+    required String subtitle,
     required this.icon,
     required this.careLevel,
-    required this.checkInQuestion,
-    required this.hardDayMessage,
-    required this.calmTips,
-    required this.affirmations,
+    required String checkInQuestion,
+    required String hardDayMessage,
+    required List<String> calmTips,
+    required List<String> affirmations,
     required this.avoidWords,
-    required this.info,
-    this.fact,
+    required String info,
+    String? fact,
     this.source,
-  });
+  }) : titleTr = title,
+       shortTitleTr = shortTitle,
+       subtitleTr = subtitle,
+       checkInQuestionTr = checkInQuestion,
+       hardDayMessageTr = hardDayMessage,
+       calmTipsTr = calmTips,
+       affirmationsTr = affirmations,
+       infoTr = info,
+       factTr = fact;
 
-  final String title;
-  final String shortTitle;
-  final String subtitle;
+  // Türkçe kaynak metinler (çeviri anahtarları). Ekranda getter'lar kullanılır:
+  // `title`, `affirmations` vb. etkin dile çevrilmiş metni döndürür.
+  final String titleTr;
+  final String shortTitleTr;
+  final String subtitleTr;
+  final String checkInQuestionTr;
+  final String hardDayMessageTr;
+  final List<String> calmTipsTr;
+  final List<String> affirmationsTr;
+  final String infoTr;
+  final String? factTr;
+
   final IconData icon;
 
   /// 1-10: Yüksek değer = daha hassas dil. Birden fazla alan seçildiyse
   /// bildirim tonu en yüksek değerli kategoriden alınır.
   final int careLevel;
-  final String checkInQuestion;
-  final String hardDayMessage;
-  final List<String> calmTips;
-  final List<String> affirmations;
+
+  /// Topluluk denetimi için (çevrilmez; ContentModerator kullanır).
   final List<String> avoidWords;
-  final String info;
-  final String? fact;
+
+  /// Kaynak adı (APA, WHO…): özel ad, çevrilmez.
   final String? source;
+
+  String get title => tx(titleTr);
+  String get shortTitle => tx(shortTitleTr);
+  String get subtitle => tx(subtitleTr);
+  String get checkInQuestion => tx(checkInQuestionTr);
+  String get hardDayMessage => tx(hardDayMessageTr);
+  List<String> get calmTips => txList(calmTipsTr);
+  List<String> get affirmations => txList(affirmationsTr);
+  String get info => tx(infoTr);
+  String? get fact => factTr == null ? null : tx(factTr!);
 }
 
 class StruggleType {
-  const StruggleType(this.id, this.category, this.label);
+  const StruggleType(this.id, this.category, String label) : labelTr = label;
 
   /// Firestore doküman ID'si: `users/{uid}/struggles/{id}`
   final String id;
   final StruggleCategory category;
-  final String label;
+
+  /// Türkçe kaynak ad (çeviri anahtarı).
+  final String labelTr;
+
+  String get label => tx(labelTr);
 }
 
 const kStruggleTypes = <StruggleType>[
@@ -415,17 +480,13 @@ const kStruggleTypes = <StruggleType>[
   StruggleType('insomnia', StruggleCategory.sleep, 'Uykusuzluk'),
 ];
 
-final Map<String, StruggleType> _typesById = {
-  for (final t in kStruggleTypes) t.id: t,
-};
+final Map<String, StruggleType> _typesById = {for (final t in kStruggleTypes) t.id: t};
 
 StruggleType? struggleTypeById(String id) => _typesById[id];
 
-Iterable<StruggleType> typesOf(StruggleCategory c) =>
-    kStruggleTypes.where((t) => t.category == c);
+Iterable<StruggleType> typesOf(StruggleCategory c) => kStruggleTypes.where((t) => t.category == c);
 
-StruggleCategory? categoryByName(String? name) =>
-    name == null ? null : StruggleCategory.values.asNameMap()[name];
+StruggleCategory? categoryByName(String? name) => name == null ? null : StruggleCategory.values.asNameMap()[name];
 
 /// Birden fazla alan seçildiyse en hassas (careLevel en yüksek) kategori.
 StruggleCategory? highestCare(Iterable<StruggleCategory> categories) {

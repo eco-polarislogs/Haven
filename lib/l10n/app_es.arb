@@ -43,7 +43,7 @@
   "greetingEvening": "Buenas tardes",
   "greetingNight": "Buenas noches",
   "dailyStreak": "días de racha",
-  "bestStreak": "Mejor: {days} días",
+  "bestStreak": "Mejor: {days, plural, =1{1 día} other{{days} días}}",
   "@bestStreak": {
     "placeholders": {
       "days": {
@@ -84,7 +84,7 @@
     }
   },
   "raceTitle": "Compites con tu propio récord",
-  "raceBody": "Te faltan {left} días para tu récord. Sin prisa, a tu ritmo.",
+  "raceBody": "Te {left, plural, =1{falta 1 día} other{faltan {left} días}} para tu récord. Sin prisa, a tu ritmo.",
   "@raceBody": {
     "placeholders": {
       "left": {
@@ -133,7 +133,7 @@
       }
     }
   },
-  "giftDaysLeft": "Faltan {left} días",
+  "giftDaysLeft": "{left, plural, =1{Falta 1 día} other{Faltan {left} días}}",
   "@giftDaysLeft": {
     "placeholders": {
       "left": {
@@ -150,11 +150,11 @@
   "save": "Guardar",
   "cancel": "Cancelar",
   "close": "Cerrar",
-  "daysCount": "{count} días",
-  "recordLabel": "Récord: {count} días",
+  "daysCount": "{count, plural, =1{1 día} other{{count} días}}",
+  "recordLabel": "Récord: {count, plural, =1{1 día} other{{count} días}}",
   "journeyStart": "Tu camino puede empezar hoy.",
   "recordReached": "¡Alcanzaste tu récord! Mañana puede haber uno nuevo.",
-  "comebackShort": "Tu récord es de {best} días. Un buen día para empezar de nuevo.",
+  "comebackShort": "Tu récord es de {best, plural, =1{1 día} other{{best} días}}. Un buen día para empezar de nuevo.",
   "seeAll": "Todo",
   "beginning": "Comienzo"
 }

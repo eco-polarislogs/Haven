@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../l10n/l10n.dart';
 import '../../../providers.dart';
+import '../../../l10n/tx.dart';
 
 /// Hafıza kartları / renk eşleştirme: 6 çifti eşleştir. Süre yok; hamle
 /// sayısı sadece bilgi. `colorMode` → kartların yüzünde renkler (daha sade).
@@ -29,8 +30,12 @@ class _MemoryGameState extends ConsumerState<MemoryGame> {
   ];
 
   static const _colors = [
-    Color(0xFF2B6B73), Color(0xFF5B7DB1), Color(0xFFC98A3A),
-    Color(0xFF6B7F5E), Color(0xFFA0603F), Color(0xFF7A6A9A),
+    Color(0xFF2B6B73),
+    Color(0xFF5B7DB1),
+    Color(0xFFC98A3A),
+    Color(0xFF6B7F5E),
+    Color(0xFFA0603F),
+    Color(0xFF7A6A9A),
   ];
 
   late List<int> _cards;
@@ -46,7 +51,9 @@ class _MemoryGameState extends ConsumerState<MemoryGame> {
   }
 
   void _shuffle() {
-    _cards = [for (var i = 0; i < _icons.length; i++) ...[i, i]]..shuffle(Random());
+    _cards = [
+      for (var i = 0; i < _icons.length; i++) ...[i, i],
+    ]..shuffle(Random());
     _open.clear();
     _matched.clear();
     _moves = 0;
@@ -91,15 +98,21 @@ class _MemoryGameState extends ConsumerState<MemoryGame> {
         padding: const EdgeInsets.fromLTRB(20, 4, 20, 20),
         child: Column(
           children: [
-            Row(children: [
-              Expanded(child: Text('Eşleşen çiftleri bul. Kendi hızında.', style: t.bodyMedium)),
-              Chip(label: Text('$_moves hamle')),
-            ]),
+            Row(
+              children: [
+                Expanded(child: Text(tx('Eşleşen çiftleri bul. Kendi hızında.'), style: t.bodyMedium)),
+                Chip(label: Text('$_moves hamle')),
+              ],
+            ),
             const SizedBox(height: 12),
             Expanded(
               child: GridView.builder(
                 gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 3, mainAxisSpacing: 12, crossAxisSpacing: 12, childAspectRatio: 0.85),
+                  crossAxisCount: 3,
+                  mainAxisSpacing: 12,
+                  crossAxisSpacing: 12,
+                  childAspectRatio: 0.85,
+                ),
                 itemCount: _cards.length,
                 itemBuilder: (context, i) {
                   final faceUp = _open.contains(i) || _matched.contains(i);
@@ -118,8 +131,8 @@ class _MemoryGameState extends ConsumerState<MemoryGame> {
                       child: Center(
                         child: faceUp
                             ? (widget.colorMode
-                                ? const Icon(Icons.circle_outlined, size: 34, color: Colors.white70)
-                                : Icon(icon, size: 40, color: color))
+                                  ? const Icon(Icons.circle_outlined, size: 34, color: Colors.white70)
+                                  : Icon(icon, size: 40, color: color))
                             : Icon(Icons.shield_outlined, size: 28, color: Colors.white.withValues(alpha: 0.35)),
                       ),
                     ),
@@ -128,8 +141,11 @@ class _MemoryGameState extends ConsumerState<MemoryGame> {
               ),
             ),
             if (done) ...[
-              Text('Hepsini buldun! $_moves hamlede. Zihnine güzel bir mola verdin.',
-                  textAlign: TextAlign.center, style: t.titleMedium?.copyWith(color: scheme.primary)),
+              Text(
+                tx('Hepsini buldun! {moves} hamlede. Zihnine güzel bir mola verdin.', {'moves': _moves}),
+                textAlign: TextAlign.center,
+                style: t.titleMedium?.copyWith(color: scheme.primary),
+              ),
               const SizedBox(height: 12),
               FilledButton.icon(
                 onPressed: () => setState(_shuffle),

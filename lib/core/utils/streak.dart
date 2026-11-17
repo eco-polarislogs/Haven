@@ -78,9 +78,7 @@ StreakState? applyCheckIn(StreakState s, String today, CheckInResult result) {
     );
   }
 
-  final continues = s.current > 0 &&
-      s.lastKindDay != null &&
-      daysBetween(s.lastKindDay!, today) <= 1 + kGraceDays;
+  final continues = s.current > 0 && s.lastKindDay != null && daysBetween(s.lastKindDay!, today) <= 1 + kGraceDays;
   final current = continues ? s.current + 1 : 1;
   // Uzun bir aradan sonra dönüldüyse, önceki seri de geçmişe yazılır.
   final history = (!continues && s.current > 0)
@@ -145,9 +143,7 @@ class DailyStreak {
 /// `null` → bugün zaten sayıldı.
 DailyStreak? applyDailyActivity(DailyStreak s, String today) {
   if (s.lastDay == today) return null;
-  final continues = s.current > 0 &&
-      s.lastDay != null &&
-      daysBetween(s.lastDay!, today) <= 1 + kGraceDays;
+  final continues = s.current > 0 && s.lastDay != null && daysBetween(s.lastDay!, today) <= 1 + kGraceDays;
   final current = continues ? s.current + 1 : 1;
   return DailyStreak(current: current, longest: max(s.longest, current), lastDay: today);
 }

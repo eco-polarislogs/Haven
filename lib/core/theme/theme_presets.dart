@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../l10n/tx.dart';
+
 /// Kullanıcının ruh haline göre seçebileceği temalar. Renk temaları
 /// ÜCRETSİZ: herkes kendini en rahat hissettiği tonu seçebilsin. Mor tonlar ve
 /// Gece Karanlığı küçük birer hediye (seriyle ya da isteğe bağlı reklamla).
@@ -81,7 +83,7 @@ enum ThemePreset {
   );
 
   const ThemePreset({
-    required this.label,
+    required String label,
     required this.primary,
     required this.deep,
     required this.soft,
@@ -90,9 +92,10 @@ enum ThemePreset {
     required this.accent,
     this.brightness = Brightness.light,
     this.unlockStreak = 0,
-  });
+  }) : labelTr = label;
 
-  final String label;
+  final String labelTr;
+  String get label => tx(labelTr);
   final Color primary;
   final Color deep;
   final Color soft;
@@ -121,12 +124,11 @@ class HavenPalette extends ThemeExtension<HavenPalette> {
 
   static HavenPalette of(BuildContext context) =>
       Theme.of(context).extension<HavenPalette>() ??
-      HavenPalette(
-          deep: ThemePreset.ocean.deep, primary: ThemePreset.ocean.primary, accent: ThemePreset.ocean.accent);
+      HavenPalette(deep: ThemePreset.ocean.deep, primary: ThemePreset.ocean.primary, accent: ThemePreset.ocean.accent);
 
   @override
-  HavenPalette copyWith({Color? deep, Color? primary, Color? accent}) => HavenPalette(
-      deep: deep ?? this.deep, primary: primary ?? this.primary, accent: accent ?? this.accent);
+  HavenPalette copyWith({Color? deep, Color? primary, Color? accent}) =>
+      HavenPalette(deep: deep ?? this.deep, primary: primary ?? this.primary, accent: accent ?? this.accent);
 
   @override
   HavenPalette lerp(HavenPalette? other, double t) => other == null
@@ -134,5 +136,6 @@ class HavenPalette extends ThemeExtension<HavenPalette> {
       : HavenPalette(
           deep: Color.lerp(deep, other.deep, t)!,
           primary: Color.lerp(primary, other.primary, t)!,
-          accent: Color.lerp(accent, other.accent, t)!);
+          accent: Color.lerp(accent, other.accent, t)!,
+        );
 }

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../core/moderation/content_moderator.dart';
 import '../../core/navigation.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/utils/time_ago.dart';
@@ -9,7 +8,9 @@ import '../../core/widgets/avatar_badge.dart';
 import '../../data/models/community.dart';
 import '../../providers.dart';
 import 'post_detail_screen.dart';
+import 'translatable_text.dart';
 import 'user_profile_screen.dart';
+import '../../l10n/tx.dart';
 
 /// X (Twitter) tarzı gönderi kartı: avatar | ad · seri · zaman / çember /
 /// metin / yanıt · destek · menü. Avatara dokununca profil, karta dokununca
@@ -27,14 +28,14 @@ class PostCard extends ConsumerWidget {
     final repo = ref.read(communityRepositoryProvider);
     final analytics = ref.read(analyticsProvider);
     if (me == null) {
-      messenger.showSnackBar(const SnackBar(content: Text('Profilin hazırlanıyor, birazdan tekrar dene.')));
+      messenger.showSnackBar(SnackBar(content: Text(tx('Profilin hazırlanıyor, birazdan tekrar dene.'))));
       return;
     }
     try {
       await repo.supportNote(note, me);
       analytics.noteSupported();
     } catch (_) {
-      messenger.showSnackBar(const SnackBar(content: Text('Destek şu an gönderilemedi.')));
+      messenger.showSnackBar(SnackBar(content: Text(tx('Destek şu an gönderilemedi.'))));
     }
   }
 
@@ -49,15 +50,15 @@ class PostCard extends ConsumerWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Padding(
+            Padding(
               padding: EdgeInsets.fromLTRB(24, 0, 24, 8),
-              child: Text('Bu paylaşımı neden bildiriyorsun? Senin için hemen gizlenir.'),
+              child: Text(tx('Bu paylaşımı neden bildiriyorsun? Senin için hemen gizlenir.')),
             ),
-            for (final r in const [
-              'Kırıcı veya küçümseyici',
-              'Tetikleyici içerik',
+            for (final r in [
+              tx('Kırıcı veya küçümseyici'),
+              tx('Tetikleyici içerik'),
               'Spam veya reklam',
-              'Başka bir şey',
+              tx('Başka bir şey'),
             ])
               ListTile(leading: const Icon(Icons.flag_outlined), title: Text(r), onTap: () => Navigator.pop(ctx, r)),
           ],
@@ -69,12 +70,12 @@ class PostCard extends ConsumerWidget {
       await repo.reportNote(note, uid, reason);
       analytics.noteReported();
       messenger.showSnackBar(
-        const SnackBar(
-          content: Text('Teşekkürler. Bu paylaşım senin için gizlendi; topluluğu güvende tuttuğun için sağ ol.'),
+        SnackBar(
+          content: Text(tx('Teşekkürler. Bu paylaşım senin için gizlendi; topluluğu güvende tuttuğun için sağ ol.')),
         ),
       );
     } catch (_) {
-      messenger.showSnackBar(const SnackBar(content: Text('Bildirim şu an gönderilemedi.')));
+      messenger.showSnackBar(SnackBar(content: Text(tx('Bildirim şu an gönderilemedi.'))));
     }
   }
 
@@ -86,10 +87,10 @@ class PostCard extends ConsumerWidget {
     final ok = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Paylaşımını silmek istiyor musun?'),
+        title: Text(tx('Paylaşımını silmek istiyor musun?')),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Vazgeç')),
-          FilledButton(onPressed: () => Navigator.pop(ctx, true), child: const Text('Sil')),
+          TextButton(onPressed: () => Navigator.pop(ctx, false), child: Text(tx('Vazgeç'))),
+          FilledButton(onPressed: () => Navigator.pop(ctx, true), child: Text(tx('Sil'))),
         ],
       ),
     );
@@ -110,7 +111,6 @@ class PostCard extends ConsumerWidget {
         : note.authorUid == uid;
     final circle = note.circle;
     // Okuyanın alanları için tetikleyici olabilecek ifadeler gizlenir.
-    final masked = ContentModerator.maskFor(note.text, ref.watch(readerCategoriesProvider));
 
     void openProfile() {
       if (note.anonymous) return; // anonim gönderide profil yok
@@ -148,7 +148,7 @@ class PostCard extends ConsumerWidget {
                               child: GestureDetector(
                                 onTap: openProfile,
                                 child: Text(
-                                  note.nickname,
+                                  note.anonymous ? tx(CommunityNote.anonymousName) : note.nickname,
                                   overflow: TextOverflow.ellipsis,
                                   style: t.titleSmall?.copyWith(fontWeight: FontWeight.w700),
                                 ),
@@ -157,7 +157,7 @@ class PostCard extends ConsumerWidget {
                             const SizedBox(width: 6),
                             if (!note.anonymous) ...[StreakBadge(days: note.streak), const SizedBox(width: 6)],
                             if (note.anonymous && mine) ...[
-                              Text('(sen)', style: t.bodySmall?.copyWith(color: scheme.outline)),
+                              Text(tx('(sen)'), style: t.bodySmall?.copyWith(color: scheme.outline)),
                               const SizedBox(width: 6),
                             ],
                             Flexible(
@@ -180,9 +180,9 @@ class PostCard extends ConsumerWidget {
                           onSelected: (v) => v == 'delete' ? _delete(context, ref) : _report(context, ref),
                           itemBuilder: (_) => [
                             if (mine)
-                              const PopupMenuItem(value: 'delete', child: Text('Paylaşımımı sil'))
+                              PopupMenuItem(value: 'delete', child: Text(tx('Paylaşımımı sil')))
                             else
-                              const PopupMenuItem(value: 'report', child: Text('Bildir')),
+                              PopupMenuItem(value: 'report', child: Text(tx('Bildir'))),
                           ],
                         ),
                       ),
@@ -201,9 +201,12 @@ class PostCard extends ConsumerWidget {
                     ),
                   Padding(
                     padding: const EdgeInsets.fromLTRB(0, 6, 8, 6),
-                    child: Text(masked.text, style: t.bodyLarge?.copyWith(height: 1.4)),
+                    child: TranslatableText(
+                      text: note.text,
+                      lang: note.lang,
+                      style: t.bodyLarge?.copyWith(height: 1.4),
+                    ),
                   ),
-                  if (masked.hidden > 0) const HiddenWordsNote(),
                   Row(
                     children: [
                       _Action(
@@ -217,7 +220,7 @@ class PostCard extends ConsumerWidget {
                         count: note.supportCount,
                         color: supported ? scheme.primary : null,
                         onTap: (supported || mine) ? null : () => _support(context, ref),
-                        label: supported ? 'Destek verdin' : 'Destek',
+                        label: supported ? tx('Destek verdin') : tx('Destek'),
                       ),
                     ],
                   ),
@@ -257,31 +260,6 @@ class _Action extends StatelessWidget {
             ),
           ],
         ),
-      ),
-    );
-  }
-}
-
-/// "Senin için gizlendi" notu: okuyanı koruyan gizlemenin açıklaması.
-class HiddenWordsNote extends StatelessWidget {
-  const HiddenWordsNote({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 4),
-      child: Row(
-        children: [
-          Icon(Icons.shield_outlined, size: 14, color: scheme.outline),
-          const SizedBox(width: 4),
-          Flexible(
-            child: Text(
-              'Senin için hassas olabilecek ifadeler gizlendi.',
-              style: Theme.of(context).textTheme.labelSmall?.copyWith(color: scheme.outline),
-            ),
-          ),
-        ],
       ),
     );
   }

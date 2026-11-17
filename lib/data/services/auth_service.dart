@@ -2,10 +2,15 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
-/// Kullanıcıya gösterilebilecek, yumuşak dilli hata.
+import '../../l10n/tx.dart';
+
+/// Kullanıcıya gösterilebilecek, yumuşak dilli hata. Metin Türkçe kaynaktır;
+/// [message] gösterim anında kullanıcının diline çevrilir.
 class AuthFailure implements Exception {
-  const AuthFailure(this.message);
-  final String message;
+  const AuthFailure(this.messageTr, [this.args = const {}]);
+  final String messageTr;
+  final Map<String, Object?> args;
+  String get message => tx(messageTr, args);
   @override
   String toString() => message;
 }
@@ -71,7 +76,7 @@ class AuthService {
       await user.delete();
     } on FirebaseAuthException catch (e) {
       if (e.code != 'requires-recent-login') {
-        throw AuthFailure('Hesap silinemedi (${e.code}). Lütfen tekrar dene.');
+        throw AuthFailure('Hesap silinemedi ({code}). Lütfen tekrar dene.', {'code': e.code});
       }
       final isApple = user.providerData.any((p) => p.providerId == 'apple.com');
       if (isApple) {
@@ -96,8 +101,7 @@ class AuthService {
     } on GoogleSignInException catch (e) {
       if (e.code == GoogleSignInExceptionCode.canceled) return null;
       debugPrint('Google giriş hatası: ${e.code} ${e.description}');
-      throw const AuthFailure(
-          'Google ile giriş şu an tamamlanamadı. Biraz sonra tekrar dener misin?');
+      throw const AuthFailure('Google ile giriş şu an tamamlanamadı. Biraz sonra tekrar dener misin?');
     }
   }
 }

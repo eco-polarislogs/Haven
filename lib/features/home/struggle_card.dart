@@ -11,13 +11,15 @@ import '../../l10n/l10n.dart';
 import '../../providers.dart';
 import '../onboarding/struggle_selector.dart';
 import '../support/hard_day_sheet.dart';
+import '../../l10n/tx.dart';
 
-const _milestones = <int, String>{
-  1: 'İlk iyi günün! Her yolculuk tek bir adımla başlar.',
-  3: '3 gün üst üste! Kendine gösterdiğin özen görülüyor.',
-  7: 'Bir haftalık seri! Kendine bir teşekkür borçlusun.',
-  14: 'İki hafta! Bu emek gerçekten çok değerli.',
-  30: 'Bir ay! Kendinle gurur duyabilirsin.',
+// Getter: dil değişince yenilenir.
+Map<int, String> get _milestones => {
+  1: tx('İlk iyi günün! Her yolculuk tek bir adımla başlar.'),
+  3: tx('3 gün üst üste! Kendine gösterdiğin özen görülüyor.'),
+  7: tx('Bir haftalık seri! Kendine bir teşekkür borçlusun.'),
+  14: tx('İki hafta! Bu emek gerçekten çok değerli.'),
+  30: tx('Bir ay! Kendinle gurur duyabilirsin.'),
 };
 
 /// Bir alanın günlük değerlendirme kartı. Her alan ana sayfada TEK kez
@@ -50,18 +52,25 @@ class StruggleCard extends ConsumerWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(children: [
-              CategoryIcon(category: struggle.category, size: 38),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Text(struggle.type.label, style: t.titleMedium?.copyWith(fontWeight: FontWeight.w600)),
-              ),
-              Column(crossAxisAlignment: CrossAxisAlignment.end, children: [
-                Text('${struggle.streak.totalKindDays}',
-                    style: t.headlineSmall?.copyWith(fontWeight: FontWeight.w700, color: accent)),
-                Text(l.kindDays, style: t.labelSmall),
-              ]),
-            ]),
+            Row(
+              children: [
+                CategoryIcon(category: struggle.category, size: 38),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(struggle.type.label, style: t.titleMedium?.copyWith(fontWeight: FontWeight.w600)),
+                ),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Text(
+                      '${struggle.streak.totalKindDays}',
+                      style: t.headlineSmall?.copyWith(fontWeight: FontWeight.w700, color: accent),
+                    ),
+                    Text(l.kindDays, style: t.labelSmall),
+                  ],
+                ),
+              ],
+            ),
             const SizedBox(height: 6),
             Text(raceLine(context, race), style: t.bodySmall),
             if (race.best > 0) ...[
@@ -80,24 +89,26 @@ class StruggleCard extends ConsumerWidget {
             if (!done) ...[
               Text(struggle.category.checkInQuestion, style: t.bodyMedium),
               const SizedBox(height: 12),
-              Row(children: [
-                Expanded(
-                  child: FilledButton.icon(
-                    style: FilledButton.styleFrom(backgroundColor: accent),
-                    onPressed: () => checkIn(context, ref, struggle, CheckInResult.kind, recentHardDays),
-                    icon: const Icon(Icons.light_mode_rounded, size: 18),
-                    label: Text(l.wentWell),
+              Row(
+                children: [
+                  Expanded(
+                    child: FilledButton.icon(
+                      style: FilledButton.styleFrom(backgroundColor: accent),
+                      onPressed: () => checkIn(context, ref, struggle, CheckInResult.kind, recentHardDays),
+                      icon: const Icon(Icons.light_mode_rounded, size: 18),
+                      label: Text(l.wentWell),
+                    ),
                   ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: OutlinedButton.icon(
-                    onPressed: () => checkIn(context, ref, struggle, CheckInResult.hard, recentHardDays),
-                    icon: const Icon(Icons.cloud_outlined, size: 18),
-                    label: Text(l.wasHard),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: OutlinedButton.icon(
+                      onPressed: () => checkIn(context, ref, struggle, CheckInResult.hard, recentHardDays),
+                      icon: const Icon(Icons.cloud_outlined, size: 18),
+                      label: Text(l.wasHard),
+                    ),
                   ),
-                ),
-              ]),
+                ],
+              ),
             ] else
               Container(
                 width: double.infinity,
@@ -108,19 +119,24 @@ class StruggleCard extends ConsumerWidget {
                       : Colors.white.withValues(alpha: 0.75),
                   borderRadius: BorderRadius.circular(16),
                 ),
-                child: Row(children: [
-                  Icon(hard ? Icons.favorite_border_rounded : Icons.check_circle_outline_rounded,
-                      size: 20, color: hard ? HavenColors.clay : accent),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Text(
-                      hard
-                          ? 'Bugün zor bir gündü ve yine de buradasın. Bu da bir adım.'
-                          : 'Bugünü kaydettin. Yarın yine buradayız.',
-                      style: t.bodyMedium,
+                child: Row(
+                  children: [
+                    Icon(
+                      hard ? Icons.favorite_border_rounded : Icons.check_circle_outline_rounded,
+                      size: 20,
+                      color: hard ? HavenColors.clay : accent,
                     ),
-                  ),
-                ]),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Text(
+                        hard
+                            ? tx('Bugün zor bir gündü ve yine de buradasın. Bu da bir adım.')
+                            : tx('Bugünü kaydettin. Yarın yine buradayız.'),
+                        style: t.bodyMedium,
+                      ),
+                    ),
+                  ],
+                ),
               ),
           ],
         ),
@@ -135,8 +151,10 @@ String raceLine(BuildContext context, RecordRace race) {
   if (race.isNewRecord) return l.newRecordBody(race.live);
   if (race.best == 0) return l.journeyStart;
   if (race.isComeback) {
-    return 'Geçen sefer ${race.lastPast?.days ?? race.best} gün harika ilerledin; '
-        'şimdi ${race.best} günlük rekorunla yarışıyoruz.';
+    return tx('Geçen sefer {p} gün harika ilerledin; şimdi {best} günlük rekorunla yarışıyoruz.', {
+      'p': race.lastPast?.days ?? race.best,
+      'best': race.best,
+    });
   }
   if (race.toRecord == 0) return l.recordReached;
   return '${l.daysCount(race.live)} · ${l.raceBody(race.toRecord)}';
@@ -155,8 +173,7 @@ void checkIn(BuildContext context, WidgetRef ref, Struggle struggle, CheckInResu
   LocalNotifier.scheduleGentleNudges(enabled: user.notificationsEnabled, checkedInToday: true);
 
   final daily = outcome.daily;
-  ref.read(analyticsProvider).checkIn(struggle.category, result,
-      gapDays: outcome.gapDays, dailyStreak: daily?.current);
+  ref.read(analyticsProvider).checkIn(struggle.category, result, gapDays: outcome.gapDays, dailyStreak: daily?.current);
 
   if (daily != null) {
     final profile = ref.read(myProfileProvider).value;
@@ -180,8 +197,7 @@ void checkIn(BuildContext context, WidgetRef ref, Struggle struggle, CheckInResu
     // Biten seri silinmez; şefkatle hatırlatılır.
     showHardDaySheet(context, struggle.category, endedStreak: struggle.streak.current);
   } else {
-    final message =
-        _milestones[outcome.state.current] ?? 'Bugünü kaydettin. Küçük adımlar da gerçek adımlardır.';
+    final message = _milestones[outcome.state.current] ?? tx('Bugünü kaydettin. Küçük adımlar da gerçek adımlardır.');
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
   }
 }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../core/theme/app_theme.dart';
 import '../../data/models/month_log.dart';
+import '../../l10n/tx.dart';
 
 /// "Bu ayın ışıkları": her nazik gün bir ışık yakar. Zor günler yumuşak kil
 /// tonunda; kayıt olmayan günler boş. Kırmızı çarpı yok.
@@ -11,7 +12,7 @@ class MonthLights extends StatelessWidget {
   final DateTime month;
   final MonthLog log;
 
-  static const _weekdays = ['Pt', 'Sa', 'Ça', 'Pe', 'Cu', 'Ct', 'Pz'];
+  static List<String> get _weekdays => weekdayShort();
 
   @override
   Widget build(BuildContext context) {
@@ -28,12 +29,16 @@ class MonthLights extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('İyi geçen her gün bir ışık yakar.', style: t.bodySmall),
+            Text(tx('İyi geçen her gün bir ışık yakar.'), style: t.bodySmall),
             const SizedBox(height: 12),
-            Row(children: [
-              for (final w in _weekdays)
-                Expanded(child: Text(w, textAlign: TextAlign.center, style: t.labelSmall)),
-            ]),
+            Row(
+              children: [
+                for (final w in _weekdays)
+                  Expanded(
+                    child: Text(w, textAlign: TextAlign.center, style: t.labelSmall),
+                  ),
+              ],
+            ),
             const SizedBox(height: 8),
             GridView.count(
               crossAxisCount: 7,
@@ -53,22 +58,30 @@ class MonthLights extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 12),
-            Row(children: [
-              _legend(context, HavenColors.kindDay, 'İyi geçen gün'),
-              const SizedBox(width: 14),
-              _legend(context, HavenColors.hardDay, 'Zor gün'),
-            ]),
+            Row(
+              children: [
+                _legend(context, HavenColors.kindDay, tx('İyi geçen gün')),
+                const SizedBox(width: 14),
+                _legend(context, HavenColors.hardDay, tx('Zor gün')),
+              ],
+            ),
           ],
         ),
       ),
     );
   }
 
-  Widget _legend(BuildContext context, Color c, String label) => Row(children: [
-        Container(width: 12, height: 12, decoration: BoxDecoration(color: c, shape: BoxShape.circle)),
-        const SizedBox(width: 6),
-        Text(label, style: Theme.of(context).textTheme.labelSmall),
-      ]);
+  Widget _legend(BuildContext context, Color c, String label) => Row(
+    children: [
+      Container(
+        width: 12,
+        height: 12,
+        decoration: BoxDecoration(color: c, shape: BoxShape.circle),
+      ),
+      const SizedBox(width: 6),
+      Text(label, style: Theme.of(context).textTheme.labelSmall),
+    ],
+  );
 }
 
 class _Day extends StatelessWidget {
@@ -88,11 +101,14 @@ class _Day extends StatelessWidget {
       DayStatus.none => Colors.transparent,
     };
     return Semantics(
-      label: '$day. gün, ${switch (status) {
-        DayStatus.kind => 'iyi geçen gün',
-        DayStatus.hard => 'zor gün',
-        DayStatus.none => 'kayıt yok',
-      }}',
+      label: tx('{day}. gün, {p}', {
+        'day': day,
+        'p': switch (status) {
+          DayStatus.kind => tx('iyi geçen gün'),
+          DayStatus.hard => tx('zor gün'),
+          DayStatus.none => tx('kayıt yok'),
+        },
+      }),
       child: Container(
         decoration: BoxDecoration(
           color: fill,
@@ -100,21 +116,23 @@ class _Day extends StatelessWidget {
           border: isToday
               ? Border.all(color: scheme.primary, width: 2)
               : status == DayStatus.none
-                  ? Border.all(color: scheme.outlineVariant)
-                  : null,
+              ? Border.all(color: scheme.outlineVariant)
+              : null,
         ),
         alignment: Alignment.center,
         child: status == DayStatus.kind
             ? const Icon(Icons.light_mode_rounded, size: 16, color: Colors.white)
-            : Text('$day',
+            : Text(
+                '$day',
                 style: TextStyle(
                   fontSize: 12,
                   color: isFuture
                       ? scheme.onSurface.withValues(alpha: 0.35)
                       : status == DayStatus.hard
-                          ? HavenColors.ink
-                          : scheme.onSurface,
-                )),
+                      ? HavenColors.ink
+                      : scheme.onSurface,
+                ),
+              ),
       ),
     );
   }

@@ -5,6 +5,7 @@ import 'package:timezone/data/latest.dart' as tz_data;
 import 'package:timezone/timezone.dart' as tz;
 
 import '../../core/constants/app_constants.dart';
+import '../../l10n/tx.dart';
 import '../models/community.dart';
 
 /// Telefonun üst çubuğunda görünen bildirimler — SUNUCU GEREKTİRMEZ.
@@ -46,8 +47,7 @@ class LocalNotifier {
     'Sadece nasıl olduğunu sormak istedik. Kendine iyi bakmayı unutma.', // ~3. gün
     'Gözlerimiz seni aradı. Ne zaman hazır hissedersen burada bekliyoruz.', // ~7. gün
   ];
-  static const eveningReminder =
-      'Bugünlük sayfamızı boş bıraktık ama yarın o alanı senin için saklıyoruz.';
+  static const eveningReminder = 'Bugünlük sayfamızı boş bıraktık ama yarın o alanı senin için saklıyoruz.';
 
   /// Her mesajın kendi sıcak başlığı (sorunu asla ifşa etmez).
   static const nudgeTitles = ['Merhaba 👋', 'Kendine bir mola ☁️', 'Seni düşünüyoruz 🤍', 'Kapımız hep açık'];
@@ -134,29 +134,24 @@ class LocalNotifier {
     required String body,
     String subText = 'Haven',
     AndroidNotificationCategory category = AndroidNotificationCategory.reminder,
-  }) =>
-      NotificationDetails(
-        android: AndroidNotificationDetails(
-          ch.id,
-          ch.name,
-          channelDescription: ch.description,
-          importance: Importance.high,
-          priority: Priority.high,
-          icon: '@drawable/ic_stat_haven',
-          color: const Color(0xFF4A5C93),
-          subText: subText,
-          ticker: title,
-          category: category,
-          // Kilit ekranında içerik gizli: yanındaki kimse ne yazdığını görmesin.
-          visibility: NotificationVisibility.private,
-          styleInformation: BigTextStyleInformation(
-            body,
-            contentTitle: title,
-            summaryText: subText,
-          ),
-        ),
-        iOS: DarwinNotificationDetails(subtitle: subText, threadIdentifier: ch.id),
-      );
+  }) => NotificationDetails(
+    android: AndroidNotificationDetails(
+      ch.id,
+      ch.name,
+      channelDescription: ch.description,
+      importance: Importance.high,
+      priority: Priority.high,
+      icon: '@drawable/ic_stat_haven',
+      color: const Color(0xFF4A5C93),
+      subText: subText,
+      ticker: title,
+      category: category,
+      // Kilit ekranında içerik gizli: yanındaki kimse ne yazdığını görmesin.
+      visibility: NotificationVisibility.private,
+      styleInformation: BigTextStyleInformation(body, contentTitle: title, summaryText: subText),
+    ),
+    iOS: DarwinNotificationDetails(subtitle: subText, threadIdentifier: ch.id),
+  );
 
   /// Her açılışta ve her kayıttan sonra çağrılır.
   static Future<void> scheduleGentleNudges({required bool enabled, required bool checkedInToday}) async {
@@ -166,12 +161,19 @@ class LocalNotifier {
         await _plugin.cancel(id: id);
       }
       if (!enabled) return;
+      await _refreshChannels();
       final now = DateTime.now();
       for (final p in dailyPlan(now, checkedInToday: checkedInToday)) {
         await _schedule(_dailyIds[p.slot], p.when, p.title, p.body, 'daily');
       }
       for (var i = 0; i < _nudgeIds.length; i++) {
-        await _schedule(_nudgeIds[i], withinWindow(now.add(_nudgeOffsets[i])), nudgeTitles[i], nudges[i], 'nudge_${i + 1}');
+        await _schedule(
+          _nudgeIds[i],
+          withinWindow(now.add(_nudgeOffsets[i])),
+          nudgeTitles[i],
+          nudges[i],
+          'nudge_${i + 1}',
+        );
       }
       // Bugün henüz kayıt yoksa akşam tek bir küçük hatırlatma.
       if (!checkedInToday) {
@@ -193,17 +195,43 @@ class LocalNotifier {
     return t;
   }
 
-  static Future<void> _schedule(int id, DateTime when, String title, String body, String payload) =>
-      _plugin.zonedSchedule(
-        id: id,
-        scheduledDate: tz.TZDateTime.from(when, tz.UTC),
-        notificationDetails: _details(gentleChannel, title: title, body: body),
-        // Tam zamanlama izni gerekmez; birkaç dakikalık sapma bu amaç için sorun değil.
-        androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
-        title: title,
-        body: body,
-        payload: payload,
-      );
+  /// Metinler Türkçe kaynaktır; zamanlama anında kullanıcının diline çevrilir.
+  /// (Uygulama dili değişince açılışta yeniden zamanlanır.)
+  static Future<void> _schedule(int id, DateTime when, String titleTr, String bodyTr, String payload) {
+    final title = tx(titleTr);
+    final body = tx(bodyTr);
+    return _plugin.zonedSchedule(
+      id: id,
+      scheduledDate: tz.TZDateTime.from(when, tz.UTC),
+      notificationDetails: _details(gentleChannel, title: title, body: body),
+      // Tam zamanlama izni gerekmez; birkaç dakikalık sapma bu amaç için sorun değil.
+      androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
+      title: title,
+      body: body,
+      payload: payload,
+    );
+  }
+
+  /// Android ayarlarında görünen kanal adlarını etkin dile günceller.
+  static Future<void> _refreshChannels() async {
+    final android = _plugin.resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>();
+    await android?.createNotificationChannel(
+      AndroidNotificationChannel(
+        gentleChannel.id,
+        tx('Hatırlatmalar'),
+        description: tx('Gün içinde kısa motivasyon mesajları ve bir süre görünmediğinde hal hatır soran bildirimler.'),
+        importance: Importance.high,
+      ),
+    );
+    await android?.createNotificationChannel(
+      AndroidNotificationChannel(
+        socialChannel.id,
+        tx('Topluluk'),
+        description: tx('Arkadaş ekleme, cesaret notları, destekler ve yanıtlar.'),
+        importance: Importance.high,
+      ),
+    );
+  }
 
   /// Topluluk olayını üst çubukta göster.
   static Future<void> showInbox(InboxItem item) async {
@@ -213,9 +241,13 @@ class LocalNotifier {
         id: item.id.hashCode & 0x7fffffff,
         title: item.title,
         body: item.body,
-        notificationDetails: _details(socialChannel,
-            title: item.title, body: item.body, subText: 'Haven · Topluluk',
-            category: AndroidNotificationCategory.social),
+        notificationDetails: _details(
+          socialChannel,
+          title: item.title,
+          body: item.body,
+          subText: 'Haven · ${tx('Topluluk')}',
+          category: AndroidNotificationCategory.social,
+        ),
         payload: 'inbox',
       );
     } catch (e) {
