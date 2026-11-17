@@ -112,14 +112,13 @@ class HomeScreen extends ConsumerWidget {
               percent30: kind30 == 0 ? null : (kind30 * 100 / tracked30).round(),
             ),
             SectionTitle(l.todayRecords),
-            // Henüz kaydı yapılmamış alanlar: düğmeli kompakt kart.
-            for (final s in items.where((s) => !s.checkedInOn(today))) ...[
+            // Her alan için TEK kart: günün sorusu + "İyi geçti / Zordu".
+            // (Eskiden her alan ayrıca "İlerlemen" altında rekor kutusu olarak
+            // tekrar görünüyordu; rekor bilgisi artık bu kartın içinde.)
+            for (final s in items) ...[
               StruggleCard(struggle: s, recentHardDays: hardDays7),
               const SizedBox(height: 12),
             ],
-            // Bugün kaydı yapılanlar tek özet kartta: sayfa kalabalıklaşmaz.
-            if (items.any((s) => s.checkedInOn(today)))
-              DoneTodayCard(items: items.where((s) => s.checkedInOn(today)).toList()),
             SectionTitle(l.myNotes,
                 trailing: TextButton(
                   onPressed: () => pushScreen(context, 'journal', const JournalScreen()),

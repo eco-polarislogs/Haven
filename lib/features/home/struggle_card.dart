@@ -20,9 +20,10 @@ const _milestones = <int, String>{
   30: 'Bir ay! Kendinle gurur duyabilirsin.',
 };
 
-/// Bir alanın bugünkü kaydı: başlık + rekora doğru ince çubuk + iki düğme.
-/// Kompakt tutuldu; bugün kaydı yapılan alanlar ana sayfada tek bir özet
-/// kartta toplanır ([DoneTodayCard]), böylece sayfa kalabalıklaşmaz.
+/// Bir alanın günlük değerlendirme kartı. Her alan ana sayfada TEK kez
+/// görünür: başlık, iyi geçen gün sayısı, rekor yarışı satırı ve ince çubuk,
+/// altında o günün sorusu ve "İyi geçti / Zordu" düğmeleri. Bugün kaydı
+/// yapıldıysa düğmelerin yerinde günün sonucu yazar; yarın düğmeler yine gelir.
 class StruggleCard extends ConsumerWidget {
   const StruggleCard({super.key, required this.struggle, required this.recentHardDays});
 
@@ -37,58 +38,90 @@ class StruggleCard extends ConsumerWidget {
     final scheme = Theme.of(context).colorScheme;
     final l = context.l10n;
     final accent = categoryAccent(struggle.category);
-    final race = recordRaceOf(struggle.streak, todayKey());
+    final today = todayKey();
+    final race = recordRaceOf(struggle.streak, today);
+    final done = struggle.checkedInOn(today);
+    final hard = struggle.lastResult == CheckInResult.hard;
 
     return Card(
       color: categoryCardColor(struggle.category, scheme),
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(16, 14, 16, 14),
+        padding: const EdgeInsets.all(18),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(children: [
-              CategoryIcon(category: struggle.category, size: 34),
+              CategoryIcon(category: struggle.category, size: 38),
               const SizedBox(width: 12),
               Expanded(
-                child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                  Text(struggle.type.label, style: t.titleSmall?.copyWith(fontWeight: FontWeight.w700)),
-                  Text(raceLine(context, race), style: t.bodySmall, maxLines: 2),
+                child: Text(struggle.type.label, style: t.titleMedium?.copyWith(fontWeight: FontWeight.w600)),
+              ),
+              Column(crossAxisAlignment: CrossAxisAlignment.end, children: [
+                Text('${struggle.streak.totalKindDays}',
+                    style: t.headlineSmall?.copyWith(fontWeight: FontWeight.w700, color: accent)),
+                Text(l.kindDays, style: t.labelSmall),
+              ]),
+            ]),
+            const SizedBox(height: 6),
+            Text(raceLine(context, race), style: t.bodySmall),
+            if (race.best > 0) ...[
+              const SizedBox(height: 8),
+              ClipRRect(
+                borderRadius: BorderRadius.circular(9),
+                child: LinearProgressIndicator(
+                  value: race.progress,
+                  minHeight: 6,
+                  color: accent,
+                  backgroundColor: accent.withValues(alpha: 0.15),
+                ),
+              ),
+            ],
+            const SizedBox(height: 14),
+            if (!done) ...[
+              Text(struggle.category.checkInQuestion, style: t.bodyMedium),
+              const SizedBox(height: 12),
+              Row(children: [
+                Expanded(
+                  child: FilledButton.icon(
+                    style: FilledButton.styleFrom(backgroundColor: accent),
+                    onPressed: () => checkIn(context, ref, struggle, CheckInResult.kind, recentHardDays),
+                    icon: const Icon(Icons.light_mode_rounded, size: 18),
+                    label: Text(l.wentWell),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: OutlinedButton.icon(
+                    onPressed: () => checkIn(context, ref, struggle, CheckInResult.hard, recentHardDays),
+                    icon: const Icon(Icons.cloud_outlined, size: 18),
+                    label: Text(l.wasHard),
+                  ),
+                ),
+              ]),
+            ] else
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.fromLTRB(14, 12, 14, 12),
+                decoration: BoxDecoration(
+                  color: scheme.brightness == Brightness.dark
+                      ? Colors.white.withValues(alpha: 0.06)
+                      : Colors.white.withValues(alpha: 0.75),
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: Row(children: [
+                  Icon(hard ? Icons.favorite_border_rounded : Icons.check_circle_outline_rounded,
+                      size: 20, color: hard ? HavenColors.clay : accent),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Text(
+                      hard
+                          ? 'Bugün zor bir gündü ve yine de buradasın. Bu da bir adım.'
+                          : 'Bugünü kaydettin. Yarın yine buradayız.',
+                      style: t.bodyMedium,
+                    ),
+                  ),
                 ]),
               ),
-            ]),
-            const SizedBox(height: 10),
-            ClipRRect(
-              borderRadius: BorderRadius.circular(9),
-              child: LinearProgressIndicator(
-                value: race.best == 0 ? 0 : race.progress,
-                minHeight: 6,
-                color: accent,
-                backgroundColor: accent.withValues(alpha: 0.15),
-              ),
-            ),
-            const SizedBox(height: 12),
-            Text(struggle.category.checkInQuestion, style: t.bodyMedium),
-            const SizedBox(height: 10),
-            Row(children: [
-              Expanded(
-                child: FilledButton.icon(
-                  style: FilledButton.styleFrom(
-                      backgroundColor: accent, padding: const EdgeInsets.symmetric(vertical: 12)),
-                  onPressed: () => checkIn(context, ref, struggle, CheckInResult.kind, recentHardDays),
-                  icon: const Icon(Icons.light_mode_rounded, size: 18),
-                  label: Text(l.wentWell),
-                ),
-              ),
-              const SizedBox(width: 10),
-              Expanded(
-                child: OutlinedButton.icon(
-                  style: OutlinedButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 12)),
-                  onPressed: () => checkIn(context, ref, struggle, CheckInResult.hard, recentHardDays),
-                  icon: const Icon(Icons.cloud_outlined, size: 18),
-                  label: Text(l.wasHard),
-                ),
-              ),
-            ]),
           ],
         ),
       ),
@@ -107,50 +140,6 @@ String raceLine(BuildContext context, RecordRace race) {
   }
   if (race.toRecord == 0) return l.recordReached;
   return '${l.daysCount(race.live)} · ${l.raceBody(race.toRecord)}';
-}
-
-/// Bugün kaydı yapılan alanlar: tek kartta, satır satır.
-class DoneTodayCard extends StatelessWidget {
-  const DoneTodayCard({super.key, required this.items});
-  final List<Struggle> items;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = Theme.of(context).textTheme;
-    final today = todayKey();
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
-        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Text('Bugün kaydettiklerin', style: t.labelLarge?.copyWith(fontWeight: FontWeight.w700)),
-          const SizedBox(height: 4),
-          for (final s in items)
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 6),
-              child: Row(children: [
-                CategoryIcon(category: s.category, size: 28),
-                const SizedBox(width: 10),
-                Expanded(
-                  child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                    Text(s.type.label, style: t.bodyMedium?.copyWith(fontWeight: FontWeight.w600)),
-                    Text(raceLine(context, recordRaceOf(s.streak, today)), style: t.bodySmall, maxLines: 2),
-                  ]),
-                ),
-                Icon(
-                  s.lastResult == CheckInResult.hard ? Icons.favorite_border_rounded : Icons.check_circle_rounded,
-                  color: s.lastResult == CheckInResult.hard ? HavenColors.clay : categoryAccent(s.category),
-                ),
-              ]),
-            ),
-          if (items.any((s) => s.lastResult == CheckInResult.hard))
-            Padding(
-              padding: const EdgeInsets.only(top: 4, bottom: 6),
-              child: Text('Zor geçen bir gün de olsa buradasın. Bu da bir adım.', style: t.bodySmall),
-            ),
-        ]),
-      ),
-    );
-  }
 }
 
 /// Kayıt mantığı (kart ve kısayollar ortak kullanır).

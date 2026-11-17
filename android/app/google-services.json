@@ -7,51 +7,6 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:405103373295:android:b1bf7dda19665eee97241a",
-        "android_client_info": {
-          "package_name": "com.gentlyapp.gently"
-        }
-      },
-      "oauth_client": [
-        {
-          "client_id": "405103373295-la91a905fcq9p1ngo19jl6tj5ltt7ag5.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.gentlyapp.gently",
-            "certificate_hash": "acfcda3cf1e142d5f516d995b0c84d9b7644f4c1"
-          }
-        },
-        {
-          "client_id": "405103373295-q7d4a3946ltpknj94fmlkpaltr71cp90.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.gentlyapp.gently",
-            "certificate_hash": "bf201551e8ee2db712bbe254bba5480e83c7c34c"
-          }
-        },
-        {
-          "client_id": "405103373295-ollv78n7q700tq9aq5l3rph4qh2rs5i9.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
-      "api_key": [
-        {
-          "current_key": "AIzaSyB8X1lnKu78F1F2PKNY-L8mooYkQSTq3XQ"
-        }
-      ],
-      "services": {
-        "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "405103373295-ollv78n7q700tq9aq5l3rph4qh2rs5i9.apps.googleusercontent.com",
-              "client_type": 3
-            }
-          ]
-        }
-      }
-    },
-    {
-      "client_info": {
         "mobilesdk_app_id": "1:405103373295:android:97bfce0ac11b376697241a",
         "android_client_info": {
           "package_name": "com.havenapp.haven"

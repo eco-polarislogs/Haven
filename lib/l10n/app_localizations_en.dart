@@ -282,7 +282,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get gameMemory => 'Memory cards';
 
   @override
-  String get gameMemoryDesc => 'Gently occupy your mind';
+  String get gameMemoryDesc => 'Calmly occupy your mind';
 
   @override
   String get groundingTitle => '5-4-3-2-1 grounding';
