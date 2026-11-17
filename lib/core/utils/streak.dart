@@ -2,9 +2,20 @@ import 'dart:math';
 
 import 'day_key.dart';
 
-/// `kind`  = "Bugün iyi geçti" (dürtüye yenik düşmedim / kendime zarar vermedim)
-/// `hard`  = "Bugün zordu"     (cezalandırmıyoruz, sadece kaydediyoruz)
-enum CheckInResult { kind, hard }
+/// Günün değerlendirmesi (kullanıcının gözünden):
+/// `kind`      = "Başardım"    → seri devam eder.
+/// `struggled` = "Zorlandım"   → zor oldu ama dayandım; seri YİNE devam eder
+///                (dürtüye rağmen dayanmak gerçek bir başarıdır).
+/// `hard`      = "Başaramadım" → seri dinlenir, biten seri geçmişe yazılır;
+///                cezalandırmıyoruz, sadece kaydediyoruz.
+enum CheckInResult {
+  kind,
+  struggled,
+  hard;
+
+  /// Bu sonuç seriyi sürdürür mü?
+  bool get keepsStreak => this != CheckInResult.hard;
+}
 
 /// Şefkat payı: Bir günü kaçırmak seriyi BOZMAZ.
 const int kGraceDays = 1;

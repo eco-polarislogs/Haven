@@ -86,7 +86,7 @@ class StreakHero extends StatelessWidget {
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
                         color: switch (week[i]) {
-                          DayStatus.kind || DayStatus.hard => p.accent,
+                          DayStatus.kind || DayStatus.struggled || DayStatus.hard => p.accent,
                           DayStatus.none => Colors.white.withValues(alpha: 0.1),
                         },
                         border: i == todayIndex ? Border.all(color: Colors.white, width: 2) : null,

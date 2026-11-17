@@ -79,7 +79,7 @@ Tasarım hedefleri, öncelik sırasıyla:
 | **Tarihler `"2026-11-17"` string, yerel saatle** | Timestamp UTC'dir; TR'de 01:30'daki check-in UTC'de önceki güne düşer. String anahtar kullanıcının yaşadığı gündür. |
 | **Doküman ID'leri deterministik** (`typeId`, `yyyy-MM`) | Offline'da iki kez basılsa bile kopya oluşmaz; yazma idempotent. |
 | **`categoryIds` kullanıcı dokümanında** | Function, kullanıcı başına alt koleksiyon okumadan mesaj tonunu seçer. |
-| **`totalKindDays` hiç azalmaz** | Şefkat felsefesi: zor gün emeği silmez. `currentStreak` sadece kullanıcı "zordu" dediğinde 0 olur; uygulamaya girmemek seriyi 1 gün boyunca bozmaz (`kGraceDays`). |
+| **`totalKindDays` hiç azalmaz** | Şefkat felsefesi: zor gün emeği silmez. Günlük değerlendirme 3 sonuçlu: `kind` (Başardım) ve `struggled` (Zorlandım ama dayandım) seriyi sürdürür; `currentStreak` yalnızca `hard` (Başaramadım) seçildiğinde 0 olur ve biten seri `history`ye yazılır; uygulamaya girmemek seriyi 1 gün boyunca bozmaz (`kGraceDays`). |
 | **`nudge` alanı istemciye kapalı** | Bildirim sayacı istemciden değiştirilemez. |
 | **Katalog (kategoriler, metinler) Firestore'da değil kodda** | Sıfır okuma, tam offline. |
 

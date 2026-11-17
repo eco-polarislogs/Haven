@@ -9,7 +9,7 @@ import 'package:haven/data/models/struggle.dart';
 import 'package:haven/features/home/struggle_card.dart';
 import 'package:haven/l10n/app_localizations.dart';
 
-/// Ana sayfadaki günlük değerlendirme kartı: her alan için "İyi geçti / Zordu"
+/// Ana sayfadaki günlük değerlendirme kartı: her alan için "Başardım / Zorlandım / Başaramadım"
 /// düğmeleri kayıt yapılmadıysa görünür; kayıt yapıldıysa günün sonucu yazar.
 void main() {
   Future<void> pump(WidgetTester tester, Struggle s) => tester.pumpWidget(
@@ -30,11 +30,13 @@ void main() {
 
   final type = typesOf(StruggleCategory.bfrb).first;
 
-  testWidgets('bugün değerlendirilmemiş alan: soru + iki düğme', (tester) async {
+  testWidgets('bugün değerlendirilmemiş alan: soru + üç seçenek', (tester) async {
     await pump(tester, Struggle(type: type, streak: const StreakState()));
     await tester.pumpAndSettle();
-    expect(find.text('İyi geçti'), findsOneWidget);
-    expect(find.text('Zordu'), findsOneWidget);
+    expect(find.text('Başardım'), findsOneWidget);
+    expect(find.text('Zorlandım'), findsOneWidget);
+    expect(find.text('Başaramadım'), findsOneWidget);
+    expect(find.text('Zor oldu ama dayandım'), findsOneWidget);
     expect(find.text(StruggleCategory.bfrb.checkInQuestion), findsOneWidget);
   });
 
@@ -49,8 +51,23 @@ void main() {
       ),
     );
     await tester.pumpAndSettle();
-    expect(find.text('İyi geçti'), findsNothing);
+    expect(find.text('Başardım'), findsNothing);
     expect(find.textContaining('Bugünü kaydettin'), findsOneWidget);
     expect(find.text('2'), findsOneWidget); // iyi geçen gün sayısı
+  });
+
+  testWidgets('"zorlandım ama dayandım" kaydı: seri sürer, kendine özgü mesaj', (tester) async {
+    final today = todayKey();
+    await pump(
+      tester,
+      Struggle(
+        type: type,
+        streak: StreakState(current: 4, longest: 4, totalKindDays: 4, lastKindDay: today, lastCheckInDay: today),
+        lastResult: CheckInResult.struggled,
+      ),
+    );
+    await tester.pumpAndSettle();
+    expect(find.textContaining('Zorlandın ama dayandın'), findsOneWidget);
+    expect(find.text('Zorlandım'), findsNothing);
   });
 }

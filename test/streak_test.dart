@@ -1,6 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:haven/core/utils/day_key.dart';
 import 'package:haven/core/utils/streak.dart';
+import 'package:haven/data/models/month_log.dart';
 
 void main() {
   group('alan serisi', () {
@@ -70,5 +71,41 @@ void main() {
     expect(daysBetween('2026-10-31', '2026-11-01'), 1);
     expect(daysBetween('2026-12-31', '2027-01-01'), 1);
     expect(daysBetween('2028-02-28', '2028-03-01'), 2); // artık yıl
+  });
+
+  group('üç sonuç: başardım / zorlandım / başaramadım', () {
+    test('"zorlandım ama dayandım" seriyi sürdürür ve iyi gün sayılır', () {
+      var s = const StreakState();
+      s = applyCheckIn(s, '2026-11-01', CheckInResult.kind)!;
+      s = applyCheckIn(s, '2026-11-02', CheckInResult.struggled)!;
+      s = applyCheckIn(s, '2026-11-03', CheckInResult.kind)!;
+      expect(s.current, 3);
+      expect(s.totalKindDays, 3);
+      expect(s.history, isEmpty);
+    });
+
+    test('"başaramadım" seriyi dinlendirir, biten seri geçmişe yazılır', () {
+      var s = const StreakState();
+      s = applyCheckIn(s, '2026-11-01', CheckInResult.struggled)!;
+      s = applyCheckIn(s, '2026-11-02', CheckInResult.struggled)!;
+      s = applyCheckIn(s, '2026-11-03', CheckInResult.hard)!;
+      expect(s.current, 0);
+      expect(s.longest, 2);
+      expect(s.history.single.days, 2);
+    });
+
+    test('ay takvimi: başaramadım > zorlandım > başardım önceliği', () {
+      final log = MonthLog({
+        1: {'a': CheckInResult.kind},
+        2: {'a': CheckInResult.kind, 'b': CheckInResult.struggled},
+        3: {'a': CheckInResult.struggled, 'b': CheckInResult.hard},
+      });
+      expect(log.statusOf(1), DayStatus.kind);
+      expect(log.statusOf(2), DayStatus.struggled);
+      expect(log.statusOf(3), DayStatus.hard);
+      expect(log.statusOf(4), DayStatus.none);
+      expect(CheckInResult.struggled.keepsStreak, isTrue);
+      expect(CheckInResult.hard.keepsStreak, isFalse);
+    });
   });
 }

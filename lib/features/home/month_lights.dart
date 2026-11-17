@@ -58,11 +58,13 @@ class MonthLights extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 12),
-            Row(
+            Wrap(
+              spacing: 14,
+              runSpacing: 6,
               children: [
-                _legend(context, HavenColors.kindDay, tx('İyi geçen gün')),
-                const SizedBox(width: 14),
-                _legend(context, HavenColors.hardDay, tx('Zor gün')),
+                _legend(context, HavenColors.kindDay, tx('Başardım')),
+                _legend(context, HavenColors.struggledDay, tx('Zorlandım')),
+                _legend(context, HavenColors.hardDay, tx('Başaramadım')),
               ],
             ),
           ],
@@ -97,6 +99,7 @@ class _Day extends StatelessWidget {
     final scheme = Theme.of(context).colorScheme;
     final fill = switch (status) {
       DayStatus.kind => HavenColors.kindDay,
+      DayStatus.struggled => HavenColors.struggledDay,
       DayStatus.hard => HavenColors.hardDay,
       DayStatus.none => Colors.transparent,
     };
@@ -105,6 +108,7 @@ class _Day extends StatelessWidget {
         'day': day,
         'p': switch (status) {
           DayStatus.kind => tx('iyi geçen gün'),
+          DayStatus.struggled => tx('zorlandığın ama dayandığın gün'),
           DayStatus.hard => tx('zor gün'),
           DayStatus.none => tx('kayıt yok'),
         },
@@ -120,7 +124,7 @@ class _Day extends StatelessWidget {
               : null,
         ),
         alignment: Alignment.center,
-        child: status == DayStatus.kind
+        child: status == DayStatus.kind || status == DayStatus.struggled
             ? const Icon(Icons.light_mode_rounded, size: 16, color: Colors.white)
             : Text(
                 '$day',

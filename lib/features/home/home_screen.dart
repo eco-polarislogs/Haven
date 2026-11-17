@@ -59,7 +59,7 @@ class HomeScreen extends ConsumerWidget {
       final log = (d.year == now.year && d.month == now.month) ? month : prevMonth;
       final entries = log.days[d.day]?.values ?? const <CheckInResult>[];
       tracked30 += entries.length;
-      kind30 += entries.where((r) => r == CheckInResult.kind).length;
+      kind30 += entries.where((r) => r.keepsStreak).length;
     }
 
     final list = struggles.value ?? const <Struggle>[];

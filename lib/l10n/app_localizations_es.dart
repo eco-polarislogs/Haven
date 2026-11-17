@@ -31,13 +31,16 @@ class AppLocalizationsEs extends AppLocalizations {
   String get welcomeSubtitle => 'Sin juicios, sin prisas; a tu propio ritmo.';
 
   @override
-  String get welcomeFeaturePrivate => 'Un diario privado solo para ti. Solo tú puedes ver tus registros.';
+  String get welcomeFeaturePrivate =>
+      'Un diario privado solo para ti. Solo tú puedes ver tus registros.';
 
   @override
-  String get welcomeFeatureCommunity => 'Apoyo amable y amigos de racha de quienes recorren el mismo camino.';
+  String get welcomeFeatureCommunity =>
+      'Apoyo amable y amigos de racha de quienes recorren el mismo camino.';
 
   @override
-  String get welcomeFeatureCalm => 'Respiración, anclaje y juegos breves para los momentos difíciles.';
+  String get welcomeFeatureCalm =>
+      'Respiración, anclaje y juegos breves para los momentos difíciles.';
 
   @override
   String get welcomeGoogle => 'Regístrate / inicia sesión con Google';
@@ -105,7 +108,8 @@ class AppLocalizationsEs extends AppLocalizations {
   String get areasTitle => '¿Con qué estás lidiando?';
 
   @override
-  String get areasSubtitle => 'Puedes elegir más de una. Esto es privado y puedes cambiarlo cuando quieras.';
+  String get areasSubtitle =>
+      'Puedes elegir más de una. Esto es privado y puedes cambiarlo cuando quieras.';
 
   @override
   String get communityTitle => 'Conoce a quienes recorren el mismo camino';
@@ -143,7 +147,12 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String bestStreak(int days) {
-    String _temp0 = intl.Intl.pluralLogic(days, locale: localeName, other: '$days días', one: '1 día');
+    String _temp0 = intl.Intl.pluralLogic(
+      days,
+      locale: localeName,
+      other: '$days días',
+      one: '1 día',
+    );
     return 'Mejor: $_temp0';
   }
 
@@ -151,7 +160,8 @@ class AppLocalizationsEs extends AppLocalizations {
   String get streakDoneToday => 'Hoy ya te registraste; tu racha continúa.';
 
   @override
-  String get streakNotDone => 'Regístrate hoy para mantener tu racha. Saltarte un día no la rompe.';
+  String get streakNotDone =>
+      'Regístrate hoy para mantener tu racha. Saltarte un día no la rompe.';
 
   @override
   String get quoteTitle => 'Frase del día';
@@ -220,7 +230,12 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String raceBody(int left) {
-    String _temp0 = intl.Intl.pluralLogic(left, locale: localeName, other: 'faltan $left días', one: 'falta 1 día');
+    String _temp0 = intl.Intl.pluralLogic(
+      left,
+      locale: localeName,
+      other: 'faltan $left días',
+      one: 'falta 1 día',
+    );
     return 'Te $_temp0 para tu récord. Sin prisa, a tu ritmo.';
   }
 
@@ -243,7 +258,8 @@ class AppLocalizationsEs extends AppLocalizations {
   String get emergencyTitle => 'Apoyo urgente';
 
   @override
-  String get emergencyBody => 'Si no te sientes a salvo, llama ahora. Pedir ayuda requiere fuerza.';
+  String get emergencyBody =>
+      'Si no te sientes a salvo, llama ahora. Pedir ayuda requiere fuerza.';
 
   @override
   String get breathingTitle => 'Inhala · sostén · exhala';
@@ -313,7 +329,12 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String giftDaysLeft(int left) {
-    String _temp0 = intl.Intl.pluralLogic(left, locale: localeName, other: 'Faltan $left días', one: 'Falta 1 día');
+    String _temp0 = intl.Intl.pluralLogic(
+      left,
+      locale: localeName,
+      other: 'Faltan $left días',
+      one: 'Falta 1 día',
+    );
     return '$_temp0';
   }
 
@@ -346,13 +367,23 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String daysCount(int count) {
-    String _temp0 = intl.Intl.pluralLogic(count, locale: localeName, other: '$count días', one: '1 día');
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count días',
+      one: '1 día',
+    );
     return '$_temp0';
   }
 
   @override
   String recordLabel(int count) {
-    String _temp0 = intl.Intl.pluralLogic(count, locale: localeName, other: '$count días', one: '1 día');
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count días',
+      one: '1 día',
+    );
     return 'Récord: $_temp0';
   }
 
@@ -360,11 +391,17 @@ class AppLocalizationsEs extends AppLocalizations {
   String get journeyStart => 'Tu camino puede empezar hoy.';
 
   @override
-  String get recordReached => '¡Alcanzaste tu récord! Mañana puede haber uno nuevo.';
+  String get recordReached =>
+      '¡Alcanzaste tu récord! Mañana puede haber uno nuevo.';
 
   @override
   String comebackShort(int best) {
-    String _temp0 = intl.Intl.pluralLogic(best, locale: localeName, other: '$best días', one: '1 día');
+    String _temp0 = intl.Intl.pluralLogic(
+      best,
+      locale: localeName,
+      other: '$best días',
+      one: '1 día',
+    );
     return 'Tu récord es de $_temp0. Un buen día para empezar de nuevo.';
   }
 

@@ -1,6 +1,6 @@
 import '../../core/utils/streak.dart';
 
-enum DayStatus { none, kind, hard }
+enum DayStatus { none, kind, struggled, hard }
 
 /// `users/{uid}/checkins/{yyyy-MM}` dokümanı.
 ///
@@ -31,11 +31,14 @@ class MonthLog {
     return MonthLog(out);
   }
 
-  /// O gün herhangi bir alanda "zordu" denildiyse `hard`, sadece iyi
-  /// günler varsa `kind`, kayıt yoksa `none`.
+  /// O gün herhangi bir alanda "başaramadım" denildiyse `hard`; yoksa
+  /// "zorlandım" varsa `struggled`; yalnızca "başardım" varsa `kind`.
   DayStatus statusOf(int day) {
     final entries = days[day];
     if (entries == null || entries.isEmpty) return DayStatus.none;
-    return entries.values.contains(CheckInResult.hard) ? DayStatus.hard : DayStatus.kind;
+    final v = entries.values;
+    if (v.contains(CheckInResult.hard)) return DayStatus.hard;
+    if (v.contains(CheckInResult.struggled)) return DayStatus.struggled;
+    return DayStatus.kind;
   }
 }

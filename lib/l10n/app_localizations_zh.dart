@@ -43,7 +43,8 @@ class AppLocalizationsZh extends AppLocalizations {
   String get welcomeGoogle => '使用 Google 注册 / 登录';
 
   @override
-  String get welcomeGoogleNote => 'Google 只用于验证你的身份，你的密码绝不会与 Haven 共享。其余的注册步骤我们会在这里一起完成。';
+  String get welcomeGoogleNote =>
+      'Google 只用于验证你的身份，你的密码绝不会与 Haven 共享。其余的注册步骤我们会在这里一起完成。';
 
   @override
   String get privacyPolicy => '隐私政策';
@@ -109,7 +110,8 @@ class AppLocalizationsZh extends AppLocalizations {
   String get communityTitle => '认识同路人';
 
   @override
-  String get communitySubtitle => '在 Haven 社区里，面临相似挑战的人们互相留下温暖的留言、看到彼此的连续记录并互相鼓励。';
+  String get communitySubtitle =>
+      '在 Haven 社区里，面临相似挑战的人们互相留下温暖的留言、看到彼此的连续记录并互相鼓励。';
 
   @override
   String get communityJoin => '我想加入社区';

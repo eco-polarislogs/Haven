@@ -10,6 +10,8 @@ import '../../data/services/local_notifier.dart';
 import '../../l10n/l10n.dart';
 import '../../providers.dart';
 import '../onboarding/struggle_selector.dart';
+import '../../core/navigation.dart';
+import '../support/calm_screen.dart';
 import '../support/hard_day_sheet.dart';
 import '../../l10n/tx.dart';
 
@@ -43,7 +45,7 @@ class StruggleCard extends ConsumerWidget {
     final today = todayKey();
     final race = recordRaceOf(struggle.streak, today);
     final done = struggle.checkedInOn(today);
-    final hard = struggle.lastResult == CheckInResult.hard;
+    final last = struggle.lastResult;
 
     return Card(
       color: categoryCardColor(struggle.category, scheme),
@@ -89,25 +91,44 @@ class StruggleCard extends ConsumerWidget {
             if (!done) ...[
               Text(struggle.category.checkInQuestion, style: t.bodyMedium),
               const SizedBox(height: 12),
-              Row(
-                children: [
-                  Expanded(
-                    child: FilledButton.icon(
-                      style: FilledButton.styleFrom(backgroundColor: accent),
-                      onPressed: () => checkIn(context, ref, struggle, CheckInResult.kind, recentHardDays),
-                      icon: const Icon(Icons.light_mode_rounded, size: 18),
-                      label: Text(l.wentWell),
+              // Üç dürüst seçenek: başardım / zorlandım ama dayandım / başaramadım.
+              // IntrinsicHeight: açıklaması uzun olan düğme diğerlerini de uzatır.
+              IntrinsicHeight(
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Expanded(
+                      child: _ResultButton(
+                        icon: Icons.check_circle_rounded,
+                        label: tx('Başardım'),
+                        hint: tx('Bugün iyi geçti'),
+                        color: accent,
+                        filled: true,
+                        onTap: () => checkIn(context, ref, struggle, CheckInResult.kind, recentHardDays),
+                      ),
                     ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: OutlinedButton.icon(
-                      onPressed: () => checkIn(context, ref, struggle, CheckInResult.hard, recentHardDays),
-                      icon: const Icon(Icons.cloud_outlined, size: 18),
-                      label: Text(l.wasHard),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: _ResultButton(
+                        icon: Icons.bolt_rounded,
+                        label: tx('Zorlandım'),
+                        hint: tx('Zor oldu ama dayandım'),
+                        color: HavenColors.struggledDay,
+                        onTap: () => checkIn(context, ref, struggle, CheckInResult.struggled, recentHardDays),
+                      ),
                     ),
-                  ),
-                ],
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: _ResultButton(
+                        icon: Icons.favorite_border_rounded,
+                        label: tx('Başaramadım'),
+                        hint: tx('Bugün olmadı'),
+                        color: HavenColors.clay,
+                        onTap: () => checkIn(context, ref, struggle, CheckInResult.hard, recentHardDays),
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ] else
               Container(
@@ -122,18 +143,25 @@ class StruggleCard extends ConsumerWidget {
                 child: Row(
                   children: [
                     Icon(
-                      hard ? Icons.favorite_border_rounded : Icons.check_circle_outline_rounded,
+                      switch (last) {
+                        CheckInResult.hard => Icons.favorite_border_rounded,
+                        CheckInResult.struggled => Icons.bolt_rounded,
+                        _ => Icons.check_circle_outline_rounded,
+                      },
                       size: 20,
-                      color: hard ? HavenColors.clay : accent,
+                      color: switch (last) {
+                        CheckInResult.hard => HavenColors.clay,
+                        CheckInResult.struggled => HavenColors.struggledDay,
+                        _ => accent,
+                      },
                     ),
                     const SizedBox(width: 12),
                     Expanded(
-                      child: Text(
-                        hard
-                            ? tx('Bugün zor bir gündü ve yine de buradasın. Bu da bir adım.')
-                            : tx('Bugünü kaydettin. Yarın yine buradayız.'),
-                        style: t.bodyMedium,
-                      ),
+                      child: Text(switch (last) {
+                        CheckInResult.hard => tx('Bugün zor bir gündü ve yine de buradasın. Bu da bir adım.'),
+                        CheckInResult.struggled => tx('Zorlandın ama dayandın. Bu, en değerli başarılardan biri.'),
+                        _ => tx('Bugünü kaydettin. Yarın yine buradayız.'),
+                      }, style: t.bodyMedium),
                     ),
                   ],
                 ),
@@ -196,8 +224,78 @@ void checkIn(BuildContext context, WidgetRef ref, Struggle struggle, CheckInResu
     }
     // Biten seri silinmez; şefkatle hatırlatılır.
     showHardDaySheet(context, struggle.category, endedStreak: struggle.streak.current);
+  } else if (result == CheckInResult.struggled) {
+    // Dayanmak gerçek bir başarı: seri sürer; sakinleşme araçlarına kısa yol.
+    final milestone = _milestones[outcome.state.current];
+    final message = tx('Zorlandın ama dayandın; serin devam ediyor. Bu gerçek bir güç.');
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(milestone == null ? message : '$message $milestone'),
+        duration: const Duration(seconds: 6),
+        action: SnackBarAction(
+          label: tx('Sakinleş'),
+          onPressed: () => pushScreen(context, 'calm', CalmScreen(category: struggle.category)),
+        ),
+      ),
+    );
   } else {
     final message = _milestones[outcome.state.current] ?? tx('Bugünü kaydettin. Küçük adımlar da gerçek adımlardır.');
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
+  }
+}
+
+/// Değerlendirme düğmesi: simge, kısa etiket ve altında ne anlama geldiği.
+class _ResultButton extends StatelessWidget {
+  const _ResultButton({
+    required this.icon,
+    required this.label,
+    required this.hint,
+    required this.color,
+    required this.onTap,
+    this.filled = false,
+  });
+
+  final IconData icon;
+  final String label;
+  final String hint;
+  final Color color;
+  final VoidCallback onTap;
+  final bool filled;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = Theme.of(context).textTheme;
+    final fg = filled ? Colors.white : HavenColors.ink;
+    return Material(
+      color: filled ? color : color.withValues(alpha: 0.18),
+      borderRadius: BorderRadius.circular(16),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(16),
+        onTap: onTap,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 12),
+          child: Column(
+            children: [
+              Icon(icon, color: filled ? Colors.white : color, size: 24),
+              const SizedBox(height: 6),
+              Text(
+                label,
+                textAlign: TextAlign.center,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: t.labelLarge?.copyWith(color: fg, fontWeight: FontWeight.w700),
+              ),
+              const SizedBox(height: 2),
+              Text(
+                hint,
+                textAlign: TextAlign.center,
+                maxLines: 2,
+                style: t.labelSmall?.copyWith(color: fg.withValues(alpha: 0.8)),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }

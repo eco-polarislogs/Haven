@@ -29,6 +29,9 @@ class HavenColors {
   /// Takvimdeki gün renkleri.
   static const kindDay = Color(0xFF8CC3BE);
   static const hardDay = Color(0xFFE6C1AE);
+
+  /// "Zorlandım ama dayandım": ışık yine yanar, sıcak bir tonla.
+  static const struggledDay = Color(0xFFE3B66F);
 }
 
 /// Her mücadele kategorisinin kart tonu: ayırt edilebilir, soluk ve nötr.
