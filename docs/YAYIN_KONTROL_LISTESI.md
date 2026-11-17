@@ -7,7 +7,7 @@ Son kontrol: 17 Kasım 2026 · sürüm 3.2.0 (3)
 | Konu | Durum | Nasıl doğrulandı |
 |---|---|---|
 | Google ile giriş (Android), Apple ile giriş kodu (iOS) | Hazır | Emülatörde giriş; Firebase'de debug + yükleme anahtarı SHA-1/SHA-256 kayıtlı |
-| Firestore veritabanı + güvenlik kuralları | Yayında | `firebase deploy --only firestore:rules` |
+| Firestore veritabanı + güvenlik kuralları | Yayında (17 Kasım 2026) | `rules_test/`: kayıt, günlük değerlendirme, notlar, paylaşım, destek, yanıt, arkadaşlık, engelleme, destek talebi, şikâyet, geliştirici işlemleri ve hesap silme; uygulamanın gönderdiği verinin aynısıyla emülatörde 12/12. Çalıştır: `firebase emulators:exec --only firestore --project demo-haven "npm --prefix rules_test test"` (Java gerekir) |
 | Analytics (ekran + 20 özel olay) | Hazır | `analytics_service.dart`; DebugView ile izlenebilir |
 | Bildirimler: cihazda zamanlanan günlük/kişisel hatırlatmalar, bildirim merkezi, FCM | Hazır | Hepsi uygulama kapalıyken de gelir ve ekranın üstünden kayar (yüksek öncelikli kanal; FCM için `default_notification_channel_id`). `test/features_test.dart` |
 | Gizlilik politikası + hesap silme sayfası | Yayında | https://ecren-7050e.web.app/gizlilik · https://ecren-7050e.web.app/hesap-silme |
