@@ -94,20 +94,57 @@ void main() {
   });
 
   group('telefon bildirimleri', () {
-    test('şefkatli mesajlar denetimden geçer ve sorunu ifşa etmez', () {
-      for (final m in [...LocalNotifier.nudges, LocalNotifier.eveningReminder]) {
+    final allTexts = [
+      ...LocalNotifier.nudges,
+      ...LocalNotifier.nudgeTitles,
+      for (final (t, b) in LocalNotifier.eveningReminders) ...[t, b],
+      ...LocalNotifier.checkInInvites,
+      ...LocalNotifier.checkInInvitesStreak,
+      ...LocalNotifier.greetingTitles,
+      ...LocalNotifier.dailyTitles,
+    ];
+
+    test('şefkatli mesajlar denetimden geçer, baskı kurmaz ve sorunu ifşa etmez', () {
+      for (final m in allTexts) {
         expect(ContentModerator.check(m, maxLength: 400).isOk, isTrue, reason: m);
-        for (final w in ['bozul', 'kaybet', 'başarısız', 'kilo', 'kaygı', 'zarar', 'depres']) {
+        for (final w in ['bozul', 'kaybet', 'başarısız', 'sıfırlan', 'kilo', 'kaygı', 'zarar', 'depres']) {
           expect(m.toLowerCase().contains(w), isFalse, reason: '"$w" → $m');
         }
+        for (final c in StruggleCategory.values) {
+          expect(m.toLowerCase(), isNot(contains(c.shortTitle.toLowerCase())), reason: m);
+        }
       }
+    });
+
+    test('çeşitlilik: her bildirim türünün en az 4 farklı metni var, her gün sıradaki gelir', () {
+      final pools = <String, List<Object>>{
+        for (var i = 0; i < LocalNotifier.nudgeLadder.length; i++) 'merdiven ${i + 1}': LocalNotifier.nudgeLadder[i],
+        'akşam': LocalNotifier.eveningReminders,
+        'davet': LocalNotifier.checkInInvites,
+        'seri daveti': LocalNotifier.checkInInvitesStreak,
+        'isimli selam': LocalNotifier.greetingTitles,
+      };
+      for (final MapEntry(key: name, value: pool) in pools.entries) {
+        expect(pool.length, greaterThanOrEqualTo(4), reason: name);
+        expect(pool.toSet().length, pool.length, reason: '$name: tekrar eden metin');
+        // Aynı gün (sabah ya da akşam kurulsa da) aynısı; ertesi gün farklısı.
+        final today = LocalNotifier.variantFor(pool, DateTime(2026, 11, 18, 9));
+        expect(LocalNotifier.variantFor(pool, DateTime(2026, 11, 18, 20)), today, reason: name);
+        expect(LocalNotifier.variantFor(pool, DateTime(2026, 11, 19, 9)), isNot(today), reason: name);
+        // Bir hafta içinde havuzun tamamı (ya da 7 farklısı) görülür.
+        final week = {for (var d = 0; d < 7; d++) LocalNotifier.variantFor(pool, DateTime(2026, 11, 18 + d))};
+        expect(week.length, pool.length < 7 ? pool.length : 7, reason: name);
+      }
+      expect(LocalNotifier.dailyTitles.length, greaterThanOrEqualTo(14));
+      expect(LocalNotifier.checkInInvitesStreak.every((m) => m.contains('{n}')), isTrue);
+      expect(LocalNotifier.greetingTitles.every((m) => m.contains('{name}')), isTrue);
     });
 
     test('gün içi bildirim: her gün 13:00, 7 gün, değişen ve sorunu adlandırmayan mesaj', () {
       final plan = LocalNotifier.dailyPlan(DateTime(2026, 11, 18, 9), checkedInToday: false);
       expect(plan.length, 7);
       expect(plan.every((p) => p.when.hour == 13 && p.when.minute == 0), isTrue);
-      expect(plan.first.body, LocalNotifier.checkInInvite); // bugün kayıt yoksa davet
+      expect(LocalNotifier.checkInInvites, contains(plan.first.body)); // bugün kayıt yoksa davet
       expect(plan.map((p) => p.body).toSet().length, greaterThan(3)); // her gün farklı
       for (final p in plan) {
         expect(LocalNotifier.withinWindow(p.when), p.when, reason: "sessiz saat dışında");
@@ -122,7 +159,7 @@ void main() {
       expect(late.length, 6);
       expect(late.first.when.day, 19);
       final done = LocalNotifier.dailyPlan(DateTime(2026, 11, 18, 9), checkedInToday: true);
-      expect(done.first.body, isNot(LocalNotifier.checkInInvite));
+      expect(LocalNotifier.checkInInvites, isNot(contains(done.first.body)));
     });
 
     test('gün içi bildirim kişiye göre: kendi alanlarının sözleri, kendi serisi, takma adı', () {
@@ -134,8 +171,8 @@ void main() {
         streak: 5,
         nickname: 'Deniz',
       );
-      expect(plan.first.body, LocalNotifier.checkInInviteStreak);
-      expect(plan.first.title, LocalNotifier.greetingTitle);
+      expect(LocalNotifier.checkInInvitesStreak, contains(plan.first.body));
+      expect(LocalNotifier.greetingTitles, contains(plan.first.title));
       expect(plan.first.args, {'name': 'Deniz', 'n': 5});
       final bodies = plan.skip(1).map((p) => p.body).toList();
       expect(bodies.any(StruggleCategory.sleep.affirmationsTr.contains), isTrue, reason: 'kendi alanından söz');
@@ -144,12 +181,13 @@ void main() {
       final other = LocalNotifier.dailyPlan(DateTime(2026, 11, 18, 9), checkedInToday: true, categories: [StruggleCategory.anger]);
       expect(other.map((p) => p.body).any(StruggleCategory.sleep.affirmationsTr.contains), isFalse);
       // Davet metni baskı kurmaz, sorunu adlandırmaz.
-      for (final m in [LocalNotifier.checkInInviteStreak, LocalNotifier.greetingTitle]) {
+      for (final m in [...LocalNotifier.checkInInvitesStreak, ...LocalNotifier.greetingTitles]) {
         for (final w in ['bozul', 'kaybet', 'başarısız', 'sıfırlan']) {
           expect(m.toLowerCase().contains(w), isFalse, reason: m);
         }
       }
-      expect(fillPlaceholders(LocalNotifier.checkInInviteStreak, plan.first.args), contains('5 günlük'));
+      expect(fillPlaceholders(plan.first.body, plan.first.args), contains('5 gün'));
+      expect(fillPlaceholders(plan.first.title, plan.first.args), contains('Deniz'));
     });
 
     test('sessiz saatler: yalnızca 10:00–20:59', () {

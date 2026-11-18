@@ -43,18 +43,54 @@ class LocalNotifier {
     importance: Importance.high,
   );
 
-  /// Şefkatli merdiven: yargı yok, baskı yok; her biri açık bir kapı.
-  static const nudges = [
-    'Bugün buralarda görünmüyorsun, umarım günün güzel geçiyordur.', // ~1. gün
-    'Zor bir gün müydü? Bazen sadece dinlenmek gerekir, yarın yeniden deneyebiliriz.', // ~2. gün
-    'Sadece nasıl olduğunu sormak istedik. Kendine iyi bakmayı unutma.', // ~3. gün
-    'Gözlerimiz seni aradı. Ne zaman hazır hissedersen burada bekliyoruz.', // ~7. gün
+  /// Şefkatli merdiven: uygulamaya 1, 2, 3 ve 7 gün girilmezse. Yargı yok,
+  /// baskı yok; her biri açık bir kapı. Her basamağın birkaç çeşidi var ve
+  /// hangisinin geleceği bildirimin gününe göre seçilir ([variantFor]): aynı
+  /// kişiye aynı cümle art arda gelmez. (başlık, metin)
+  static const nudgeLadder = <List<(String, String)>>[
+    // ~1. gün: şefkatli merak
+    [
+      ('Merhaba 👋', 'Bugün buralarda görünmüyorsun, umarım günün güzel geçiyordur.'),
+      ('Selam 🌤', 'Bugün seni biraz özledik. Bir dakikan olursa uğra; olmazsa da sorun değil.'),
+      ('Küçük bir merhaba', 'Günün nasıl geçiyor? İstersen birkaç saniyeliğine uğrayabilirsin.'),
+      ('Buradayız ☁️', 'Yoğun bir gün olabilir. Ne zaman istersen kapımız açık.'),
+    ],
+    // ~2. gün: zor günleri olağan karşılamak
+    [
+      ('Kendine bir mola ☁️', 'Zor bir gün müydü? Bazen sadece dinlenmek gerekir, yarın yeniden deneyebiliriz.'),
+      ('Yavaşlamak da olur', 'Bazı günler ağır gelir. Dinlenmek de yolun bir parçası; hazır olduğunda buradayız.'),
+      ('Bir nefeslik ara', 'Her şeyi bugün yapmak zorunda değilsin. Kısa bir nefes bile iyi gelebilir.'),
+      ('Seni düşündük', 'Dün biraz sessizdik. Nasıl hissediyorsan, o his de burada kabul görür.'),
+    ],
+    // ~3. gün: içten bir hal hatır
+    [
+      ('Seni düşünüyoruz 🤍', 'Sadece nasıl olduğunu sormak istedik. Kendine iyi bakmayı unutma.'),
+      ('Nasılsın? 🤍', 'Birkaç gündür görüşemedik. Sadece iyi olduğunu bilmek istedik.'),
+      ('Yanındayız 🤍', 'Bu birkaç gün nasıl geçti bilmiyoruz ama yalnız olmadığını bilmeni istiyoruz.'),
+      ('Kendine iyi bak', 'Su içtin mi, biraz dinlenebildin mi? Küçük şeyler de önemli.'),
+    ],
+    // ~7. gün: açık kapı
+    [
+      ('Kapımız hep açık', 'Gözlerimiz seni aradı. Ne zaman hazır hissedersen burada bekliyoruz.'),
+      ('Yerin hazır', 'Bir haftadır görüşemedik. Acele yok; döndüğünde kaldığın yerden, yargısız devam ederiz.'),
+      ('Liman burada ⚓', 'Bazen uzaklaşmak gerekir. Geri gelmek istediğinde liman burada.'),
+      ('Yeni bir sayfa ✨', 'Her gün yeniden başlamak için bir fırsat. Hazır olduğunda seni bekliyoruz.'),
+    ],
   ];
-  static const eveningReminder = 'Bugünlük sayfamızı boş bıraktık ama yarın o alanı senin için saklıyoruz.';
 
-  /// Her mesajın kendi sıcak başlığı (sorunu asla ifşa etmez).
-  static const nudgeTitles = ['Merhaba 👋', 'Kendine bir mola ☁️', 'Seni düşünüyoruz 🤍', 'Kapımız hep açık'];
-  static const eveningTitle = 'Yarın da buradayız ✨';
+  /// Merdivendeki tüm metinler ve başlıklar (denetim ve çeviri testleri için).
+  static List<String> get nudges => [for (final step in nudgeLadder) for (final n in step) n.$2];
+  static List<String> get nudgeTitles => [for (final step in nudgeLadder) for (final n in step) n.$1];
+
+  /// Akşam 20:00, yalnızca o gün kayıt yoksa: tek, küçük bir hatırlatma.
+  static const eveningReminders = <(String, String)>[
+    ('Yarın da buradayız ✨', 'Bugünlük sayfamızı boş bıraktık ama yarın o alanı senin için saklıyoruz.'),
+    ('Günü kapatırken 🌙', 'İstersen bugünü birkaç saniyede kaydedebilirsin. İstemezsen de yarın yeniden buradayız.'),
+    ('İyi akşamlar 🌙', 'Bugün nasıl geçti? Ne seçersen seç, burada yargı yok.'),
+    ('Akşam molası', 'Günün yorgunluğunu bırakmadan önce kendine bir dakika ayırmak ister misin?'),
+    ('Bugünü düşünürken', 'Küçük bir adım da adımdır. Bugünü eklemek istersen Haven burada.'),
+    ('Sakin bir akşam dileriz', 'Bugünkü kaydını yapmadıysan dert etme; yarın yeni bir gün.'),
+  ];
 
   static const _nudgeOffsets = [Duration(days: 1), Duration(days: 2), Duration(days: 3), Duration(days: 7)];
   static const _nudgeIds = [101, 102, 103, 104];
@@ -72,18 +108,48 @@ class LocalNotifier {
     'Bir nefeslik ara',
     'Selam 👋',
     'Yanındayız 🤍',
+    'Sana bir not 💌',
+    'Öğle molası ☕',
+    'Bugünün cümlesi',
+    'Kısa bir hatırlatma 🌤',
+    'Bir gülümseme kadar',
+    'Yavaşça, kendi hızında',
+    'Liman burada ⚓',
   ];
-  static const checkInInvite =
-      'Bugün nasıl geçiyor? Günü değerlendirmek birkaç saniye sürer; ne seçersen seç, burada yargı yok.';
+
+  /// Bugün henüz kayıt yoksa 13:00'teki davet.
+  static const checkInInvites = [
+    'Bugün nasıl geçiyor? Günü değerlendirmek birkaç saniye sürer; ne seçersen seç, burada yargı yok.',
+    'Öğle arası küçük bir mola: bugün kendine nasıl davrandın? Birkaç saniyede kaydedebilirsin.',
+    'Günün yarısı geride kaldı. Nasıl hissettiğini eklemek ister misin? Her cevap burada kabul görür.',
+    'Kendine bir dakika ayır: bugün neler iyi gitti, neler zordu? Hepsi burada değerli.',
+  ];
 
   /// Kişiye özel davet: serisi olan kullanıcıya kendi yolunu hatırlatır.
   /// Baskı yok ("bozulur", "kaybedersin" gibi ifadeler asla kullanılmaz).
-  static const checkInInviteStreak =
-      'Bugün nasıl geçiyor? {n} günlük yolun burada; günü eklemek birkaç saniye sürer. Ne seçersen seç, yargı yok.';
+  static const checkInInvitesStreak = [
+    'Bugün nasıl geçiyor? {n} günlük yolun burada; günü eklemek birkaç saniye sürer. Ne seçersen seç, yargı yok.',
+    '{n} gündür kendine zaman ayırıyorsun, bu çok değerli. Bugünü de eklemek ister misin?',
+    '{n} günlük emeğin seninle. Bugün nasıl geçti? Birkaç saniyede kaydedebilirsin.',
+    'Şimdiye kadar {n} gün; her biri senin emeğin. Bugünü de birlikte ekleyelim mi?',
+  ];
 
   /// Takma adla kişisel selam (kilit ekranında içerik zaten gizli).
-  static const greetingTitle = 'Selam {name} 👋';
+  static const greetingTitles = [
+    'Selam {name} 👋',
+    'Merhaba {name} 🌤',
+    '{name}, nasılsın?',
+    'İyi günler {name} ✨',
+    '{name}, küçük bir mola?',
+  ];
   static const _dailyIds = [120, 121, 122, 123, 124, 125, 126];
+
+  /// O güne düşen çeşit: aynı gün hep aynısı (uygulama yeniden açılıp
+  /// bildirimler yeniden kurulsa da), ertesi gün sıradaki.
+  @visibleForTesting
+  static T variantFor<T>(List<T> pool, DateTime day) =>
+      pool[(DateTime.utc(day.year, day.month, day.day).millisecondsSinceEpoch ~/ Duration.millisecondsPerDay) %
+          pool.length];
 
   /// Profil → "Deneme bildirimi gönder" (test sürecinde bildirimin uygulama
   /// kapalıyken de geldiğini görmek için).
@@ -136,8 +202,8 @@ class LocalNotifier {
             (
               slot: d,
               when: DateTime(now.year, now.month, now.day + d, dailyHour),
-              title: name.isNotEmpty ? greetingTitle : dailyTitles[(dayIndex + d) % dailyTitles.length],
-              body: streak > 0 ? checkInInviteStreak : checkInInvite,
+              title: name.isNotEmpty ? variantFor(greetingTitles, now) : dailyTitles[(dayIndex + d) % dailyTitles.length],
+              body: variantFor(streak > 0 ? checkInInvitesStreak : checkInInvites, now),
               args: {'name': name, 'n': streak},
             )
           else
@@ -249,19 +315,16 @@ class LocalNotifier {
         await _schedule(_dailyIds[p.slot], p.when, p.title, p.body, 'daily', p.args);
       }
       for (var i = 0; i < _nudgeIds.length; i++) {
-        await _schedule(
-          _nudgeIds[i],
-          withinWindow(now.add(_nudgeOffsets[i])),
-          nudgeTitles[i],
-          nudges[i],
-          'nudge_${i + 1}',
-        );
+        final when = withinWindow(now.add(_nudgeOffsets[i]));
+        final (title, body) = variantFor(nudgeLadder[i], when);
+        await _schedule(_nudgeIds[i], when, title, body, 'nudge_${i + 1}');
       }
       // Bugün henüz kayıt yoksa akşam tek bir küçük hatırlatma.
       if (!checkedInToday) {
         final evening = DateTime(now.year, now.month, now.day, 20);
         if (evening.isAfter(now.add(const Duration(minutes: 30)))) {
-          await _schedule(_eveningId, evening, eveningTitle, eveningReminder, 'evening');
+          final (title, body) = variantFor(eveningReminders, evening);
+          await _schedule(_eveningId, evening, title, body, 'evening');
         }
       }
     } catch (e) {

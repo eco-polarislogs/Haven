@@ -112,12 +112,11 @@ void main() {
       ..add(CommunityNote.anonymousName)
       ..addAll(LocalNotifier.nudges)
       ..addAll(LocalNotifier.nudgeTitles)
-      ..add(LocalNotifier.eveningTitle)
-      ..add(LocalNotifier.eveningReminder)
+      ..addAll([for (final (t, b) in LocalNotifier.eveningReminders) ...[t, b]])
       ..addAll(LocalNotifier.dailyTitles)
-      ..add(LocalNotifier.checkInInvite)
-      ..add(LocalNotifier.checkInInviteStreak)
-      ..add(LocalNotifier.greetingTitle)
+      ..addAll(LocalNotifier.checkInInvites)
+      ..addAll(LocalNotifier.checkInInvitesStreak)
+      ..addAll(LocalNotifier.greetingTitles)
       ..add(LocalNotifier.testTitle)
       ..add(LocalNotifier.testBody);
     return keys;
