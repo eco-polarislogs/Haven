@@ -1,15 +1,15 @@
 # Haven — Yayın kontrol listesi
 
-Son kontrol: 17 Kasım 2026 · sürüm 3.2.0 (3)
+Son kontrol: 23 Kasım 2026 · sürüm 3.2.1 (4)
 
 ## 1. Kodda hazır olanlar (doğrulandı)
 
 | Konu | Durum | Nasıl doğrulandı |
 |---|---|---|
 | Google ile giriş (Android), Apple ile giriş kodu (iOS) | Hazır | Emülatörde giriş; Firebase'de debug + yükleme anahtarı SHA-1/SHA-256 kayıtlı |
-| Firestore veritabanı + güvenlik kuralları | Yayında (17 Kasım 2026) | `rules_test/`: kayıt, günlük değerlendirme, notlar, paylaşım, destek, yanıt, arkadaşlık, engelleme, destek talebi, şikâyet, geliştirici işlemleri ve hesap silme; uygulamanın gönderdiği verinin aynısıyla emülatörde 12/12. Çalıştır: `firebase emulators:exec --only firestore --project demo-haven "npm --prefix rules_test test"` (Java gerekir) |
+| Firestore veritabanı + güvenlik kuralları | Yayında (17 Kasım 2026); 23 Kasım sıkılaştırması (paylaşımda yalnızca uygulamanın alanları, ad ≤ 24 ve temiz, sunucu saati) henüz deploy edilmedi: `firebase deploy --only firestore:rules` | `rules_test/`: kayıt, günlük değerlendirme, notlar, paylaşım, destek, yanıt, arkadaşlık, engelleme, destek talebi, şikâyet, geliştirici işlemleri ve hesap silme; uygulamanın gönderdiği verinin aynısıyla emülatörde 12/12. Çalıştır: `firebase emulators:exec --only firestore --project demo-haven "npm --prefix rules_test test"` (Java gerekir) |
 | Analytics (ekran + 20 özel olay) | Hazır | `analytics_service.dart`; DebugView ile izlenebilir |
-| Bildirimler: cihazda zamanlanan günlük/kişisel hatırlatmalar, bildirim merkezi, FCM | Hazır | Hepsi uygulama kapalıyken de gelir ve ekranın üstünden kayar (yüksek öncelikli kanal; FCM için `default_notification_channel_id`). `test/features_test.dart` |
+| Bildirimler: cihazda zamanlanan günlük/kişisel hatırlatmalar, bildirim merkezi, FCM | Hazır | Hepsi uygulama kapalıyken de gelir ve ekranın üstünden kayar (yüksek öncelikli kanal; FCM için `default_notification_channel_id`). Profil → Hatırlatmalar kapatılınca zamanlanmış bildirimler anında iptal edilir. Sunucu push'u (Blaze) açılırsa aynı topluluk olayı telefonda iki kez görünmez (ortak `inbox` etiketi). `test/features_test.dart` |
 | Gizlilik politikası + hesap silme sayfası | Yayında | https://ecren-7050e.web.app/gizlilik · https://ecren-7050e.web.app/hesap-silme |
 | Topluluk: paylaşım, yanıt, destek, arkadaş, cesaret notu, anonim paylaşım | Hazır | Testler + emülatör |
 | **Bildir / Engelle** (Play kullanıcı içeriği politikası) | Hazır | `test/moderation_actions_test.dart`, kurallar yayında |
@@ -18,7 +18,7 @@ Son kontrol: 17 Kasım 2026 · sürüm 3.2.0 (3)
 | Reklam altyapısı (banner, ana sayfa kartı, ödüllü) | Test kimlikleriyle hazır | Gerçek kimlikler için bkz. 2.2 |
 | İmzalı sürüm paketi (AAB) | Hazır | `flutter build appbundle --release` → 101,7 MB, CN=Haven yükleme anahtarıyla imzalı |
 | 16 KB sayfa boyutu uyumu (Android 15+) | Uyumlu | Paketteki tüm 64-bit `.so` dosyaları ≥ 0x4000 hizalı |
-| Hesap silme (uygulama içi + web sayfası) | Hazır | Profil → Hesabımı sil; `site/hesap-silme.html` |
+| Hesap silme (uygulama içi + web sayfası) | Hazır | Profil → Hesabımı sil (önce kimlik yeniden doğrulanır; vazgeçilirse hiçbir şey silinmez); `site/hesap-silme.html` |
 
 ## 2. Senin yapman gerekenler (hesap / ödeme / kişisel bilgi)
 
@@ -89,4 +89,4 @@ Hepsi `store/` klasöründe (kopyası masaüstünde: *Haven Mağaza*); hangi dos
 - Simge 512×512, öne çıkan grafik 1024×500 (Türkçe + İngilizce).
 - 5 telefon ekran görüntüsü 1080×1920 (Türkçe + İngilizce): uygulamanın gerçek ekranları, örnek verilerle.
 - Uygulama adı, kısa açıklama, tam açıklama (Türkçe + İngilizce), Play karakter sınırlarının içinde.
-- Telefona doğrudan kurulabilen APK (gösterim ve deneme için): masaüstünde `Haven-3.2.0-3.apk`. Play'den kapalı test sürümünü kurmadan önce bu APK'yı kaldır; imzaları farklı olduğu için üzerine kurulmaz.
+- Telefona doğrudan kurulabilen APK (gösterim ve deneme için): masaüstünde `Haven-3.2.0-3.apk` (3.2.1 (4) için yeniden derlenmeli). Play'den kapalı test sürümünü kurmadan önce bu APK'yı kaldır; imzaları farklı olduğu için üzerine kurulmaz.

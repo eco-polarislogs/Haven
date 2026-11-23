@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/navigation.dart';
+import '../../l10n/l10n.dart';
 import '../../providers.dart';
 import 'notifications_screen.dart';
 
@@ -13,7 +14,7 @@ class NotificationBell extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final unread = ref.watch(unreadCountProvider);
     return IconButton(
-      tooltip: 'Bildirimler',
+      tooltip: context.l10n.notificationsTitle,
       onPressed: () => pushScreen(context, 'notifications', const NotificationsScreen()),
       icon: Badge(
         isLabelVisible: unread > 0,

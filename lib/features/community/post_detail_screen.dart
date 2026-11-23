@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -94,19 +96,63 @@ class _PostDetailScreenState extends ConsumerState<PostDetailScreen> {
     }
   }
 
+  /// Kendi yanıtını siler (yanlışlıkla dokunmaya karşı onaylı).
+  Future<void> _deleteReply(NoteReply r) async {
+    final repo = ref.read(communityRepositoryProvider);
+    final messenger = ScaffoldMessenger.of(context);
+    final ok = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(tx('Yanıtını silmek istiyor musun?')),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(ctx, false), child: Text(tx('Vazgeç'))),
+          FilledButton(onPressed: () => Navigator.pop(ctx, true), child: Text(tx('Sil'))),
+        ],
+      ),
+    );
+    if (ok != true) return;
+    try {
+      await repo.deleteReply(widget.note.id, r.id);
+    } on TimeoutException {
+      // Çevrimdışı: silme kuyrukta, bağlantı gelince tamamlanır.
+    } catch (_) {
+      messenger.showSnackBar(SnackBar(content: Text(tx('Şu an yapılamadı. Biraz sonra tekrar dener misin?'))));
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final t = Theme.of(context).textTheme;
     final scheme = Theme.of(context).colorScheme;
     final user = ref.watch(appUserProvider).value;
     final uid = ref.watch(uidProvider);
-    // Gönderinin güncel hali (destek/yanıt sayıları) akıştan gelir.
-    final live =
-        [
-          ...?ref.watch(feedProvider).value,
-          ...?ref.watch(friendsFeedProvider).value,
-        ].where((n) => n.id == widget.note.id).firstOrNull ??
-        widget.note;
+    // Gönderinin canlı hali: destek/yanıt sayıları hangi ekrandan açılırsa
+    // açılsın (akış, kişi profili) anında güncellenir.
+    final noteAsync = ref.watch(noteProvider(widget.note.id));
+    if (noteAsync.hasValue && noteAsync.value == null) {
+      // Yazarı sildi ya da geliştirici şikâyet üzerine kaldırdı.
+      return Scaffold(
+        appBar: AppBar(title: Text(tx('Paylaşım'))),
+        body: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(32),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(Icons.speaker_notes_off_outlined, size: 48, color: scheme.outline),
+                const SizedBox(height: 12),
+                Text(
+                  tx('Bu paylaşım artık yok. Yazarı silmiş ya da topluluk kuralları gereği kaldırılmış olabilir.'),
+                  textAlign: TextAlign.center,
+                  style: t.bodyMedium,
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    }
+    final live = noteAsync.value ?? widget.note;
     final blocked = ref.watch(blockedUidsProvider);
     final replies = (ref.watch(repliesProvider(widget.note.id)).value ?? const <NoteReply>[])
         .where((r) => !blocked.contains(r.authorUid) && !(user?.reportedReplies.contains(r.id) ?? false))
@@ -159,7 +205,7 @@ class _PostDetailScreenState extends ConsumerState<PostDetailScreen> {
                         ? IconButton(
                             tooltip: tx('Sil'),
                             icon: const Icon(Icons.delete_outline_rounded, size: 20),
-                            onPressed: () => ref.read(communityRepositoryProvider).deleteReply(widget.note.id, r.id),
+                            onPressed: () => _deleteReply(r),
                           )
                         : PopupMenuButton<String>(
                             icon: Icon(Icons.more_horiz_rounded, size: 20, color: scheme.outline),

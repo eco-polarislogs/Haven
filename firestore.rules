@@ -79,6 +79,8 @@ service cloud.firestore {
           && request.resource.data.keys().hasOnly(
                ['type', 'fromUid', 'fromNickname', 'fromAvatar', 'messageId', 'value', 'createdAt', 'read'])
           && request.resource.data.read == false
+          // Sunucu saati: başkası bildirimimi listenin tepesine sabitleyemez.
+          && request.resource.data.createdAt == request.time
           && (!('fromNickname' in request.resource.data)
               || (request.resource.data.fromNickname is string && request.resource.data.fromNickname.size() <= 24))
           && (!('messageId' in request.resource.data)
@@ -115,7 +117,16 @@ service cloud.firestore {
       //  - İsimli: authorUid == ben.
       //  - Anonim: belgede authorUid YOK, ad "Anonim üye"; sahiplik aynı
       //    batch'te users/{ben}/myNotes/{noteId} özel kaydına yazılır.
+      // Yalnızca uygulamanın yazdığı alanlar (CommunityRepository.postNote):
+      // sayaçlar sıfırdan başlar, yanıt sayacı önceden şişirilemez, tarih sunucu
+      // saatidir (akışın tepesine sabitlenemez), ad en fazla 24 karakter ve temiz.
       allow create: if signedIn()
+        && request.resource.data.keys().hasOnly(['circleId', 'text', 'createdAt', 'supportCount', 'reportCount',
+             'lang', 'anonymous', 'authorUid', 'nickname', 'avatar', 'streak'])
+        && request.resource.data.createdAt == request.time
+        && request.resource.data.nickname is string
+        && request.resource.data.nickname.size() <= 24
+        && clean(request.resource.data.nickname)
         && request.resource.data.text is string
         && request.resource.data.text.size() >= 3
         && request.resource.data.text.size() <= 280
@@ -175,6 +186,7 @@ service cloud.firestore {
         allow create: if signedIn()
           && request.resource.data.authorUid == me()
           && request.resource.data.keys().hasOnly(['authorUid', 'nickname', 'avatar', 'text', 'createdAt', 'lang'])
+          && request.resource.data.createdAt == request.time
           && request.resource.data.text is string
           && request.resource.data.text.size() >= 1
           && request.resource.data.text.size() <= 280

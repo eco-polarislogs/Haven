@@ -70,7 +70,7 @@ class _OnboardingFlowState extends ConsumerState<OnboardingFlow> {
       if (!r.isOk) {
         setState(
           () => _nickError = r.verdict == ModerationVerdict.tooLong
-              ? 'Takma ad en fazla 24 karakter olabilir.'
+              ? tx('Takma ad en fazla 24 karakter olabilir.')
               : tx('Bu takma ad kullanılamıyor. Başka bir tane dener misin?'),
         );
         return;

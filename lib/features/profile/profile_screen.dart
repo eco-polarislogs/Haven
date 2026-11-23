@@ -105,6 +105,8 @@ class ProfileScreen extends ConsumerWidget {
     final messenger = ScaffoldMessenger.of(context);
     final container = ProviderScope.containerOf(context, listen: false);
     try {
+      // Vazgeçerse hiçbir şey silinmez.
+      if (!await auth.confirmIdentity()) return;
       await notifications.stop();
       await repo.deleteAllUserData(uid);
       await auth.deleteAccount();
@@ -442,7 +444,7 @@ class ProfileScreen extends ConsumerWidget {
                     controller: controller,
                     maxLength: 24,
                     onChanged: (_) => setSheet(() => error = null),
-                    decoration: InputDecoration(labelText: 'Takma ad', errorText: error),
+                    decoration: InputDecoration(labelText: ctx.l10n.nicknameLabel, errorText: error),
                   ),
                   Row(
                     children: [

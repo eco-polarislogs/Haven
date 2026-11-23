@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart';
 
 import 'analytics_service.dart';
 import 'haven_repository.dart';
+import 'local_notifier.dart';
 
 /// İstemci tarafı FCM: izin + cihaz kaydı.
 ///
@@ -67,7 +68,12 @@ class NotificationService {
   /// Uygulama açıkken gelen bildirimler.
   Stream<RemoteMessage> get foregroundMessages => FirebaseMessaging.onMessage;
 
-  void _onOpened(RemoteMessage message) => _analytics.nudgeOpened(message.data['level'] as String?);
+  /// Push'a dokunuldu. Topluluk olayıysa (inboxPush) bildirim merkezi açılır;
+  /// yerel bildirimlerle aynı yol (HavenApp._openFromNotification).
+  void _onOpened(RemoteMessage message) {
+    _analytics.nudgeOpened(message.data['level'] as String?);
+    if (message.data['type'] == 'inbox') LocalNotifier.onTap?.call('inbox');
+  }
 
   /// Çıkış / hesap silme öncesi: bu cihaz artık bu kullanıcının bildirimlerini
   /// almasın.

@@ -24,7 +24,8 @@ void main() {
 
   Set<String> sourceKeys() {
     final keys = <String>{};
-    final lit = RegExp(r"""\btx\(\s*'((?:[^'\\]|\\.)*)'""");
+    // AuthFailure('…') metinleri de gösterim anında tx() ile çevrilir.
+    final lit = RegExp(r"""\b(?:tx|AuthFailure)\(\s*'((?:[^'\\]|\\.)*)'""");
     for (final f in Directory('lib').listSync(recursive: true).whereType<File>()) {
       if (!f.path.endsWith('.dart') || f.path.contains('${Platform.pathSeparator}l10n${Platform.pathSeparator}')) {
         continue;

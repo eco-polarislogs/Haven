@@ -175,6 +175,11 @@ final profileProvider = StreamProvider.family<PublicProfile?, String>(
   (ref, uid) => ref.watch(communityRepositoryProvider).watchProfile(uid),
 );
 
+/// Gönderi detay ekranı: gönderinin canlı hali (silindiyse `null`).
+final noteProvider = StreamProvider.family<CommunityNote?, String>(
+  (ref, noteId) => ref.watch(communityRepositoryProvider).watchNote(noteId),
+);
+
 final repliesProvider = StreamProvider.family<List<NoteReply>, String>(
   (ref, noteId) => ref.watch(communityRepositoryProvider).watchReplies(noteId),
 );

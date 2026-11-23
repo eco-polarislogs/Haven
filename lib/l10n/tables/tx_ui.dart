@@ -2468,4 +2468,48 @@ const kTxUi = <String, List<String>>{
     "到目前为止已有 {n} 天，每一天都是你的努力。我们一起把今天也加上吧？",
     "अब तक {n} दिन; हर दिन आपकी मेहनत है। क्या आज भी साथ मिलकर जोड़ें?",
   ],
+  // Giriş ve hesap silme hataları (AuthFailure; gösterim anında çevrilir).
+  "Apple ile giriş şu an tamamlanamadı. Biraz sonra tekrar dener misin?": [
+    "Couldn't complete Apple sign-in right now. Could you try again a bit later?",
+    "No se pudo completar el inicio de sesión con Apple. ¿Puedes intentarlo de nuevo en un rato?",
+    "暂时无法完成 Apple 登录。可以稍后再试一次吗？",
+    "अभी Apple से साइन इन पूरा नहीं हो सका। क्या आप थोड़ी देर बाद फिर कोशिश करेंगे?",
+  ],
+  "Google ile giriş şu an tamamlanamadı. Biraz sonra tekrar dener misin?": [
+    "Couldn't complete Google sign-in right now. Could you try again a bit later?",
+    "No se pudo completar el inicio de sesión con Google. ¿Puedes intentarlo de nuevo en un rato?",
+    "暂时无法完成 Google 登录。可以稍后再试一次吗？",
+    "अभी Google से साइन इन पूरा नहीं हो सका। क्या आप थोड़ी देर बाद फिर कोशिश करेंगे?",
+  ],
+  "Google kimlik bilgisi alınamadı.": [
+    "Couldn't get your Google credentials.",
+    "No se pudieron obtener tus credenciales de Google.",
+    "无法获取你的 Google 凭据。",
+    "आपकी Google पहचान जानकारी नहीं मिल सकी।",
+  ],
+  "Hesap silinemedi ({code}). Lütfen tekrar dene.": [
+    "Couldn't delete the account ({code}). Please try again.",
+    "No se pudo eliminar la cuenta ({code}). Inténtalo de nuevo.",
+    "无法删除账户（{code}）。请重试。",
+    "खाता हटाया नहीं जा सका ({code})। कृपया फिर कोशिश करें।",
+  ],
+  // Topluluk: silinen gönderi, yanıt silme, takma ad sınırı.
+  "Bu paylaşım artık yok. Yazarı silmiş ya da topluluk kuralları gereği kaldırılmış olabilir.": [
+    "This post is no longer available. Its author may have deleted it, or it was removed under the community rules.",
+    "Esta publicación ya no está disponible. Puede que su autor la haya borrado o que se haya retirado por las normas de la comunidad.",
+    "这条动态已不存在。可能已被作者删除，或因社区规则被移除。",
+    "यह पोस्ट अब उपलब्ध नहीं है। हो सकता है लेखक ने इसे हटा दिया हो या समुदाय के नियमों के कारण इसे हटाया गया हो।",
+  ],
+  "Yanıtını silmek istiyor musun?": [
+    "Delete your reply?",
+    "¿Quieres eliminar tu respuesta?",
+    "要删除你的回复吗？",
+    "क्या आप अपना जवाब हटाना चाहते हैं?",
+  ],
+  "Takma ad en fazla 24 karakter olabilir.": [
+    "Nicknames can be at most 24 characters.",
+    "El apodo puede tener como máximo 24 caracteres.",
+    "昵称最多 24 个字符。",
+    "उपनाम अधिकतम 24 अक्षरों का हो सकता है।",
+  ],
 };

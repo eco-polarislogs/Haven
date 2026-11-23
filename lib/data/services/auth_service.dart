@@ -67,8 +67,36 @@ class AuthService {
     await _auth.signOut();
   }
 
+  /// Hesap silmeden ÖNCE: Firebase, oturum birkaç dakikadan eskiyse hesabı
+  /// silmeyi "requires-recent-login" ile reddeder. Kimlik, veriler silinmeden
+  /// önce yeniden doğrulanır; böylece kullanıcı Google panelini kapatırsa hiçbir
+  /// şey silinmez (eskiden veriler silinip giriş hesabı yarım kalıyordu).
+  /// Kullanıcı vazgeçtiyse `false`.
+  Future<bool> confirmIdentity() async {
+    final user = _auth.currentUser;
+    if (user == null) return false;
+    final last = user.metadata.lastSignInTime;
+    if (last != null && DateTime.now().difference(last) < const Duration(minutes: 4)) return true;
+    try {
+      if (user.providerData.any((p) => p.providerId == 'apple.com')) {
+        await user.reauthenticateWithProvider(AppleAuthProvider());
+      } else {
+        final credential = await _googleCredential();
+        if (credential == null) return false;
+        await user.reauthenticateWithCredential(credential);
+      }
+      return true;
+    } on FirebaseAuthException catch (e) {
+      if (e.code == 'canceled' || e.code == 'web-context-canceled') return false;
+      debugPrint('Kimlik doğrulanamadı: ${e.code} ${e.message}');
+      // ör. user-mismatch: panelde başka bir Google hesabı seçildi.
+      throw AuthFailure('Hesap silinemedi ({code}). Lütfen tekrar dene.', {'code': e.code});
+    }
+  }
+
   /// Google Play ve App Store, uygulama içi hesap silmeyi ZORUNLU tutar.
-  /// Firestore verisi bundan önce silinmelidir (HavenRepository.deleteAllUserData).
+  /// Önce [confirmIdentity], sonra Firestore verisi (HavenRepository.deleteAllUserData),
+  /// en son bu.
   Future<void> deleteAccount() async {
     final user = _auth.currentUser;
     if (user == null) return;

@@ -15,4 +15,14 @@ void main() {
     expect(rules, contains('-keep class * extends androidx.room.RoomDatabase { <init>(); }'));
     expect(rules, contains('androidx.work.impl.WorkDatabase_Impl'));
   });
+
+  // Destek taleplerine eklenen sürüm (kAppVersion) mağazadaki sürümle aynı olmalı;
+  // geliştirici panelinde hatanın hangi sürümde olduğu buna göre okunur.
+  test('uygulama içi sürüm pubspec sürümüyle aynı', () {
+    final pubspec = RegExp(r'^version:\s*([\d.]+)\+\d+', multiLine: true)
+        .firstMatch(File('pubspec.yaml').readAsStringSync())!
+        .group(1);
+    final constants = File('lib/core/constants/app_constants.dart').readAsStringSync();
+    expect(constants, contains("const kAppVersion = '$pubspec';"));
+  });
 }

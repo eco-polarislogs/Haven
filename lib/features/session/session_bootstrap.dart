@@ -34,6 +34,16 @@ class _SessionBootstrapState extends ConsumerState<SessionBootstrap> with Widget
     WidgetsBinding.instance.addObserver(this);
     _foregroundSub = ref.read(notificationServiceProvider).foregroundMessages.listen(_showPush);
     ref.listenManual(inboxProvider, (_, next) => _onInbox(next.value));
+    // Profil → "Hatırlatmalar" kapatılınca ya da takma ad değişince telefonda
+    // zamanlanmış bildirimler HEMEN yeniden kurulur. Eskiden bu ancak uygulama
+    // bir sonraki öne gelişte oluyordu: hatırlatmayı kapatıp uygulamayı
+    // kapatan kullanıcıya bildirimler gelmeye devam ediyordu.
+    ref.listenManual(appUserProvider.select((u) => (u.value?.notificationsEnabled, u.value?.nickname)), (prev, next) {
+      if (prev == null || prev == next) return;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) _rescheduleNudges();
+      });
+    });
     WidgetsBinding.instance.addPostFrameCallback((_) => _start());
   }
 
@@ -46,6 +56,14 @@ class _SessionBootstrapState extends ConsumerState<SessionBootstrap> with Widget
     unawaited(ref.read(analyticsProvider).setEnabled(user?.analyticsEnabled ?? true));
     unawaited(ref.read(notificationServiceProvider).start(uid));
     _rescheduleNudges();
+    if (user != null && user.communityJoined && (user.nickname?.isNotEmpty ?? false)) {
+      unawaited(
+        ref
+            .read(communityRepositoryProvider)
+            .repairProfile(uid, nickname: user.nickname!, avatar: user.avatar, daily: user.daily)
+            .catchError((Object e) => debugPrint('Profil onarılamadı: $e')),
+      );
+    }
   }
 
   /// Kullanıcı buradaysa merdiven baştan kurulur: ilk nazik mesaj ancak
@@ -63,15 +81,19 @@ class _SessionBootstrapState extends ConsumerState<SessionBootstrap> with Widget
     final seen = _seenInbox;
     _seenInbox = ids;
     if (seen == null) return; // ilk yükleme: eski bildirimleri tekrar gösterme
-    // Başka bir kullanıcıdan gelen yeni olaylar → telefonun üst çubuğu.
-    for (final item in items.where((i) => !seen.contains(i.id) && !i.read && i.fromUid != null).take(3)) {
-      unawaited(LocalNotifier.showInbox(item));
-    }
+    // Başka bir kullanıcıdan gelen en yeni olay → telefonun üst çubuğu.
+    // (Liste yeniden eskiye sıralı; bildirimler tek etiketle üst üste
+    // yazıldığı için yalnızca en yenisi gösterilir, bkz. LocalNotifier.showInbox.)
+    final fresh = items.where((i) => !seen.contains(i.id) && !i.read && i.fromUid != null).firstOrNull;
+    if (fresh != null) unawaited(LocalNotifier.showInbox(fresh));
   }
 
   void _showPush(RemoteMessage message) {
     final n = message.notification;
     if (n == null || !mounted) return;
+    // Topluluk olayları (sunucudaki inboxPush) zaten bildirim kutusu
+    // dinleyicisinden üst çubukta gösteriliyor ([_onInbox]); ikinci kez gösterme.
+    if (message.data['type'] == 'inbox') return;
     final text = [n.title, n.body].whereType<String>().join('\n');
     if (text.isEmpty) return;
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(text), duration: const Duration(seconds: 6)));

@@ -169,6 +169,12 @@ test('paylaşım: isimli ve anonim; akış okunur; link ve seçilmemiş alan red
   await assertSucceeds(getDocs(query(collection(db('bob'), 'notes'), where('circleId', 'in', ['bfrb']), orderBy('createdAt', 'desc'), limit(60))));
   await assertFails(setDoc(doc(a, 'notes', 'bad1'), { ...common, text: 'bak https://ornek.com', anonymous: false, authorUid: 'alice', nickname: 'x', avatar: 1, streak: 0 }));
   await assertFails(setDoc(doc(a, 'notes', 'bad2'), { ...common, circleId: 'eating', anonymous: false, authorUid: 'alice', nickname: 'x', avatar: 1, streak: 0 }));
+  // Uygulamanın yazmadığı alan (şişirilmiş yanıt sayacı), uzun/kirli ad ve istemci saati reddedilir.
+  const named = { ...common, anonymous: false, authorUid: 'alice', nickname: 'Sevimli Panda', avatar: 1, streak: 3 };
+  await assertFails(setDoc(doc(a, 'notes', 'bad3'), { ...named, replyCount: 999 }));
+  await assertFails(setDoc(doc(a, 'notes', 'bad4'), { ...named, nickname: 'Haven Resmi Destek Ekibi Yöneticisi' }));
+  await assertFails(setDoc(doc(a, 'notes', 'bad5'), { ...named, nickname: 'www.ornek.com' }));
+  await assertFails(setDoc(doc(a, 'notes', 'bad6'), { ...named, createdAt: new Date('2030-01-01') }));
   // Silme: isimli (deleteNote batch'i olmayan myNotes kaydını da siler) ve anonim
   const del = writeBatch(a);
   del.delete(doc(a, 'notes', 'named1'));
@@ -211,6 +217,11 @@ test('destek, bildir, yanıt ve yanıt silme; destek kişi başı bir kez', asyn
   p.set(doc(collection(b, 'users', 'alice', 'inbox')), fromMe(bob, 'note_reply'));
   await assertSucceeds(p.commit());
   await assertSucceeds(getDocs(query(collection(db('alice'), 'notes', 'n1', 'replies'), orderBy('createdAt'), limit(100))));
+  // Yanıt da istemci saatiyle yazılamaz.
+  const late = writeBatch(b);
+  late.set(doc(collection(b, 'notes', 'n1', 'replies')), { authorUid: 'bob', nickname: 'Cesur Kuş', avatar: 1, text: 'Devam!', createdAt: new Date('2030-01-01'), lang: 'tr' });
+  late.update(doc(b, 'notes', 'n1'), { replyCount: increment(1) });
+  await assertFails(late.commit());
   // deleteReply
   const d = writeBatch(b);
   d.delete(replyRef);
@@ -236,6 +247,8 @@ test('arkadaşlık, cesaret notu ve seri kutlaması (15\'erli batch)', async () 
   // sendKudos
   await assertSucceeds(addDoc(collection(a, 'users', 'bob', 'inbox'), fromMe(alice, 'kudos', { messageId: 3 })));
   await assertFails(addDoc(collection(a, 'users', 'bob', 'inbox'), { ...fromMe(alice, 'kudos', { messageId: 3 }), text: 'serbest metin' }));
+  // Başkasının kutusuna istemci saatiyle (listenin tepesine sabitlemek için) yazılamaz.
+  await assertFails(addDoc(collection(a, 'users', 'bob', 'inbox'), { ...fromMe(alice, 'kudos', { messageId: 3 }), createdAt: new Date('2030-01-01') }));
   // notifyFriendsOfMilestone: her alıcı için kural bir okuma yapar; 15'lik batch sınırın içinde kalmalı
   const friends = Array.from({ length: 15 }, (_, i) => `f${i}`);
   for (const id of friends) await seedUser(id, { profile: false });

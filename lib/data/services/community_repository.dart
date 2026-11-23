@@ -62,6 +62,21 @@ class CommunityRepository {
     });
   }
 
+  /// Topluluğa katılmış ama herkese açık profili hiç oluşmamış kullanıcı için
+  /// (ör. kayıt ya da katılma anında internet yoktu). Profil yoksa paylaşım,
+  /// yanıt ve arkadaş ekleme "Profil hazırlanıyor…" durumunda takılı kalır.
+  /// Oturum her açıldığında çağrılır; profil varsa hiçbir şey yazmaz.
+  Future<void> repairProfile(
+    String uid, {
+    required String nickname,
+    required int avatar,
+    required DailyStreak daily,
+  }) async {
+    final snap = await _profiles.doc(uid).get();
+    if (snap.exists) return;
+    await ensureProfile(uid, nickname: nickname, avatar: avatar, daily: daily);
+  }
+
   /// Arkadaşların seriyi görebilmesi için herkese açık profile yansıt.
   void syncStreak(String uid, PublicProfile profile, DailyStreak daily) => _fireAndForget(
     _profiles.doc(uid).set({
@@ -99,6 +114,15 @@ class CommunityRepository {
         .snapshots()
         .map((q) => q.docs.map(CommunityNote.fromDoc).toList());
   }
+
+  /// Tek bir gönderinin canlı hali (detay ekranı): destek/yanıt sayıları anında
+  /// güncellenir; gönderi silinir ya da geliştirici kaldırırsa `null` gelir.
+  Stream<CommunityNote?> watchNote(String noteId) => _notes
+      .doc(noteId)
+      .snapshots()
+      // Çevrimdışıyken önbellekte olmayan gönderi "silinmiş" sanılmasın.
+      .where((d) => d.exists || !d.metadata.isFromCache)
+      .map((d) => d.exists ? CommunityNote.fromDoc(d) : null);
 
   /// [anonymous] true ise gönderide ad, avatar, seri ve yazar kimliği YOK;
   /// sahiplik (silebilmek için) aynı batch'te yazarın özel kaydına yazılır.

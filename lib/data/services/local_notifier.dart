@@ -269,10 +269,12 @@ class LocalNotifier {
     required String body,
     String subText = 'Haven',
     AndroidNotificationCategory category = AndroidNotificationCategory.reminder,
+    String? tag,
   }) => NotificationDetails(
     android: AndroidNotificationDetails(
       ch.id,
       ch.name,
+      tag: tag,
       channelDescription: ch.description,
       importance: Importance.high,
       priority: Priority.high,
@@ -385,12 +387,19 @@ class LocalNotifier {
     );
   }
 
+  /// Sunucu push'u (functions/index.js → buildMessage) ile AYNI etiket ve
+  /// kimlik: FCM bildirimi Android'de `notify("inbox", 0)` ile gösterilir. Aynı
+  /// olay hem push hem de bildirim kutusu dinleyicisinden gelirse ikincisi
+  /// birincinin üstüne yazılır; telefonda iki kez görünmez.
+  static const _inboxTag = 'inbox';
+  static const _inboxId = 0;
+
   /// Topluluk olayını üst çubukta göster.
   static Future<void> showInbox(InboxItem item) async {
     if (!_ready) return;
     try {
       await _plugin.show(
-        id: item.id.hashCode & 0x7fffffff,
+        id: _inboxId,
         title: item.title,
         body: item.body,
         notificationDetails: _details(
@@ -399,6 +408,7 @@ class LocalNotifier {
           body: item.body,
           subText: 'Haven · ${tx('Topluluk')}',
           category: AndroidNotificationCategory.social,
+          tag: _inboxTag,
         ),
         payload: 'inbox',
       );

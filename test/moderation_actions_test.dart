@@ -5,8 +5,10 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:haven/data/models/app_user.dart';
+import 'package:haven/data/models/community.dart';
 import 'package:haven/data/models/support_ticket.dart';
 import 'package:haven/features/community/moderation_actions.dart';
+import 'package:haven/features/community/post_detail_screen.dart';
 import 'package:haven/l10n/app_localizations.dart';
 import 'package:haven/providers.dart';
 
@@ -70,5 +72,50 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('Engellediğin kişiler'), findsOneWidget);
     expect(find.textContaining('Kimseyi engellemedin'), findsOneWidget);
+  });
+
+  test('paylaşım, yanıt ve bildirim: yalnızca uygulamanın alanları, sunucu saati', () {
+    expect(rules, contains("'lang', 'anonymous', 'authorUid', 'nickname', 'avatar', 'streak'])"));
+    expect(RegExp(r'match /notes/\{noteId\}[\s\S]*?createdAt == request\.time').hasMatch(rules), isTrue);
+    expect(RegExp(r'match /replies/\{replyId\}[\s\S]*?createdAt == request\.time').hasMatch(rules), isTrue);
+    expect(RegExp(r'match /inbox/\{id\}[\s\S]*?createdAt == request\.time').hasMatch(rules), isTrue);
+  });
+
+  testWidgets('Silinen ya da kaldırılan paylaşım açılınca bilgi verilir, yanıt kutusu gösterilmez', (tester) async {
+    const note = CommunityNote(
+      id: 'n1',
+      authorUid: 'alice',
+      nickname: 'Sevimli Panda',
+      avatar: 1,
+      streak: 3,
+      circle: null,
+      text: 'Bugün iyi geçti.',
+      createdAt: null,
+      supportCount: 0,
+      reportCount: 0,
+    );
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          uidProvider.overrideWithValue('bob'),
+          appUserProvider.overrideWith((ref) => Stream.value(null)),
+          noteProvider('n1').overrideWith((ref) => Stream.value(null)),
+        ],
+        child: MaterialApp(
+          locale: const Locale('tr'),
+          supportedLocales: AppLocalizations.supportedLocales,
+          localizationsDelegates: const [
+            AppLocalizations.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          home: const PostDetailScreen(note: note),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    expect(find.textContaining('Bu paylaşım artık yok'), findsOneWidget);
+    expect(find.byType(TextField), findsNothing);
   });
 }

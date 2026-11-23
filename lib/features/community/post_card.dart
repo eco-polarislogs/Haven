@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -66,6 +68,7 @@ class PostCard extends ConsumerWidget {
     final repo = ref.read(communityRepositoryProvider);
     final uid = ref.read(uidProvider);
     final nav = Navigator.of(context);
+    final messenger = ScaffoldMessenger.of(context);
     if (uid == null) return;
     final ok = await showDialog<bool>(
       context: context,
@@ -77,10 +80,16 @@ class PostCard extends ConsumerWidget {
         ],
       ),
     );
-    if (ok == true) {
+    if (ok != true) return;
+    try {
       await repo.deleteNote(note.id, uid);
-      if (!tappable && nav.canPop()) nav.pop(); // detay ekranındaysak geri dön
+    } on TimeoutException {
+      // Çevrimdışı: silme kuyrukta, bağlantı gelince tamamlanır (akıştan hemen kalktı).
+    } catch (_) {
+      messenger.showSnackBar(SnackBar(content: Text(tx('Şu an yapılamadı. Biraz sonra tekrar dener misin?'))));
+      return;
     }
+    if (!tappable && nav.canPop()) nav.pop(); // detay ekranındaysak geri dön
   }
 
   @override
