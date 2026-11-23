@@ -1,0 +1,34 @@
+{
+  "v": 3,
+  "createdOnFiles": { "v": 1, "at": "2026-11-23T08:45:00Z" },
+  "title": "Haven Tasarım Alternatifleri",
+  "launch": { "view": "canvas" },
+  "pages": [],
+  "boards": {
+    "Main.dc.html": { "x": 0, "y": 0, "w": 390, "h": 844, "title": "Sis · Bugün" },
+    "SisTopluluk.dc.html": { "x": 0, "y": 964, "w": 390, "h": 844, "title": "Sis · Topluluk" },
+    "GeceBugun.dc.html": { "x": 470, "y": 0, "w": 390, "h": 844, "title": "Gece Limanı · Bugün" },
+    "GeceTopluluk.dc.html": { "x": 470, "y": 964, "w": 390, "h": 844, "title": "Gece Limanı · Topluluk" },
+    "BahceBugun.dc.html": { "x": 940, "y": 0, "w": 390, "h": 844, "title": "Bahçe · Bugün" },
+    "BahceTopluluk.dc.html": { "x": 940, "y": 964, "w": 390, "h": 844, "title": "Bahçe · Topluluk" },
+    "NeseliBugun.dc.html": { "x": 1410, "y": 0, "w": 390, "h": 844, "title": "Neşeli · Bugün" },
+    "NeseliTopluluk.dc.html": { "x": 1410, "y": 964, "w": 390, "h": 844, "title": "Neşeli · Topluluk" }
+  },
+  "order": [
+    "Main.dc.html",
+    "SisTopluluk.dc.html",
+    "GeceBugun.dc.html",
+    "GeceTopluluk.dc.html",
+    "BahceBugun.dc.html",
+    "BahceTopluluk.dc.html",
+    "NeseliBugun.dc.html",
+    "NeseliTopluluk.dc.html"
+  ],
+  "notes": {
+    "titleSis": { "x": 0, "y": -260, "text": "A · Sis", "kind": "title1", "maxW": 390 },
+    "titleGece": { "x": 470, "y": -260, "text": "B · Gece Limanı", "kind": "title1", "maxW": 390 },
+    "titleBahce": { "x": 940, "y": -260, "text": "C · Bahçe", "kind": "title1", "maxW": 390 },
+    "titleNeseli": { "x": 1410, "y": -260, "text": "D · Neşeli", "kind": "title1", "maxW": 390 }
+  },
+  "designSystems": []
+}

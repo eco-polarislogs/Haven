@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<title>Neşeli · Bugün</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#6656CC}a:hover{color:#4F41A8}
+button{font-family:inherit}
+</style>
+</helmet>
+<div style="position: relative; width: 390px; height: 844px; overflow: hidden; display: flex; flex-direction: column; background: #F6F3FF; color: #2A2540; font-family: 'Nunito', system-ui, sans-serif">
+  <main style="flex-grow: 1; display: flex; flex-direction: column; gap: 22px; padding: 28px 20px 0 20px; overflow: hidden">
+    <header style="display: flex; align-items: center; gap: 12px">
+      <span style="flex-shrink: 0; width: 50px; height: 50px; border-radius: 25px; background: #FFB38A; border: 2px solid #2A2540; box-sizing: border-box; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 900">SP</span>
+      <h1 style="flex-grow: 1; margin: 0; font-size: 22px; font-weight: 900">Selam, Sevimli Panda!</h1>
+      <button aria-label="Bildirimler, 2 okunmamış" style="position: relative; flex-shrink: 0; width: 46px; height: 46px; border: 2px solid #2A2540; border-radius: 16px; background: #FFFFFF; box-shadow: 0 3px 0 #2A2540; display: flex; align-items: center; justify-content: center; color: #2A2540">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"></path></svg>
+        <span style="position: absolute; top: -7px; right: -7px; min-width: 20px; height: 20px; border-radius: 10px; background: #FFB38A; border: 2px solid #2A2540; box-sizing: border-box; font-size: 11px; font-weight: 900; display: flex; align-items: center; justify-content: center">2</span>
+      </button>
+    </header>
+
+    <section aria-label="Seri" style="display: flex; flex-direction: column; gap: 14px; padding: 18px; background: #FFFFFF; border: 2px solid #2A2540; border-radius: 22px; box-shadow: 0 4px 0 #2A2540">
+      <div style="display: flex; align-items: center; gap: 14px">
+        <span style="flex-shrink: 0; width: 60px; height: 60px; border-radius: 18px; background: #FFB38A; display: flex; align-items: center; justify-content: center; color: #2A2540"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.07-2.14-.22-4.05 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.15.43-2.29 1-3a2.5 2.5 0 0 0 2.5 2.5z"></path></svg></span>
+        <span style="font-size: 40px; font-weight: 900; line-height: 1">12 gün</span>
+      </div>
+      <div style="display: flex; align-items: center; gap: 10px">
+        <div style="flex-grow: 1; height: 14px; border-radius: 7px; background: #EDE9FB; overflow: hidden"><div style="width: 57%; height: 14px; border-radius: 7px; background: {{accent}}"></div></div>
+        <span style="font-size: 13px; font-weight: 800; color: #5C5675">Rekor 21</span>
+      </div>
+    </section>
+
+    <div style="display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 6px">
+      <div style="display: flex; flex-direction: column; align-items: center; gap: 4px"><span style="width: 38px; height: 38px; border-radius: 12px; background: #8ED9C3; border: 2px solid #2A2540; box-sizing: border-box; display: flex; align-items: center; justify-content: center"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2A2540" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"></path></svg></span><span style="font-size: 12px; font-weight: 700; color: #5C5675">Pt</span></div>
+      <div style="display: flex; flex-direction: column; align-items: center; gap: 4px"><span style="width: 38px; height: 38px; border-radius: 12px; background: #8ED9C3; border: 2px solid #2A2540; box-sizing: border-box; display: flex; align-items: center; justify-content: center"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2A2540" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"></path></svg></span><span style="font-size: 12px; font-weight: 700; color: #5C5675">Sa</span></div>
+      <div style="display: flex; flex-direction: column; align-items: center; gap: 4px"><span style="width: 38px; height: 38px; border-radius: 12px; background: #FFFFFF; border: 2px dashed {{accent}}; box-sizing: border-box"></span><span style="font-size: 12px; font-weight: 900">Ça</span></div>
+      <div style="display: flex; flex-direction: column; align-items: center; gap: 4px"><span style="width: 38px; height: 38px; border-radius: 12px; background: #EDE9FB"></span><span style="font-size: 12px; font-weight: 700; color: #5C5675">Pe</span></div>
+      <div style="display: flex; flex-direction: column; align-items: center; gap: 4px"><span style="width: 38px; height: 38px; border-radius: 12px; background: #EDE9FB"></span><span style="font-size: 12px; font-weight: 700; color: #5C5675">Cu</span></div>
+      <div style="display: flex; flex-direction: column; align-items: center; gap: 4px"><span style="width: 38px; height: 38px; border-radius: 12px; background: #EDE9FB"></span><span style="font-size: 12px; font-weight: 700; color: #5C5675">Ct</span></div>
+      <div style="display: flex; flex-direction: column; align-items: center; gap: 4px"><span style="width: 38px; height: 38px; border-radius: 12px; background: #EDE9FB"></span><span style="font-size: 12px; font-weight: 700; color: #5C5675">Pz</span></div>
+    </div>
+
+    <section aria-label="Bugünü değerlendir" style="display: flex; flex-direction: column; gap: 10px">
+      <span style="font-size: 18px; font-weight: 900">Bugün nasıl geçti?</span>
+      <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px">
+        <button style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; height: 92px; border: 2px solid #2A2540; border-radius: 18px; background: #8ED9C3; box-shadow: 0 4px 0 #2A2540; color: #2A2540; font-size: 14px; font-weight: 900"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"></path></svg>Başardım</button>
+        <button style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; height: 92px; border: 2px solid #2A2540; border-radius: 18px; background: #FFB38A; box-shadow: 0 4px 0 #2A2540; color: #2A2540; font-size: 14px; font-weight: 900"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"></path></svg>Zorlandım</button>
+        <button style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; height: 92px; border: 2px solid #2A2540; border-radius: 18px; background: #E4DEFF; box-shadow: 0 4px 0 #2A2540; color: #2A2540; font-size: 14px; font-weight: 900"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17.5 19H9a7 7 0 1 1 6.7-9h1.8a4.5 4.5 0 1 1 0 9Z"></path></svg>Başaramadım</button>
+      </div>
+    </section>
+
+    <section aria-label="Günün sözü" style="position: relative; padding: 14px 16px; background: #FFFFFF; border: 2px solid #2A2540; border-radius: 20px">
+      <p style="margin: 0; font-size: 16px; font-weight: 800; line-height: 1.4">Yavaş ilerlemek de ilerlemektir.</p>
+      <span aria-hidden="true" style="position: absolute; left: 28px; bottom: -9px; width: 14px; height: 14px; background: #FFFFFF; border-right: 2px solid #2A2540; border-bottom: 2px solid #2A2540; transform: rotate(45deg)"></span>
+    </section>
+
+    <div style="display: flex; gap: 10px; margin-top: 4px">
+      <button style="flex-grow: 1; display: flex; align-items: center; justify-content: center; gap: 8px; height: 54px; border: 2px solid #2A2540; border-radius: 18px; background: {{accent}}; box-shadow: 0 4px 0 #2A2540; color: #FFFFFF; font-size: 15px; font-weight: 900"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"></path></svg>Şu an zorlanıyorum</button>
+      <button aria-label="Nefes" style="width: 54px; height: 54px; border: 2px solid #2A2540; border-radius: 18px; background: #FFFFFF; box-shadow: 0 4px 0 #2A2540; color: #2A2540; display: flex; align-items: center; justify-content: center"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17.7 7.7a2.5 2.5 0 1 1 1.8 4.3H2"></path><path d="M9.6 4.6A2 2 0 1 1 11 8H2"></path><path d="M12.6 19.4A2 2 0 1 0 14 16H2"></path></svg></button>
+      <button aria-label="Oyunlar" style="width: 54px; height: 54px; border: 2px solid #2A2540; border-radius: 18px; background: #FFFFFF; box-shadow: 0 4px 0 #2A2540; color: #2A2540; display: flex; align-items: center; justify-content: center"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="7" cy="7" r="4"></circle><rect x="13" y="13" width="8" height="8" rx="2"></rect><path d="M17 3l4 7h-8z"></path></svg></button>
+    </div>
+  </main>
+
+  <nav aria-label="Ana gezinme" style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); height: 80px; background: #FFFFFF; border-top: 2px solid #2A2540">
+    <button style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; border: none; background: transparent; color: #2A2540; font-size: 12px; font-weight: 900"><span style="width: 58px; height: 32px; border-radius: 12px; background: {{accent}}; color: #FFFFFF; display: flex; align-items: center; justify-content: center"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M6.3 17.7l-1.4 1.4M19.1 4.9l-1.4 1.4"></path></svg></span>Bugün</button>
+    <button style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; border: none; background: transparent; color: #5C5675; font-size: 12px; font-weight: 700"><span style="width: 58px; height: 32px; display: flex; align-items: center; justify-content: center"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M22 21v-2a4 4 0 0 0-3-3.9"></path><path d="M16 3.1a4 4 0 0 1 0 7.8"></path></svg></span>Topluluk</button>
+    <button style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; border: none; background: transparent; color: #5C5675; font-size: 12px; font-weight: 700"><span style="width: 58px; height: 32px; display: flex; align-items: center; justify-content: center"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20c-4 0-8-3-8-8 4 0 8 3 8 8Z"></path><path d="M12 20c4 0 8-3 8-8-4 0-8 3-8 8Z"></path><path d="M12 20c-2-3-2-9 0-14 2 5 2 11 0 14Z"></path></svg></span>Sakinleş</button>
+    <button style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; border: none; background: transparent; color: #5C5675; font-size: 12px; font-weight: 700"><span style="width: 58px; height: 32px; display: flex; align-items: center; justify-content: center"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"></circle><path d="M4 21v-1a6 6 0 0 1 6-6h4a6 6 0 0 1 6 6v1"></path></svg></span>Profil</button>
+  </nav>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"accent":{"editor":"color","default":"#6656CC","options":["#6656CC","#2F7D6D","#C2528B","#3E6BC4"]},"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return { accent: this.props.accent ?? '#6656CC' };
+  }
+}
+</script>
+</body>
+</html>
