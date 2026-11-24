@@ -145,7 +145,7 @@ class UserProfileScreen extends ConsumerWidget {
             ),
           ),
           if (blocked)
-            Card(
+            HavenCard(
               margin: const EdgeInsets.symmetric(horizontal: 16),
               child: ListTile(
                 leading: const Icon(Icons.block_rounded),

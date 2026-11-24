@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../constants/app_constants.dart';
+import '../theme/haven_style.dart';
 
 /// Sevimli hayvan avatarı (gerçek fotoğraf yok: toplulukta anonimlik ve güvenlik).
 class AvatarBadge extends StatelessWidget {
@@ -50,7 +51,9 @@ class StreakBadge extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final active = days > 0;
-    final color = active ? const Color(0xFFE3A64F) : Theme.of(context).colorScheme.outline;
+    final style = HavenStyle.of(context);
+    final flame = style.isClassic ? const Color(0xFFE3A64F) : style.t.flame;
+    final color = active ? flame : Theme.of(context).colorScheme.outline;
     return Container(
       padding: EdgeInsets.symmetric(horizontal: compact ? 8 : 12, vertical: compact ? 3 : 6),
       decoration: BoxDecoration(color: color.withValues(alpha: 0.14), borderRadius: BorderRadius.circular(999)),

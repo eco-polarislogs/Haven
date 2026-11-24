@@ -267,13 +267,20 @@ class HavenRepository {
   void setAnalyticsEnabled(String uid, bool value) =>
       _fireAndForget(_user(uid).set({'analyticsEnabled': value}, _merge));
 
-  void setTheme(String uid, String themeId) => _fireAndForget(_user(uid).set({'themeId': themeId}, _merge));
+  /// Renk temaları Klasik tasarımın renkleridir: bir renk teması seçmek
+  /// (Hediyelerim'den ya da reklamla açınca) Klasik tasarıma döndürür.
+  void setTheme(String uid, String themeId) =>
+      _fireAndForget(_user(uid).set({'themeId': themeId, 'designId': 'classic'}, _merge));
+
+  /// Görünüm tasarımı (Klasik, Sis, Gece Limanı, Bahçe, Neşeli, Defter, Net).
+  void setDesign(String uid, String designId) => _fireAndForget(_user(uid).set({'designId': designId}, _merge));
 
   /// Ödüllü reklam sonrası. MVP notu: ödülü istemci yazıyor (sadece bir tema).
   void unlockTheme(String uid, String themeId) => _fireAndForget(
     _user(uid).set({
       'unlocks': {themeId: FieldValue.serverTimestamp()},
       'themeId': themeId,
+      'designId': 'classic',
     }, _merge),
   );
 

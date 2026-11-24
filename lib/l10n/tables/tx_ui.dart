@@ -2512,4 +2512,53 @@ const kTxUi = <String, List<String>>{
     "昵称最多 24 个字符。",
     "उपनाम अधिकतम 24 अक्षरों का हो सकता है।",
   ],
+  // Görünüm tasarımları (Profil → Tasarım). "Neşeli" tx_content'te.
+  "Tasarım": [
+    "Design",
+    "Diseño",
+    "设计",
+    "डिज़ाइन",
+  ],
+  "Tasarım: {p}": [
+    "Design: {p}",
+    "Diseño: {p}",
+    "设计：{p}",
+    "डिज़ाइन: {p}",
+  ],
+  "Klasik": [
+    "Classic",
+    "Clásico",
+    "经典",
+    "क्लासिक",
+  ],
+  "Sis": [
+    "Mist",
+    "Niebla",
+    "薄雾",
+    "धुंध",
+  ],
+  "Gece Limanı": [
+    "Night Harbor",
+    "Puerto nocturno",
+    "夜港",
+    "रात का बंदरगाह",
+  ],
+  "Bahçe": [
+    "Garden",
+    "Jardín",
+    "花园",
+    "बगीचा",
+  ],
+  "Defter": [
+    "Notebook",
+    "Cuaderno",
+    "笔记本",
+    "नोटबुक",
+  ],
+  "Net": [
+    "Clear",
+    "Nítido",
+    "清晰",
+    "स्पष्ट",
+  ],
 };

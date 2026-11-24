@@ -229,13 +229,12 @@ class _PostDetailScreenState extends ConsumerState<PostDetailScreen> {
             Container(
               margin: const EdgeInsets.fromLTRB(12, 0, 12, 6),
               padding: const EdgeInsets.all(10),
-              decoration: BoxDecoration(
-                color: HavenColors.clay.withValues(alpha: 0.12),
-                borderRadius: BorderRadius.circular(12),
-              ),
+              decoration: HavenStyle.of(
+                context,
+              ).box(color: HavenStyle.of(context).danger.withValues(alpha: 0.12), radius: 12, outlined: false),
               child: Row(
                 children: [
-                  const Icon(Icons.info_outline_rounded, color: HavenColors.clay, size: 20),
+                  Icon(Icons.info_outline_rounded, color: HavenStyle.of(context).danger, size: 20),
                   const SizedBox(width: 8),
                   Expanded(child: Text(_problem!, style: t.bodySmall)),
                 ],

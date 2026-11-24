@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/constants/struggle_catalog.dart';
 import '../../core/navigation.dart';
+import '../../core/theme/app_theme.dart';
 import '../../core/utils/day_key.dart';
 import '../../core/utils/streak.dart';
 import '../../core/widgets/avatar_badge.dart';
@@ -301,12 +302,15 @@ class _Feed extends ConsumerWidget {
             if (i == 1) return const _ComposerRow();
             if (visible.isEmpty) return empty;
             final n = visible[i - 2];
-            return Column(
-              children: [
-                PostCard(note: n, supported: user?.supportedNotes.contains(n.id) ?? false),
-                const Divider(height: 1),
-              ],
-            );
+            final post = PostCard(note: n, supported: user?.supportedNotes.contains(n.id) ?? false);
+            // Bazı tasarımlarda her gönderi ayrı bir kart; Klasik'te çizgiyle ayrılmış liste.
+            if (HavenStyle.of(context).t.feedCards) {
+              return Padding(
+                padding: const EdgeInsets.fromLTRB(16, 6, 16, 6),
+                child: HavenCard(clipBehavior: Clip.antiAlias, child: post),
+              );
+            }
+            return Column(children: [post, const Divider(height: 1)]);
           },
         );
       },

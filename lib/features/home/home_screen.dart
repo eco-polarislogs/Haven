@@ -170,7 +170,7 @@ class _QuoteCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
     final t = Theme.of(context).textTheme;
-    return Card(
+    return HavenCard(
       child: Padding(
         padding: const EdgeInsets.fromLTRB(18, 16, 18, 18),
         child: Row(
@@ -211,12 +211,14 @@ class _ComebackCard extends StatelessWidget {
     final t = Theme.of(context).textTheme;
     final p = HavenPalette.of(context);
     final past = race.lastPast?.days ?? race.best;
+    final s = HavenStyle.of(context);
     return Container(
       padding: const EdgeInsets.all(18),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(24),
+      decoration: s.box(
+        radius: 24,
         color: p.accent.withValues(alpha: 0.14),
-        border: Border.all(color: p.accent.withValues(alpha: 0.4)),
+        border: s.isClassic ? Border.all(color: p.accent.withValues(alpha: 0.4)) : null,
+        raised: true,
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -256,7 +258,7 @@ class _RaceBar extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         ClipRRect(
-          borderRadius: BorderRadius.circular(9),
+          borderRadius: HavenStyle.of(context).br(9),
           child: LinearProgressIndicator(
             value: value,
             minHeight: 10,
@@ -312,7 +314,7 @@ class _StatTile extends StatelessWidget {
     final t = Theme.of(context).textTheme;
     final scheme = Theme.of(context).colorScheme;
     return Expanded(
-      child: Card(
+      child: HavenCard(
         child: Padding(
           padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 10),
           child: Column(
@@ -337,7 +339,7 @@ class _NotesPreview extends ConsumerWidget {
     final l = context.l10n;
     final t = Theme.of(context).textTheme;
     final notes = ref.watch(journalProvider).value ?? const [];
-    return Card(
+    return HavenCard(
       child: Padding(
         padding: const EdgeInsets.fromLTRB(16, 12, 16, 12),
         child: Column(
@@ -393,21 +395,22 @@ class _QuickActions extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l = context.l10n;
     void tab(int i) => ref.read(shellIndexProvider.notifier).select(i);
+    final s = HavenStyle.of(context);
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         _Action(
           Icons.air_rounded,
           l.quickBreath,
-          const Color(0xFF2F7C93),
+          s.tile(0),
           () => pushScreen(context, 'calm', CalmScreen(category: mostCare)),
         ),
-        _Action(Icons.extension_outlined, l.quickGames, const Color(0xFF5B7DB1), () => tab(2)),
-        _Action(Icons.groups_outlined, l.quickCommunity, const Color(0xFF4E8063), () => tab(1)),
+        _Action(Icons.extension_outlined, l.quickGames, s.tile(1), () => tab(2)),
+        _Action(Icons.groups_outlined, l.quickCommunity, s.tile(2), () => tab(1)),
         _Action(
           Icons.volunteer_activism_outlined,
           l.quickSupport,
-          const Color(0xFFA9783C),
+          s.tile(3),
           () => pushScreen(context, 'professional_support', const ProfessionalSupportScreen()),
         ),
       ],
@@ -424,8 +427,9 @@ class _Action extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final s = HavenStyle.of(context);
     return InkWell(
-      borderRadius: BorderRadius.circular(20),
+      borderRadius: s.br(20),
       onTap: onTap,
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
@@ -434,8 +438,8 @@ class _Action extends StatelessWidget {
             Container(
               width: 58,
               height: 58,
-              decoration: BoxDecoration(color: color.withValues(alpha: 0.13), borderRadius: BorderRadius.circular(20)),
-              child: Icon(icon, color: color, size: 28),
+              decoration: s.tileBox(color, radius: 20),
+              child: Icon(icon, color: s.tileIcon(color), size: 28),
             ),
             const SizedBox(height: 6),
             Text(label, style: Theme.of(context).textTheme.labelMedium),
@@ -453,7 +457,7 @@ class _SupportSuggestion extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = Theme.of(context).textTheme;
     final scheme = Theme.of(context).colorScheme;
-    return Card(
+    return HavenCard(
       color: scheme.tertiary.withValues(alpha: 0.13),
       child: Padding(
         padding: const EdgeInsets.all(18),

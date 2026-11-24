@@ -17,13 +17,14 @@ class MonthLights extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = Theme.of(context).textTheme;
+    final c = HavenStyle.of(context).t;
     final first = DateTime(month.year, month.month);
     final daysInMonth = DateTime(month.year, month.month + 1, 0).day;
     final leading = first.weekday - 1;
     final now = DateTime.now();
     final isCurrent = now.year == month.year && now.month == month.month;
 
-    return Card(
+    return HavenCard(
       child: Padding(
         padding: const EdgeInsets.fromLTRB(18, 16, 18, 16),
         child: Column(
@@ -62,9 +63,9 @@ class MonthLights extends StatelessWidget {
               spacing: 14,
               runSpacing: 6,
               children: [
-                _legend(context, HavenColors.kindDay, tx('Başardım')),
-                _legend(context, HavenColors.struggledDay, tx('Zorlandım')),
-                _legend(context, HavenColors.hardDay, tx('Başaramadım')),
+                _legend(context, c.kindDay, tx('Başardım')),
+                _legend(context, c.struggledDay, tx('Zorlandım')),
+                _legend(context, c.hardDay, tx('Başaramadım')),
               ],
             ),
           ],
@@ -78,7 +79,9 @@ class MonthLights extends StatelessWidget {
       Container(
         width: 12,
         height: 12,
-        decoration: BoxDecoration(color: c, shape: BoxShape.circle),
+        decoration: HavenStyle.of(context).t.squareDays
+            ? BoxDecoration(color: c, borderRadius: BorderRadius.circular(3))
+            : BoxDecoration(color: c, shape: BoxShape.circle),
       ),
       const SizedBox(width: 6),
       Text(label, style: Theme.of(context).textTheme.labelSmall),
@@ -97,12 +100,16 @@ class _Day extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
+    final s = HavenStyle.of(context);
+    final c = s.t;
     final fill = switch (status) {
-      DayStatus.kind => HavenColors.kindDay,
-      DayStatus.struggled => HavenColors.struggledDay,
-      DayStatus.hard => HavenColors.hardDay,
+      DayStatus.kind => c.kindDay,
+      DayStatus.struggled => c.struggledDay,
+      DayStatus.hard => c.hardDay,
       DayStatus.none => Colors.transparent,
     };
+    // Işık simgesinin rengi: açık zeminli günde koyu, koyu zeminde beyaz.
+    final onFill = s.isClassic || ThemeData.estimateBrightnessForColor(fill) == Brightness.dark ? Colors.white : c.ink;
     return Semantics(
       label: tx('{day}. gün, {p}', {
         'day': day,
@@ -116,7 +123,8 @@ class _Day extends StatelessWidget {
       child: Container(
         decoration: BoxDecoration(
           color: fill,
-          shape: BoxShape.circle,
+          shape: c.squareDays ? BoxShape.rectangle : BoxShape.circle,
+          borderRadius: c.squareDays ? BorderRadius.circular(s.r(10)) : null,
           border: isToday
               ? Border.all(color: scheme.primary, width: 2)
               : status == DayStatus.none
@@ -125,7 +133,7 @@ class _Day extends StatelessWidget {
         ),
         alignment: Alignment.center,
         child: status == DayStatus.kind || status == DayStatus.struggled
-            ? const Icon(Icons.light_mode_rounded, size: 16, color: Colors.white)
+            ? Icon(Icons.light_mode_rounded, size: 16, color: onFill)
             : Text(
                 '$day',
                 style: TextStyle(
@@ -133,7 +141,7 @@ class _Day extends StatelessWidget {
                   color: isFuture
                       ? scheme.onSurface.withValues(alpha: 0.35)
                       : status == DayStatus.hard
-                      ? HavenColors.ink
+                      ? (s.isClassic ? HavenColors.ink : c.ink)
                       : scheme.onSurface,
                 ),
               ),

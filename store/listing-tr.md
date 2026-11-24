@@ -30,6 +30,9 @@ Aynı yolda yürüyenlerle deneyim paylaş, destek ver, cesaret notu gönder, ar
 📓 NOTLARIM VE AYIN IŞIKLARI
 Kendine kısa notlar yaz. Ayın takviminde iyi geçen günlerin ışık gibi yanar; ne kadar yol aldığını bir bakışta görürsün. Rozetler, temalar ve küçük hediyeler yolculuğuna eşlik eder.
 
+🎨 GÖRÜNÜMÜ SEN SEÇ
+Klasik, Sis, Gece Limanı, Bahçe, Neşeli, Defter ve yüksek karşıtlıklı, kolay okunan Net: yedi tasarım arasında Profil'den tek dokunuşla geçiş yap. Yazı tipi, renkler, kartlar ve nefes animasyonu birlikte değişir.
+
 🌍 5 DİL
 Türkçe, English, Español, 中文, हिन्दी. Topluluktaki farklı dildeki paylaşımları cihazının üzerinde, internete göndermeden çevirebilirsin.
 

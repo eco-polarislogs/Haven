@@ -9,6 +9,7 @@ class AppUser {
     required this.notificationsEnabled,
     required this.analyticsEnabled,
     required this.themeId,
+    this.designId = 'classic',
     required this.unlockedThemes,
     required this.communityJoined,
     required this.daily,
@@ -53,6 +54,9 @@ class AppUser {
   final bool notificationsEnabled;
   final bool analyticsEnabled;
   final String themeId;
+
+  /// Görünüm tasarımı (HavenDesign.name); 'classic' = orijinal tasarım.
+  final String designId;
   final Set<String> unlockedThemes;
   final bool communityJoined;
   final DailyStreak daily;
@@ -83,6 +87,7 @@ class AppUser {
       notificationsEnabled: m['notificationsEnabled'] as bool? ?? true,
       analyticsEnabled: m['analyticsEnabled'] as bool? ?? true,
       themeId: m['themeId'] as String? ?? 'ocean',
+      designId: m['designId'] as String? ?? 'classic',
       unlockedThemes: unlocks.keys.toSet(),
       communityJoined: m['communityJoined'] as bool? ?? false,
       daily: DailyStreak(

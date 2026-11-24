@@ -7,6 +7,7 @@ import '../../l10n/l10n.dart';
 import '../../providers.dart';
 import '../support/hard_day_sheet.dart';
 import '../../l10n/tx.dart';
+import '../../core/theme/app_theme.dart';
 
 /// "Notlarım": kendine yazdığın özel notlar. Kimseyle paylaşılmaz.
 class JournalScreen extends ConsumerWidget {
@@ -49,7 +50,7 @@ class JournalScreen extends ConsumerWidget {
               separatorBuilder: (_, _) => const SizedBox(height: 10),
               itemBuilder: (context, i) {
                 final n = notes[i];
-                return Card(
+                return HavenCard(
                   child: Padding(
                     padding: const EdgeInsets.fromLTRB(16, 12, 4, 12),
                     child: Row(

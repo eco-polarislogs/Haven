@@ -23,6 +23,7 @@ import '../../l10n/l10n.dart';
 import '../ads/rewarded_unlock.dart';
 import '../rewards/gifts_screen.dart';
 import 'badges.dart';
+import 'design_picker.dart';
 import '../community/moderation_actions.dart';
 import '../support/developer_panel_screen.dart';
 import '../support/feedback_screen.dart';
@@ -137,13 +138,14 @@ class ProfileScreen extends ConsumerWidget {
     final totalKind = struggles.fold<int>(0, (sum, s) => sum + s.streak.totalKindDays);
     final best = ref.watch(bestStreakProvider);
     final currentTheme = ref.watch(themePresetProvider);
+    final design = ref.watch(designProvider);
 
     return Scaffold(
       appBar: AppBar(title: Text(tx('Profil')), actions: const [NotificationBell(), SizedBox(width: 4)]),
       body: ListView(
         padding: const EdgeInsets.fromLTRB(16, 4, 16, 32),
         children: [
-          Card(
+          HavenCard(
             child: Padding(
               padding: const EdgeInsets.all(18),
               child: Column(
@@ -197,7 +199,7 @@ class ProfileScreen extends ConsumerWidget {
             ),
           ),
           const SizedBox(height: 14),
-          Card(
+          HavenCard(
             color: scheme.tertiary.withValues(alpha: 0.13),
             child: ListTile(
               contentPadding: const EdgeInsets.symmetric(horizontal: 18, vertical: 6),
@@ -211,7 +213,7 @@ class ProfileScreen extends ConsumerWidget {
           const SizedBox(height: 12),
           const BadgesSection(),
           SectionTitle(tx('Yolculuğum')),
-          Card(
+          HavenCard(
             child: Column(
               children: [
                 ListTile(
@@ -231,7 +233,7 @@ class ProfileScreen extends ConsumerWidget {
             ),
           ),
           SectionTitle(tx('Topluluk ve bildirimler')),
-          Card(
+          HavenCard(
             child: Column(
               children: [
                 SwitchListTile(
@@ -322,11 +324,24 @@ class ProfileScreen extends ConsumerWidget {
               ],
             ),
           ),
-          SectionTitle(context.l10n.themes),
-          Wrap(
-            spacing: 10,
-            runSpacing: 10,
-            children: [
+          // Görünüm tasarımı: tüm ekranlar, kartlar ve kutular birlikte değişir.
+          SectionTitle(tx('Tasarım')),
+          DesignPicker(
+            selected: design,
+            classicPreset: currentTheme,
+            onSelect: (d) {
+              repo.setDesign(uid, d.name);
+              ref.read(analyticsProvider).designChanged(d.name);
+            },
+          ),
+          // Renk temaları Klasik tasarımın renkleridir; diğer tasarımlar kendi
+          // renk dünyasıyla gelir.
+          if (design.isClassic) ...[
+            SectionTitle(context.l10n.themes),
+            Wrap(
+              spacing: 10,
+              runSpacing: 10,
+              children: [
               for (final p in ThemePreset.values)
                 Builder(
                   builder: (context) {
@@ -342,8 +357,9 @@ class ProfileScreen extends ConsumerWidget {
                     );
                   },
                 ),
-            ],
-          ),
+              ],
+            ),
+          ],
           SectionTitle(context.l10n.language),
           DropdownButtonFormField<String?>(
             initialValue: ref.watch(localeProvider).languageCode,
@@ -359,7 +375,7 @@ class ProfileScreen extends ConsumerWidget {
             ),
           ),
           SectionTitle(tx('Destek ve öneriler')),
-          Card(
+          HavenCard(
             child: Column(
               children: [
                 ListTile(
@@ -385,7 +401,7 @@ class ProfileScreen extends ConsumerWidget {
             ),
           ),
           SectionTitle(tx('Hesap')),
-          Card(
+          HavenCard(
             child: Column(
               children: [
                 ListTile(

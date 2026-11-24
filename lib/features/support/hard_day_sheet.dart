@@ -26,7 +26,7 @@ Future<void> showHardDaySheet(BuildContext context, StruggleCategory category, {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              const Icon(Icons.favorite_rounded, size: 40, color: HavenColors.clay),
+              Icon(Icons.favorite_rounded, size: 40, color: HavenStyle.of(context).danger),
               const SizedBox(height: 12),
               Text(category.hardDayMessage, textAlign: TextAlign.center, style: text.titleMedium),
               const SizedBox(height: 8),
@@ -90,7 +90,7 @@ Future<void> showCrisisSheet(BuildContext context) {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              const Icon(Icons.favorite_rounded, size: 40, color: HavenColors.clay),
+              Icon(Icons.favorite_rounded, size: 40, color: HavenStyle.of(context).danger),
               const SizedBox(height: 12),
               Text(tx('Şu an çok zorlandığını görüyoruz'), textAlign: TextAlign.center, style: text.titleLarge),
               const SizedBox(height: 8),

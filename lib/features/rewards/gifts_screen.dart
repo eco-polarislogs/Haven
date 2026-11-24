@@ -170,7 +170,7 @@ class _GiftsScreenState extends ConsumerState<GiftsScreen> {
           ),
           if (user.adsAllowed) ...[
             SectionTitle(tx('Günün ek sözü')),
-            Card(
+            HavenCard(
               child: Padding(
                 padding: const EdgeInsets.all(16),
                 child: user.quoteUnlockedDay == todayKey()
@@ -277,7 +277,7 @@ class _ThemeTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final l = context.l10n;
     final t = Theme.of(context).textTheme;
-    return Card(
+    return HavenCard(
       child: Padding(
         padding: const EdgeInsets.fromLTRB(14, 12, 12, 12),
         child: Row(
@@ -390,7 +390,7 @@ class _AdSafetyCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = Theme.of(context).textTheme;
     final sensitive = user.categoryIds.any(AppUser.sensitiveForAds.contains);
-    return Card(
+    return HavenCard(
       child: Padding(
         padding: const EdgeInsets.fromLTRB(16, 14, 8, 8),
         child: Column(

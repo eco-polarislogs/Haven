@@ -9,6 +9,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'core/constants/country_support.dart';
 import 'core/constants/struggle_catalog.dart';
+import 'core/theme/designs.dart';
 import 'core/theme/theme_presets.dart';
 import 'data/models/app_user.dart';
 import 'data/models/community.dart';
@@ -104,6 +105,9 @@ final themePresetProvider = Provider<ThemePreset>((ref) {
   );
   return unlocked ? preset : ThemePreset.ocean;
 });
+
+/// Seçili görünüm tasarımı (varsayılan: Klasik = orijinal tasarım).
+final designProvider = Provider<HavenDesign>((ref) => HavenDesign.parse(ref.watch(appUserProvider).value?.designId));
 
 /// Giriş yapmadan önce karşılama ekranında seçilen dil (hesap açılınca kaydedilir).
 final languageOverrideProvider = NotifierProvider<LanguageOverride, String?>(LanguageOverride.new);

@@ -30,6 +30,9 @@ Share experiences with people walking the same path, give support, send encourag
 📓 MY NOTES AND MONTH LIGHTS
 Write short notes to yourself. In the month calendar your good days light up, so you can see at a glance how far you have come. Badges, themes and small gifts keep you company along the way.
 
+🎨 CHOOSE YOUR LOOK
+Classic, Mist, Night Harbor, Garden, Cheerful, Notebook and the high-contrast, easy-to-read Clear: switch between seven designs in Profile with one tap. Fonts, colors, cards and the breathing animation all change together.
+
 🌍 5 LANGUAGES
 Türkçe, English, Español, 中文, हिन्दी. Community posts in other languages can be translated on your device, without sending them to the internet.
 

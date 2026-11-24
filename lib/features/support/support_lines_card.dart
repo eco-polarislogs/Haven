@@ -5,6 +5,7 @@ import 'package:url_launcher/url_launcher.dart';
 import '../../core/constants/country_support.dart';
 import '../../l10n/tx.dart';
 import '../../providers.dart';
+import '../../core/theme/app_theme.dart';
 
 Future<void> callSupportLine(String number) async {
   try {
@@ -32,7 +33,7 @@ class SupportLinesCard extends ConsumerWidget {
     final text = Theme.of(context).textTheme;
     final country = ref.watch(countryProvider);
     final uid = ref.watch(uidProvider);
-    return Card(
+    return HavenCard(
       child: Padding(
         padding: const EdgeInsets.fromLTRB(8, 16, 8, 12),
         child: Column(

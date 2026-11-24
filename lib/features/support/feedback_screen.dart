@@ -12,6 +12,7 @@ import '../../providers.dart';
 import '../community/translatable_text.dart';
 import 'professional_support_screen.dart';
 import 'ticket_widgets.dart';
+import '../../core/theme/app_theme.dart';
 
 /// "Destek ve öneriler": kullanıcı geliştiriciye öneri, hata bildirimi ya da
 /// soru gönderir; gönderdiği talepleri, durumlarını ve geliştiricinin
@@ -127,7 +128,7 @@ class _FeedbackScreenState extends ConsumerState<FeedbackScreen> {
       body: ListView(
         padding: const EdgeInsets.fromLTRB(16, 8, 16, 32),
         children: [
-          Card(
+          HavenCard(
             color: scheme.primaryContainer.withValues(alpha: 0.45),
             child: Padding(
               padding: const EdgeInsets.all(16),
@@ -184,7 +185,7 @@ class _FeedbackScreenState extends ConsumerState<FeedbackScreen> {
           ),
           if (_crisis) ...[
             const SizedBox(height: 4),
-            Card(
+            HavenCard(
               color: scheme.tertiaryContainer,
               child: Padding(
                 padding: const EdgeInsets.all(14),
@@ -274,7 +275,7 @@ class _MyTicketCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = Theme.of(context).textTheme;
     final scheme = Theme.of(context).colorScheme;
-    return Card(
+    return HavenCard(
       child: Padding(
         padding: const EdgeInsets.fromLTRB(14, 12, 6, 6),
         child: Column(

@@ -8,6 +8,7 @@ import '../../core/widgets/avatar_badge.dart';
 import '../../data/models/community.dart';
 import '../../providers.dart';
 import '../../l10n/tx.dart';
+import '../../core/theme/app_theme.dart';
 
 /// Duolingo tarzı seri arkadaşları. Sıralama/lider tablosu YOK: kıyas,
 /// yetersizlik hissi doğurabilir. Sadece birbirini görmek ve cesaret vermek.
@@ -134,7 +135,7 @@ class FriendsTab extends ConsumerWidget {
     return ListView(
       padding: const EdgeInsets.fromLTRB(16, 12, 16, 112),
       children: [
-        Card(
+        HavenCard(
           color: scheme.primaryContainer.withValues(alpha: 0.6),
           child: Padding(
             padding: const EdgeInsets.all(18),
@@ -198,7 +199,7 @@ class FriendsTab extends ConsumerWidget {
           for (final f in friends)
             Padding(
               padding: const EdgeInsets.only(bottom: 10),
-              child: Card(
+              child: HavenCard(
                 child: ListTile(
                   contentPadding: const EdgeInsets.fromLTRB(14, 8, 8, 8),
                   leading: AvatarBadge(index: f.avatar),

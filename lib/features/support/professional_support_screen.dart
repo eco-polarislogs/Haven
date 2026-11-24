@@ -6,6 +6,7 @@ import '../../core/constants/country_support.dart';
 import '../../providers.dart';
 import 'support_lines_card.dart';
 import '../../l10n/tx.dart';
+import '../../core/theme/app_theme.dart';
 
 /// "Destek al": kriz hatları + profesyonel desteğe nasıl ulaşılır (Türkiye).
 /// Haven kullanıcılarının bir kısmı profesyonel desteğe ihtiyaç duyabilir;
@@ -47,7 +48,7 @@ class _ProfessionalSupportScreenState extends ConsumerState<ProfessionalSupportS
           for (final r in ref.watch(countryProvider).isTurkey ? kHelpResources : kHelpResourcesGlobal)
             Padding(
               padding: const EdgeInsets.only(bottom: 10),
-              child: Card(
+              child: HavenCard(
                 child: ListTile(
                   contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
                   leading: CircleAvatar(
@@ -60,7 +61,7 @@ class _ProfessionalSupportScreenState extends ConsumerState<ProfessionalSupportS
               ),
             ),
           const SizedBox(height: 12),
-          Card(
+          HavenCard(
             color: scheme.primaryContainer.withValues(alpha: 0.5),
             child: Padding(
               padding: const EdgeInsets.all(18),

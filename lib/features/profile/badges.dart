@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../data/models/struggle.dart';
 import '../../l10n/tx.dart';
 import '../../providers.dart';
+import '../../core/theme/app_theme.dart';
 
 /// Duolingo tarzı rozetler: küçük adımları görünür kılar. Hiçbiri kaybedilmez;
 /// zor bir gün rozetleri silmez (I Am Sober mantığı: emek kalıcıdır).
@@ -67,7 +68,7 @@ class BadgesSection extends ConsumerWidget {
     final t = Theme.of(context).textTheme;
     final scheme = Theme.of(context).colorScheme;
 
-    return Card(
+    return HavenCard(
       child: Padding(
         padding: const EdgeInsets.fromLTRB(16, 14, 16, 16),
         child: Column(

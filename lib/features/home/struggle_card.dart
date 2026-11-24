@@ -41,14 +41,17 @@ class StruggleCard extends ConsumerWidget {
     final t = Theme.of(context).textTheme;
     final scheme = Theme.of(context).colorScheme;
     final l = context.l10n;
-    final accent = categoryAccent(struggle.category);
+    final st = HavenStyle.of(context);
+    final c = st.t;
+    final accent = st.readable(categoryAccent(struggle.category));
     final today = todayKey();
     final race = recordRaceOf(struggle.streak, today);
     final done = struggle.checkedInOn(today);
     final last = struggle.lastResult;
 
-    return Card(
-      color: categoryCardColor(struggle.category, scheme),
+    return HavenCard(
+      // Klasik: kategorinin soluk tonu. Diğer tasarımlar: tasarımın kart rengi.
+      color: st.isClassic ? categoryCardColor(struggle.category, scheme) : null,
       child: Padding(
         padding: const EdgeInsets.all(18),
         child: Column(
@@ -78,7 +81,7 @@ class StruggleCard extends ConsumerWidget {
             if (race.best > 0) ...[
               const SizedBox(height: 8),
               ClipRRect(
-                borderRadius: BorderRadius.circular(9),
+                borderRadius: st.br(9),
                 child: LinearProgressIndicator(
                   value: race.progress,
                   minHeight: 6,
@@ -113,7 +116,7 @@ class StruggleCard extends ConsumerWidget {
                         icon: Icons.bolt_rounded,
                         label: tx('Zorlandım'),
                         hint: tx('Zor oldu ama dayandım'),
-                        color: HavenColors.struggledDay,
+                        color: c.struggledDay,
                         onTap: () => checkIn(context, ref, struggle, CheckInResult.struggled, recentHardDays),
                       ),
                     ),
@@ -123,7 +126,7 @@ class StruggleCard extends ConsumerWidget {
                         icon: Icons.favorite_border_rounded,
                         label: tx('Başaramadım'),
                         hint: tx('Bugün olmadı'),
-                        color: HavenColors.clay,
+                        color: c.danger,
                         onTap: () => checkIn(context, ref, struggle, CheckInResult.hard, recentHardDays),
                       ),
                     ),
@@ -134,12 +137,14 @@ class StruggleCard extends ConsumerWidget {
               Container(
                 width: double.infinity,
                 padding: const EdgeInsets.fromLTRB(14, 12, 14, 12),
-                decoration: BoxDecoration(
-                  color: scheme.brightness == Brightness.dark
-                      ? Colors.white.withValues(alpha: 0.06)
-                      : Colors.white.withValues(alpha: 0.75),
-                  borderRadius: BorderRadius.circular(16),
-                ),
+                decoration: st.isClassic
+                    ? BoxDecoration(
+                        color: scheme.brightness == Brightness.dark
+                            ? Colors.white.withValues(alpha: 0.06)
+                            : Colors.white.withValues(alpha: 0.75),
+                        borderRadius: BorderRadius.circular(16),
+                      )
+                    : st.box(color: c.surfaceAlt, radius: 16, outlined: false),
                 child: Row(
                   children: [
                     Icon(
@@ -150,8 +155,8 @@ class StruggleCard extends ConsumerWidget {
                       },
                       size: 20,
                       color: switch (last) {
-                        CheckInResult.hard => HavenColors.clay,
-                        CheckInResult.struggled => HavenColors.struggledDay,
+                        CheckInResult.hard => c.danger,
+                        CheckInResult.struggled => st.isClassic ? c.struggledDay : st.readable(const Color(0xFFB7862F)),
                         _ => accent,
                       },
                     ),
@@ -296,18 +301,33 @@ class _ResultButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = Theme.of(context).textTheme;
-    final fg = filled ? Colors.white : HavenColors.ink;
+    final st = HavenStyle.of(context);
+    final c = st.t;
+    // Klasik: orijinal renkler. Tasarımlarda dolgu rengine göre okunur yazı.
+    final bg = filled ? color : color.withValues(alpha: st.isClassic ? 0.18 : (c.dark ? 0.22 : 0.2));
+    final fg = st.isClassic
+        ? (filled ? Colors.white : HavenColors.ink)
+        : filled
+        ? (ThemeData.estimateBrightnessForColor(color) == Brightness.dark ? Colors.white : c.ink)
+        : c.ink;
+    final iconColor = filled ? fg : (st.isClassic || !c.dark ? color : st.readable(color));
+    final shape = RoundedRectangleBorder(
+      borderRadius: st.br(16),
+      side: st.isClassic || c.borderWidth == 0 ? BorderSide.none : BorderSide(color: c.outline, width: c.borderWidth),
+    );
     return Material(
-      color: filled ? color : color.withValues(alpha: 0.18),
-      borderRadius: BorderRadius.circular(16),
+      color: st.isClassic ? bg : Color.alphaBlend(bg, c.surface),
+      borderRadius: st.isClassic ? BorderRadius.circular(16) : null,
+      shape: st.isClassic ? null : shape,
       child: InkWell(
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: st.isClassic ? BorderRadius.circular(16) : null,
+        customBorder: st.isClassic ? null : shape,
         onTap: onTap,
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 12),
           child: Column(
             children: [
-              Icon(icon, color: filled ? Colors.white : color, size: 24),
+              Icon(icon, color: iconColor, size: 24),
               const SizedBox(height: 6),
               Text(
                 label,

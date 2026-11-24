@@ -232,7 +232,7 @@ String generateFriendCode([Random? random]) {
 // ------------------------------------------------------------ destek talepleri
 
 /// Uygulama sürümü (destek taleplerine eklenir; pubspec.yaml ile aynı tutulmalı).
-const kAppVersion = '3.2.1';
+const kAppVersion = '3.3.0';
 
 /// Destek ve öneri taleplerini okuyup yanıtlayabilen geliştirici hesapları
 /// (Firebase Auth uid). firestore.rules → developerUids() ile AYNI olmalı.

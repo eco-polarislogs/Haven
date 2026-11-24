@@ -7,6 +7,7 @@ import 'package:haven/core/constants/country_support.dart';
 import 'package:haven/core/constants/struggle_catalog.dart';
 import 'package:haven/core/moderation/content_moderator.dart';
 import 'package:haven/core/quotes/quote_engine.dart';
+import 'package:haven/core/theme/designs.dart';
 import 'package:haven/core/theme/theme_presets.dart';
 import 'package:haven/data/models/community.dart';
 import 'package:haven/data/services/local_notifier.dart';
@@ -73,6 +74,9 @@ void main() {
       }
       for (final p in ThemePreset.values) {
         p.label;
+      }
+      for (final d in HavenDesign.values) {
+        d.label;
       }
       for (final v in ModerationVerdict.values) {
         ModerationResult(v).message;

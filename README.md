@@ -59,7 +59,7 @@ lib/
     ├── support/                  Zor gün paneli, kriz paneli, profesyonel destek rehberi
     ├── notifications/            Bildirim merkezi (zil)
     ├── rewards/                  Hediyeler: tema ve avatarlar (seri ya da isteğe bağlı reklam)
-    └── profile/ journal/         Profil, tema, dil, avatar ve takma ad; notlarım
+    └── profile/ journal/         Profil, tasarım, tema, dil, avatar ve takma ad; notlarım
 functions/                        inboxPush (bildirim → push), şefkatli hatırlatmalar, testler
 firestore.rules                   Kendi verine erişim; topluluk yazmaları sıkı kurallı
 site/                             Gizlilik politikası + hesap silme sayfası (Firebase Hosting)
@@ -68,8 +68,25 @@ site/                             Gizlilik politikası + hesap silme sayfası (F
 ## Görünüm
 
 - **Simge:** yumuşak köşeli bir kalkan, içinde ışığı yanan bir kapı ("güvenli liman": korunaklı, sıcak, her zaman açık). Deniz teması yok; bildirim simgesi de aynı kalkan.
-- **Temalar (Profil → Tema):** Okyanus, Mavi, Yeşil, Turuncu, Kırmızı, Pembe tonları ücretsiz; Mor tonları (3 gün) ve Gece karanlığı (7 gün) hediye.
+- **Tasarımlar (Profil → Tasarım):** yedi görünüm; kullanıcı istediğini seçer, seçim hesabında saklanır (`users/{uid}.designId`). Yazı tipi, renkler, köşeler, kenarlıklar, gölgeler, kartlar, düğmeler, alt çubuk, diyaloglar, seri kartı ve nefes animasyonu birlikte değişir. **Klasik** uygulamanın orijinal tasarımıdır ve varsayılandır; aşağıdaki renk temaları yalnızca onda geçerlidir.
+- **Temalar (Profil → Tema, Klasik tasarımda):** Okyanus, Mavi, Yeşil, Turuncu, Kırmızı, Pembe tonları ücretsiz; Mor tonları (3 gün) ve Gece karanlığı (7 gün) hediye.
 - **Avatarlar:** 18 ücretsiz + 12 hediye hayvan/simge. Her avatarın varsayılan bir adı var ("Sevimli Kurbağa", "Bilge Baykuş"…); kullanıcı istediği zaman değiştirebilir.
+
+### Tasarımlar
+
+| Tasarım | Bugün | Sakinleş | Nefes | Profil → Tasarım |
+|---|---|---|---|---|
+| **Klasik**<br>Orijinal tasarım: liman mavisi-yeşili, kum zemin, gradyanlı seri kartı | <img src="store/screenshots/designs/classic/1-bugun.png" width="150"> | <img src="store/screenshots/designs/classic/3-sakinles.png" width="150"> | <img src="store/screenshots/designs/classic/4-nefes.png" width="150"> | <img src="store/screenshots/designs/classic/6-tasarim.png" width="150"> |
+| **Sis**<br>Sade ve ferah: ince çizgiler, tek vurgu rengi (adaçayı), büyük seri sayısı · Inter | <img src="store/screenshots/designs/sis/1-bugun.png" width="150"> | <img src="store/screenshots/designs/sis/3-sakinles.png" width="150"> | <img src="store/screenshots/designs/sis/4-nefes.png" width="150"> | <img src="store/screenshots/designs/sis/6-tasarim.png" width="150"> |
+| **Gece Limanı**<br>Koyu gece: seri, rekora doğru dolan parlayan bir ışık halkası · Plus Jakarta Sans | <img src="store/screenshots/designs/gece/1-bugun.png" width="150"> | <img src="store/screenshots/designs/gece/3-sakinles.png" width="150"> | <img src="store/screenshots/designs/gece/4-nefes.png" width="150"> | <img src="store/screenshots/designs/gece/6-tasarim.png" width="150"> |
+| **Bahçe**<br>Doğal ve yumuşak: seri büyüyen bir fidan, iyi günler yaprak · Outfit | <img src="store/screenshots/designs/bahce/1-bugun.png" width="150"> | <img src="store/screenshots/designs/bahce/3-sakinles.png" width="150"> | <img src="store/screenshots/designs/bahce/4-nefes.png" width="150"> | <img src="store/screenshots/designs/bahce/6-tasarim.png" width="150"> |
+| **Neşeli**<br>Oyunsu: kalın mürekkep kenarlıklar, sert gölgeler, şeker renkleri · Nunito | <img src="store/screenshots/designs/neseli/1-bugun.png" width="150"> | <img src="store/screenshots/designs/neseli/3-sakinles.png" width="150"> | <img src="store/screenshots/designs/neseli/4-nefes.png" width="150"> | <img src="store/screenshots/designs/neseli/6-tasarim.png" width="150"> |
+| **Defter**<br>Kâğıt günlük: krem sayfa, mürekkep mavisi, serif başlıklar, çizgili seri kartı · Lora + Inter | <img src="store/screenshots/designs/defter/1-bugun.png" width="150"> | <img src="store/screenshots/designs/defter/3-sakinles.png" width="150"> | <img src="store/screenshots/designs/defter/4-nefes.png" width="150"> | <img src="store/screenshots/designs/defter/6-tasarim.png" width="150"> |
+| **Net**<br>Yüksek karşıtlık: siyah-beyaz, kalın kenarlık, sarı vurgu, %8 büyük yazı · Atkinson Hyperlegible | <img src="store/screenshots/designs/net/1-bugun.png" width="150"> | <img src="store/screenshots/designs/net/3-sakinles.png" width="150"> | <img src="store/screenshots/designs/net/4-nefes.png" width="150"> | <img src="store/screenshots/designs/net/6-tasarim.png" width="150"> |
+
+Ekran görüntüleri uygulamanın gerçek ekranlarıdır (örnek verilerle) ve kodla üretilir: `flutter test tool/design_screenshots_test.dart` (her tasarımın Bugün, Topluluk, Sakinleş, Nefes, Profil, Tasarım seçici, Bildirimler ve Notlarım ekranları → `store/screenshots/designs/`).
+
+Kod: `lib/core/theme/designs.dart` (her tasarımın renkleri ve kuralları), `lib/core/theme/haven_style.dart` (kutu/köşe/kenarlık yardımcıları ve `HavenCard`), `buildDesignTheme` (`app_theme.dart`), `lib/features/profile/design_picker.dart`. Klasik'in orijinalle aynı kaldığı `test/design_test.dart` ile denetlenir; yazı tipleri SIL Open Font License ile `assets/fonts/` altındadır.
 
 ## Kurulum (sırayla)
 

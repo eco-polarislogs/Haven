@@ -187,14 +187,12 @@ class _ComposeNoteSheetState extends ConsumerState<_ComposeNoteSheet> {
                 const SizedBox(height: 12),
                 Container(
                   padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: HavenColors.clay.withValues(alpha: 0.12),
-                    borderRadius: BorderRadius.circular(14),
-                  ),
+                  decoration: HavenStyle.of(context)
+                      .box(color: HavenStyle.of(context).danger.withValues(alpha: 0.12), radius: 14, outlined: false),
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Icon(Icons.info_outline_rounded, color: HavenColors.clay),
+                      Icon(Icons.info_outline_rounded, color: HavenStyle.of(context).danger),
                       const SizedBox(width: 10),
                       Expanded(child: Text(_problem!, style: t.bodyMedium)),
                     ],

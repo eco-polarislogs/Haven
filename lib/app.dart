@@ -52,6 +52,7 @@ class _HavenAppState extends ConsumerState<HavenApp> {
   @override
   Widget build(BuildContext context) {
     final preset = ref.watch(themePresetProvider);
+    final design = ref.watch(designProvider);
     final locale = ref.watch(localeProvider);
     // Koddaki metinler (tx) bu dili kullanır. Dil değişince ağacın tamamı
     // yeniden kurulsun diye ana sayfa dile göre anahtarlanır.
@@ -60,7 +61,7 @@ class _HavenAppState extends ConsumerState<HavenApp> {
       navigatorKey: rootNavigatorKey,
       title: 'Haven',
       debugShowCheckedModeBanner: false,
-      theme: buildTheme(preset),
+      theme: buildAppTheme(design, preset),
       locale: locale,
       supportedLocales: AppLocalizations.supportedLocales,
       localizationsDelegates: const [

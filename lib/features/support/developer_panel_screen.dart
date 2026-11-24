@@ -8,6 +8,7 @@ import '../../l10n/tx.dart';
 import '../../providers.dart';
 import '../community/translatable_text.dart';
 import 'ticket_widgets.dart';
+import '../../core/theme/app_theme.dart';
 
 /// Geliştirici paneli: kullanıcılardan gelen destek ve öneri talepleri.
 /// Yalnızca `kDeveloperUids` içindeki hesaplara görünür; Firestore kuralları
@@ -318,7 +319,7 @@ class _TicketSheetState extends ConsumerState<_TicketSheet> {
             ),
             if (ticket.kind == TicketKind.report && ticket.target != null) ...[
               const SizedBox(height: 10),
-              Card(
+              HavenCard(
                 color: scheme.errorContainer.withValues(alpha: 0.35),
                 child: ListTile(
                   leading: Icon(Icons.flag_outlined, color: scheme.error),

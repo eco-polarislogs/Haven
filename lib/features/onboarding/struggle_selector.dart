@@ -38,7 +38,7 @@ class _CategoryCard extends StatelessWidget {
     final scheme = Theme.of(context).colorScheme;
     final accent = categoryAccent(category);
     final anySelected = typesOf(category).any((t) => selected.contains(t.id));
-    return Card(
+    return HavenCard(
       color: categoryCardColor(category, scheme),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(20),

@@ -43,6 +43,9 @@ class AnalyticsService {
   Future<void> breathingFinished(int cycles) => _log('breathing_finished', {'cycles': cycles});
   Future<void> gameFinished(String game, int score) => _log('game_finished', {'game': game, 'score': score});
   Future<void> rewardEarned(String reward) => _log('reward_earned', {'reward': reward});
+
+  /// Hangi görünüm tasarımları tercih ediliyor? (yalnızca tasarım adı)
+  Future<void> designChanged(String design) => _log('design_changed', {'design': design});
   Future<void> nudgeOpened(String? level) => _log('nudge_opened', {'level': level ?? 'unknown'});
   Future<void> notificationShownInApp() => _log('notification_in_app', {});
   Future<void> notificationCenterOpened(int unread) => _log('notification_center_opened', {'unread': unread});

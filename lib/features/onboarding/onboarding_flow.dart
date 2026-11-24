@@ -14,6 +14,7 @@ import '../../l10n/l10n.dart';
 import '../../providers.dart';
 import 'struggle_selector.dart';
 import '../../l10n/tx.dart';
+import '../../core/theme/app_theme.dart';
 
 /// Haven'ın kendi kayıt akışı: 1) takma ad + avatar, 2) alanlar,
 /// 3) topluluk tercihi, 4) rıza. Google sadece kimliği doğruladı; gerisi burada.
@@ -391,7 +392,7 @@ class _CommunityStep extends StatelessWidget {
             'Haven topluluğunda benzer zorlukları yaşayan insanlar birbirine destek notları bırakır, serilerini görür ve cesaret verir.',
           ),
         ),
-        Card(
+        HavenCard(
           child: Padding(
             padding: const EdgeInsets.all(18),
             child: Column(
@@ -434,7 +435,7 @@ class _ConsentStep extends StatelessWidget {
     return _Scroll(
       children: [
         _Heading(tx('Son bir adım'), tx('Haven\'ın nasıl çalıştığını bilmeni istiyoruz.')),
-        Card(
+        HavenCard(
           child: Padding(
             padding: const EdgeInsets.all(18),
             child: Column(

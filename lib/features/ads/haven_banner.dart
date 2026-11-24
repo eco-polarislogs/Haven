@@ -6,6 +6,7 @@ import '../../core/constants/ad_ids.dart';
 import '../../data/services/ad_service.dart';
 import '../../l10n/tx.dart';
 import '../../providers.dart';
+import '../../core/theme/app_theme.dart';
 
 /// Alt gezinme çubuğunun hemen üstünde ince bir banner (320x50).
 ///
@@ -107,7 +108,7 @@ class _HavenBannerState extends ConsumerState<HavenBanner> {
     if (widget.inline) {
       if (!_loaded) return const SizedBox.shrink();
       final t = Theme.of(context).textTheme;
-      return Card(
+      return HavenCard(
         child: Padding(
           padding: const EdgeInsets.fromLTRB(12, 8, 12, 12),
           child: Column(

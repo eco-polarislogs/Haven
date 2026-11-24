@@ -26,6 +26,8 @@ class SafeSpaceScreen extends ConsumerWidget {
     final l = context.l10n;
     final t = Theme.of(context).textTheme;
     final p = HavenPalette.of(context);
+    final st = HavenStyle.of(context);
+    final danger = st.danger;
     final country = ref.watch(countryProvider);
     final categories = (ref.watch(strugglesProvider).value ?? const []).map((s) => s.category).toSet();
     final mostCare = highestCare(categories);
@@ -40,8 +42,8 @@ class SafeSpaceScreen extends ConsumerWidget {
           const SizedBox(height: 14),
 
           // 1) Acil destek — her zaman en üstte.
-          Card(
-            color: HavenColors.clay.withValues(alpha: 0.12),
+          HavenCard(
+            color: danger.withValues(alpha: st.dark ? 0.16 : 0.12),
             child: Padding(
               padding: const EdgeInsets.all(16),
               child: Column(
@@ -49,7 +51,7 @@ class SafeSpaceScreen extends ConsumerWidget {
                 children: [
                   Row(
                     children: [
-                      const Icon(Icons.emergency_outlined, color: HavenColors.clay),
+                      Icon(Icons.emergency_outlined, color: danger),
                       const SizedBox(width: 8),
                       Text(l.emergencyTitle, style: t.titleMedium?.copyWith(fontWeight: FontWeight.w700)),
                     ],
@@ -62,7 +64,8 @@ class SafeSpaceScreen extends ConsumerWidget {
                       Expanded(
                         child: FilledButton.icon(
                           style: FilledButton.styleFrom(
-                            backgroundColor: HavenColors.clay,
+                            backgroundColor: danger,
+                            foregroundColor: st.isClassic ? null : st.t.onDanger,
                             padding: const EdgeInsets.symmetric(vertical: 14),
                           ),
                           onPressed: () => callSupportLine(country.emergency),
@@ -75,6 +78,7 @@ class SafeSpaceScreen extends ConsumerWidget {
                         child: FilledButton.icon(
                           style: FilledButton.styleFrom(
                             backgroundColor: p.primary,
+                            foregroundColor: Theme.of(context).colorScheme.onPrimary,
                             padding: const EdgeInsets.symmetric(vertical: 14),
                           ),
                           onPressed: country.lines.isEmpty
@@ -122,35 +126,35 @@ class SafeSpaceScreen extends ConsumerWidget {
                 Icons.center_focus_strong_outlined,
                 l.groundingTitle,
                 l.groundingDesc,
-                const Color(0xFF8A7458),
+                st.game(0),
                 () => pushScreen(context, 'game_grounding', const GroundingGame()),
               ),
               _GridTile(
                 Icons.bubble_chart_outlined,
                 l.gameBubbles,
                 l.gameBubblesDesc,
-                const Color(0xFF5B7DB1),
+                st.game(1),
                 () => pushScreen(context, 'game_bubbles', const BubblePopGame()),
               ),
               _GridTile(
                 Icons.palette_outlined,
                 l.gameColors,
                 l.gameColorsDesc,
-                const Color(0xFFA0603F),
+                st.game(2),
                 () => pushScreen(context, 'game_colors', const MemoryGame(colorMode: true)),
               ),
               _GridTile(
                 Icons.style_outlined,
                 l.gameMemory,
                 l.gameMemoryDesc,
-                const Color(0xFF4E8063),
+                st.game(3),
                 () => pushScreen(context, 'game_memory', const MemoryGame()),
               ),
             ],
           ),
           if (tip != null) ...[
             const SizedBox(height: 14),
-            Card(
+            HavenCard(
               child: ListTile(
                 leading: Icon(Icons.lightbulb_outline_rounded, color: p.accent),
                 title: Text(tx('Şu an işe yarayabilir')),
@@ -181,9 +185,12 @@ class _BigTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = Theme.of(context).textTheme;
-    return Card(
+    final st = HavenStyle.of(context);
+    return HavenCard(
       clipBehavior: Clip.antiAlias,
-      color: Color.alphaBlend(color.withValues(alpha: 0.12), Theme.of(context).colorScheme.surfaceContainerLow),
+      color: st.isClassic || !st.t.tileFilled
+          ? Color.alphaBlend(color.withValues(alpha: 0.12), Theme.of(context).colorScheme.surfaceContainerLow)
+          : st.t.primarySoft,
       child: InkWell(
         onTap: onTap,
         child: Padding(
@@ -193,8 +200,8 @@ class _BigTile extends StatelessWidget {
               Container(
                 width: 60,
                 height: 60,
-                decoration: BoxDecoration(color: color.withValues(alpha: 0.18), shape: BoxShape.circle),
-                child: Icon(icon, color: color, size: 32),
+                decoration: st.tileBox(color, shape: BoxShape.circle),
+                child: Icon(icon, color: st.isClassic || !st.t.tileFilled ? color : st.t.onPrimary, size: 32),
               ),
               const SizedBox(width: 16),
               Expanded(
@@ -228,12 +235,16 @@ class _GridTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = Theme.of(context).textTheme;
     final dark = Theme.of(context).brightness == Brightness.dark;
-    return Card(
+    final st = HavenStyle.of(context);
+    return HavenCard(
       clipBehavior: Clip.antiAlias,
-      color: Color.alphaBlend(
-        color.withValues(alpha: dark ? 0.18 : 0.1),
-        Theme.of(context).colorScheme.surfaceContainerLow,
-      ),
+      // Neşeli: kutu dolu renk; diğerleri açık ton.
+      color: !st.isClassic && st.t.tileFilled
+          ? color
+          : Color.alphaBlend(
+              color.withValues(alpha: dark ? 0.18 : 0.1),
+              Theme.of(context).colorScheme.surfaceContainerLow,
+            ),
       child: InkWell(
         onTap: onTap,
         child: Padding(
@@ -244,11 +255,14 @@ class _GridTile extends StatelessWidget {
               Container(
                 width: 48,
                 height: 48,
-                decoration: BoxDecoration(
-                  color: color.withValues(alpha: 0.16),
-                  borderRadius: BorderRadius.circular(14),
+                decoration: !st.isClassic && st.t.tileFilled
+                    ? st.box(color: Colors.white, radius: 14)
+                    : st.box(color: color.withValues(alpha: 0.16), radius: 14, outlined: false),
+                child: Icon(
+                  icon,
+                  color: !st.isClassic && st.t.tileFilled ? st.t.ink : (st.isClassic ? color : st.readable(color)),
+                  size: 26,
                 ),
-                child: Icon(icon, color: color, size: 26),
               ),
               const Spacer(),
               Text(title, style: t.titleSmall?.copyWith(fontWeight: FontWeight.w700)),
