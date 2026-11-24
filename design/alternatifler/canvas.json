@@ -12,7 +12,19 @@
     "BahceBugun.dc.html": { "x": 940, "y": 0, "w": 390, "h": 844, "title": "Bahçe · Bugün" },
     "BahceTopluluk.dc.html": { "x": 940, "y": 964, "w": 390, "h": 844, "title": "Bahçe · Topluluk" },
     "NeseliBugun.dc.html": { "x": 1410, "y": 0, "w": 390, "h": 844, "title": "Neşeli · Bugün" },
-    "NeseliTopluluk.dc.html": { "x": 1410, "y": 964, "w": 390, "h": 844, "title": "Neşeli · Topluluk" }
+    "NeseliTopluluk.dc.html": { "x": 1410, "y": 964, "w": 390, "h": 844, "title": "Neşeli · Topluluk" },
+    "SisSakinles.dc.html": { "x": 0, "y": 1928, "w": 390, "h": 844, "title": "Sis · Sakinleş" },
+    "GeceSakinles.dc.html": { "x": 470, "y": 1928, "w": 390, "h": 844, "title": "Gece Limanı · Sakinleş" },
+    "BahceSakinles.dc.html": { "x": 940, "y": 1928, "w": 390, "h": 844, "title": "Bahçe · Sakinleş" },
+    "NeseliSakinles.dc.html": { "x": 1410, "y": 1928, "w": 390, "h": 844, "title": "Neşeli · Sakinleş" },
+    "SisNefes.dc.html": { "x": 0, "y": 2892, "w": 390, "h": 844, "title": "Sis · Nefes" },
+    "GeceNefes.dc.html": { "x": 470, "y": 2892, "w": 390, "h": 844, "title": "Gece Limanı · Nefes" },
+    "BahceNefes.dc.html": { "x": 940, "y": 2892, "w": 390, "h": 844, "title": "Bahçe · Nefes" },
+    "NeseliNefes.dc.html": { "x": 1410, "y": 2892, "w": 390, "h": 844, "title": "Neşeli · Nefes" },
+    "SisProfil.dc.html": { "x": 0, "y": 3856, "w": 390, "h": 844, "title": "Sis · Profil" },
+    "GeceProfil.dc.html": { "x": 470, "y": 3856, "w": 390, "h": 844, "title": "Gece Limanı · Profil" },
+    "BahceProfil.dc.html": { "x": 940, "y": 3856, "w": 390, "h": 844, "title": "Bahçe · Profil" },
+    "NeseliProfil.dc.html": { "x": 1410, "y": 3856, "w": 390, "h": 844, "title": "Neşeli · Profil" }
   },
   "order": [
     "Main.dc.html",
@@ -22,7 +34,19 @@
     "BahceBugun.dc.html",
     "BahceTopluluk.dc.html",
     "NeseliBugun.dc.html",
-    "NeseliTopluluk.dc.html"
+    "NeseliTopluluk.dc.html",
+    "SisSakinles.dc.html",
+    "GeceSakinles.dc.html",
+    "BahceSakinles.dc.html",
+    "NeseliSakinles.dc.html",
+    "SisNefes.dc.html",
+    "GeceNefes.dc.html",
+    "BahceNefes.dc.html",
+    "NeseliNefes.dc.html",
+    "SisProfil.dc.html",
+    "GeceProfil.dc.html",
+    "BahceProfil.dc.html",
+    "NeseliProfil.dc.html"
   ],
   "notes": {
     "titleSis": { "x": 0, "y": -260, "text": "A · Sis", "kind": "title1", "maxW": 390 },

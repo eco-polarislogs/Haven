@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<title>Sis · Nefes</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#3F6B58}a:hover{color:#2C4D3F}
+button{font-family:inherit}
+@keyframes hv-breathe{0%{transform:scale(.62)}28.6%{transform:scale(1)}57.1%{transform:scale(1)}100%{transform:scale(.62)}}
+@keyframes hv-al{0%,27%{opacity:1}29%,100%{opacity:0}}
+@keyframes hv-tut{0%,27%{opacity:0}29%,55%{opacity:1}58%,100%{opacity:0}}
+@keyframes hv-ver{0%,55%{opacity:0}58%,97%{opacity:1}100%{opacity:0}}
+.hv-breath{animation:hv-breathe 14s ease-in-out infinite}
+.hv-al{animation:hv-al 14s linear infinite}
+.hv-tut{animation:hv-tut 14s linear infinite}
+.hv-ver{animation:hv-ver 14s linear infinite}
+@media (prefers-reduced-motion:reduce){.hv-breath,.hv-al,.hv-tut,.hv-ver{animation:none}}
+</style>
+</helmet>
+<div style="position: relative; width: 390px; height: 844px; overflow: hidden; display: flex; flex-direction: column; background: #F7F7F5; color: #1E2326; font-family: 'Inter', system-ui, sans-serif">
+  <header style="display: flex; justify-content: space-between; align-items: center; padding: 28px 24px 0 24px">
+    <button aria-label="Kapat" style="width: 44px; height: 44px; border: 1px solid #E2E3E0; border-radius: 22px; background: #FFFFFF; display: flex; align-items: center; justify-content: center; color: #1E2326"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"></path></svg></button>
+    <div role="img" aria-label="5 nefesten 2'si tamam" style="display: flex; gap: 6px">
+      <span style="width: 8px; height: 8px; border-radius: 4px; background: {{accent}}"></span>
+      <span style="width: 8px; height: 8px; border-radius: 4px; background: {{accent}}"></span>
+      <span style="width: 8px; height: 8px; border-radius: 4px; background: #D9DAD6"></span>
+      <span style="width: 8px; height: 8px; border-radius: 4px; background: #D9DAD6"></span>
+      <span style="width: 8px; height: 8px; border-radius: 4px; background: #D9DAD6"></span>
+    </div>
+  </header>
+
+  <main style="flex-grow: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 28px">
+    <div style="position: relative; width: 300px; height: 300px; display: flex; align-items: center; justify-content: center">
+      <svg width="300" height="300" viewBox="0 0 300 300" style="position: absolute; top: 0; left: 0" aria-hidden="true"><circle cx="150" cy="150" r="148" fill="none" stroke="{{accent}}" stroke-opacity="0.25" stroke-width="1.5" stroke-dasharray="2 6"></circle></svg>
+      <span class="hv-breath" style="position: absolute; width: 296px; height: 296px; border-radius: 148px; background: {{tint}}; border: 1.5px solid {{accent}}; box-sizing: border-box"></span>
+      <span style="position: relative; width: 120px; height: 44px; display: flex; align-items: center; justify-content: center">
+        <span class="hv-al" style="position: absolute; font-size: 32px; font-weight: 400; letter-spacing: -0.01em">Al</span>
+        <span class="hv-tut" style="position: absolute; font-size: 32px; font-weight: 400; letter-spacing: -0.01em; opacity: 0">Tut</span>
+        <span class="hv-ver" style="position: absolute; font-size: 32px; font-weight: 400; letter-spacing: -0.01em; opacity: 0">Ver</span>
+      </span>
+    </div>
+    <span style="font-size: 14px; color: #5E666B; letter-spacing: 0.04em">4 · 4 · 6</span>
+  </main>
+
+  <footer style="display: flex; justify-content: center; padding: 0 0 56px 0">
+    <button aria-label="Duraklat" style="width: 64px; height: 64px; border: none; border-radius: 32px; background: #1E2326; color: #FFFFFF; display: flex; align-items: center; justify-content: center"><svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><rect x="6" y="4" width="4" height="16" rx="1"></rect><rect x="14" y="4" width="4" height="16" rx="1"></rect></svg></button>
+  </footer>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"accent":{"editor":"color","default":"#3F6B58","options":["#3F6B58","#3E5F8A","#7A5C8E","#8A6A3F"]},"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const accent = this.props.accent ?? '#3F6B58';
+    return { accent, tint: accent + '1F' };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<title>Bahçe · Nefes</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#2F5D4A}a:hover{color:#1F4434}
+button{font-family:inherit}
+@keyframes hv-bloom{0%{transform:scale(.58) rotate(0deg)}28.6%{transform:scale(1) rotate(22deg)}57.1%{transform:scale(1) rotate(22deg)}100%{transform:scale(.58) rotate(0deg)}}
+@keyframes hv-al{0%,27%{opacity:1}29%,100%{opacity:0}}
+@keyframes hv-tut{0%,27%{opacity:0}29%,55%{opacity:1}58%,100%{opacity:0}}
+@keyframes hv-ver{0%,55%{opacity:0}58%,97%{opacity:1}100%{opacity:0}}
+.hv-bloom{animation:hv-bloom 14s ease-in-out infinite}
+.hv-al{animation:hv-al 14s linear infinite}
+.hv-tut{animation:hv-tut 14s linear infinite}
+.hv-ver{animation:hv-ver 14s linear infinite}
+@media (prefers-reduced-motion:reduce){.hv-bloom,.hv-al,.hv-tut,.hv-ver{animation:none}}
+</style>
+</helmet>
+<div style="position: relative; width: 390px; height: 844px; overflow: hidden; display: flex; flex-direction: column; background: #EEF3EC; color: #1F2D27; font-family: 'Outfit', system-ui, sans-serif">
+  <header style="display: flex; justify-content: space-between; align-items: center; padding: 28px 20px 0 20px">
+    <button aria-label="Kapat" style="width: 46px; height: 46px; border: none; border-radius: 23px; background: #FFFFFF; display: flex; align-items: center; justify-content: center; color: #1F2D27"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"></path></svg></button>
+    <div role="img" aria-label="5 nefesten 2'si tamam" style="display: flex; gap: 2px; color: {{accent}}">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" aria-hidden="true"><path d="M5 19C5 10 11 5 19 5c0 8-5 14-14 14Z"></path></svg>
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" aria-hidden="true"><path d="M5 19C5 10 11 5 19 5c0 8-5 14-14 14Z"></path></svg>
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#9FB39D" stroke-width="1.6" stroke-linejoin="round" aria-hidden="true"><path d="M5 19C5 10 11 5 19 5c0 8-5 14-14 14Z"></path></svg>
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#9FB39D" stroke-width="1.6" stroke-linejoin="round" aria-hidden="true"><path d="M5 19C5 10 11 5 19 5c0 8-5 14-14 14Z"></path></svg>
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#9FB39D" stroke-width="1.6" stroke-linejoin="round" aria-hidden="true"><path d="M5 19C5 10 11 5 19 5c0 8-5 14-14 14Z"></path></svg>
+    </div>
+  </header>
+
+  <main style="flex-grow: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 26px">
+    <div style="position: relative; width: 310px; height: 310px; display: flex; align-items: center; justify-content: center">
+      <span style="position: absolute; width: 310px; height: 310px; border-radius: 155px; background: #DCE8DB"></span>
+      <svg class="hv-bloom" width="290" height="290" viewBox="-145 -145 290 290" style="position: relative" aria-hidden="true">
+        <ellipse cx="0" cy="-74" rx="34" ry="62" fill="#7BA889" fill-opacity="0.55"></ellipse>
+        <ellipse cx="0" cy="-74" rx="34" ry="62" fill="#7BA889" fill-opacity="0.55" transform="rotate(45)"></ellipse>
+        <ellipse cx="0" cy="-74" rx="34" ry="62" fill="#7BA889" fill-opacity="0.55" transform="rotate(90)"></ellipse>
+        <ellipse cx="0" cy="-74" rx="34" ry="62" fill="#7BA889" fill-opacity="0.55" transform="rotate(135)"></ellipse>
+        <ellipse cx="0" cy="-74" rx="34" ry="62" fill="#7BA889" fill-opacity="0.55" transform="rotate(180)"></ellipse>
+        <ellipse cx="0" cy="-74" rx="34" ry="62" fill="#7BA889" fill-opacity="0.55" transform="rotate(225)"></ellipse>
+        <ellipse cx="0" cy="-74" rx="34" ry="62" fill="#7BA889" fill-opacity="0.55" transform="rotate(270)"></ellipse>
+        <ellipse cx="0" cy="-74" rx="34" ry="62" fill="#7BA889" fill-opacity="0.55" transform="rotate(315)"></ellipse>
+        <circle cx="0" cy="0" r="34" fill="{{accent}}"></circle>
+        <circle cx="0" cy="0" r="12" fill="#E9B872"></circle>
+      </svg>
+    </div>
+    <span style="position: relative; width: 140px; height: 40px; display: flex; align-items: center; justify-content: center; color: {{accent}}">
+      <span class="hv-al" style="position: absolute; font-size: 32px; font-weight: 600">Al</span>
+      <span class="hv-tut" style="position: absolute; font-size: 32px; font-weight: 600; opacity: 0">Tut</span>
+      <span class="hv-ver" style="position: absolute; font-size: 32px; font-weight: 600; opacity: 0">Ver</span>
+    </span>
+  </main>
+
+  <footer style="display: flex; justify-content: center; padding: 0 0 56px 0">
+    <button aria-label="Duraklat" style="width: 64px; height: 64px; border: none; border-radius: 32px; background: {{accent}}; color: #FFFFFF; display: flex; align-items: center; justify-content: center"><svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><rect x="6" y="4" width="4" height="16" rx="1"></rect><rect x="14" y="4" width="4" height="16" rx="1"></rect></svg></button>
+  </footer>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"accent":{"editor":"color","default":"#2F5D4A","options":["#2F5D4A","#3B5F7A","#5E4F84","#7A5A2E"]},"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return { accent: this.props.accent ?? '#2F5D4A' };
+  }
+}
+</script>
+</body>
+</html>

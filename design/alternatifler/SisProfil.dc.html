@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<title>Sis · Profil</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#3F6B58}a:hover{color:#2C4D3F}
+button{font-family:inherit}
+</style>
+</helmet>
+<div style="position: relative; width: 390px; height: 844px; overflow: hidden; display: flex; flex-direction: column; background: #F7F7F5; color: #1E2326; font-family: 'Inter', system-ui, sans-serif">
+  <main style="flex-grow: 1; display: flex; flex-direction: column; gap: 26px; padding: 32px 24px 0 24px; overflow: hidden">
+    <header style="display: flex; justify-content: space-between; align-items: center">
+      <h1 style="margin: 0; font-size: 26px; font-weight: 600; letter-spacing: -0.01em">Profil</h1>
+      <button aria-label="Profili düzenle" style="width: 44px; height: 44px; border: 1px solid #E2E3E0; border-radius: 22px; background: #FFFFFF; display: flex; align-items: center; justify-content: center; color: #1E2326"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9"></path><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"></path></svg></button>
+    </header>
+
+    <section aria-label="Kimlik" style="display: flex; flex-direction: column; align-items: center; gap: 12px">
+      <span style="width: 88px; height: 88px; border-radius: 44px; background: {{tint}}; border: 1.5px solid {{accent}}; box-sizing: border-box; color: {{accent}}; display: flex; align-items: center; justify-content: center; font-size: 28px; font-weight: 600">SP</span>
+      <span style="font-size: 20px; font-weight: 600">Sevimli Panda</span>
+      <button aria-label="Arkadaş kodunu kopyala" style="display: flex; align-items: center; gap: 8px; height: 32px; padding: 0 12px; border: 1px solid #E2E3E0; border-radius: 16px; background: #FFFFFF; color: #5E666B; font-size: 13px; font-weight: 500; letter-spacing: 0.06em">HVN-7K2Q<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="12" height="12" rx="2"></rect><path d="M5 15V5a2 2 0 0 1 2-2h10"></path></svg></button>
+    </section>
+
+    <section aria-label="İstatistikler" style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border-top: 1px solid #E8E9E6; border-bottom: 1px solid #E8E9E6; padding: 16px 0">
+      <div style="display: flex; flex-direction: column; align-items: center; gap: 2px"><span style="font-size: 24px; font-weight: 600; color: {{accent}}">12</span><span style="font-size: 12px; color: #5E666B">seri</span></div>
+      <div style="display: flex; flex-direction: column; align-items: center; gap: 2px; border-left: 1px solid #E8E9E6; border-right: 1px solid #E8E9E6"><span style="font-size: 24px; font-weight: 600">21</span><span style="font-size: 12px; color: #5E666B">rekor</span></div>
+      <div style="display: flex; flex-direction: column; align-items: center; gap: 2px"><span style="font-size: 24px; font-weight: 600">34</span><span style="font-size: 12px; color: #5E666B">iyi gün</span></div>
+    </section>
+
+    <section aria-label="Rozetler" style="display: flex; justify-content: space-between">
+      <span role="img" aria-label="İlk adım rozeti" style="width: 52px; height: 52px; border-radius: 26px; background: {{tint}}; color: {{accent}}; display: flex; align-items: center; justify-content: center"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20c-4 0-8-3-8-8 4 0 8 3 8 8Z"></path><path d="M12 20c4 0 8-3 8-8-4 0-8 3-8 8Z"></path><path d="M12 20V8"></path></svg></span>
+      <span role="img" aria-label="7 gün rozeti" style="width: 52px; height: 52px; border-radius: 26px; background: {{tint}}; color: {{accent}}; display: flex; align-items: center; justify-content: center"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.4-.5-2-1-3-1.1-2.1-.2-4 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.2.4-2.3 1-3.3.4 1.5 1.5 2.8 2.5 2.8Z"></path></svg></span>
+      <span role="img" aria-label="Topluluk rozeti" style="width: 52px; height: 52px; border-radius: 26px; background: {{tint}}; color: {{accent}}; display: flex; align-items: center; justify-content: center"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 14c1.5-1.5 3-3.2 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.8 0-3 .5-4.5 2-1.5-1.5-2.7-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4 3 5.5l7 7Z"></path></svg></span>
+      <span role="img" aria-label="30 gün rozeti, kilitli" style="width: 52px; height: 52px; border-radius: 26px; border: 1px dashed #C9CBC6; box-sizing: border-box; color: #9AA0A3; display: flex; align-items: center; justify-content: center"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"></rect><path d="M8 11V7a4 4 0 0 1 8 0v4"></path></svg></span>
+      <span role="img" aria-label="100 gün rozeti, kilitli" style="width: 52px; height: 52px; border-radius: 26px; border: 1px dashed #C9CBC6; box-sizing: border-box; color: #9AA0A3; display: flex; align-items: center; justify-content: center"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"></rect><path d="M8 11V7a4 4 0 0 1 8 0v4"></path></svg></span>
+    </section>
+
+    <nav aria-label="Ayarlar" style="display: flex; flex-direction: column; background: #FFFFFF; border: 1px solid #E8E9E6; border-radius: 16px; overflow: hidden">
+      <button style="display: flex; align-items: center; gap: 14px; height: 54px; padding: 0 16px; border: none; border-bottom: 1px solid #F0F0EE; background: transparent; color: #1E2326; font-size: 15px; font-weight: 500; text-align: left"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="{{accent}}" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="13.5" cy="6.5" r="1.5"></circle><circle cx="17.5" cy="10.5" r="1.5"></circle><circle cx="8.5" cy="7.5" r="1.5"></circle><circle cx="6.5" cy="12.5" r="1.5"></circle><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.93 0 1.65-.75 1.65-1.69 0-.44-.18-.84-.44-1.13-.29-.29-.44-.65-.44-1.13a1.64 1.64 0 0 1 1.67-1.67h2c3.05 0 5.55-2.5 5.55-5.55C21.97 6.01 17.46 2 12 2z"></path></svg><span style="flex-grow: 1">Temalar</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#9AA0A3" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"></path></svg></button>
+      <button style="display: flex; align-items: center; gap: 14px; height: 54px; padding: 0 16px; border: none; border-bottom: 1px solid #F0F0EE; background: transparent; color: #1E2326; font-size: 15px; font-weight: 500; text-align: left"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="{{accent}}" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"></path></svg><span style="flex-grow: 1">Hatırlatmalar</span><span style="font-size: 13px; color: #5E666B">21:00</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#9AA0A3" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"></path></svg></button>
+      <button style="display: flex; align-items: center; gap: 14px; height: 54px; padding: 0 16px; border: none; border-bottom: 1px solid #F0F0EE; background: transparent; color: #1E2326; font-size: 15px; font-weight: 500; text-align: left"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="{{accent}}" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="M2 12h20"></path><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10Z"></path></svg><span style="flex-grow: 1">Dil</span><span style="font-size: 13px; color: #5E666B">Türkçe</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#9AA0A3" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"></path></svg></button>
+      <button style="display: flex; align-items: center; gap: 14px; height: 54px; padding: 0 16px; border: none; border-bottom: 1px solid #F0F0EE; background: transparent; color: #1E2326; font-size: 15px; font-weight: 500; text-align: left"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="{{accent}}" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="4"></circle><path d="m4.9 4.9 4.3 4.3M14.8 9.2l4.3-4.3M14.8 14.8l4.3 4.3M9.2 14.8l-4.3 4.3"></path></svg><span style="flex-grow: 1">Destek al</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#9AA0A3" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"></path></svg></button>
+      <button style="display: flex; align-items: center; gap: 14px; height: 54px; padding: 0 16px; border: none; background: transparent; color: #1E2326; font-size: 15px; font-weight: 500; text-align: left"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="{{accent}}" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"></path></svg><span style="flex-grow: 1">Hesap</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#9AA0A3" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"></path></svg></button>
+    </nav>
+  </main>
+
+  <nav aria-label="Ana gezinme" style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); height: 76px; border-top: 1px solid #E8E9E6; background: #F7F7F5">
+    <button style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px; border: none; background: transparent; color: #5E666B; font-size: 12px; font-weight: 500"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M6.3 17.7l-1.4 1.4M19.1 4.9l-1.4 1.4"></path></svg>Bugün<span style="width: 4px; height: 4px"></span></button>
+    <button style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px; border: none; background: transparent; color: #5E666B; font-size: 12px; font-weight: 500"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M22 21v-2a4 4 0 0 0-3-3.9"></path><path d="M16 3.1a4 4 0 0 1 0 7.8"></path></svg>Topluluk<span style="width: 4px; height: 4px"></span></button>
+    <button style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px; border: none; background: transparent; color: #5E666B; font-size: 12px; font-weight: 500"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20c-4 0-8-3-8-8 4 0 8 3 8 8Z"></path><path d="M12 20c4 0 8-3 8-8-4 0-8 3-8 8Z"></path><path d="M12 20c-2-3-2-9 0-14 2 5 2 11 0 14Z"></path></svg>Sakinleş<span style="width: 4px; height: 4px"></span></button>
+    <button style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px; border: none; background: transparent; color: #1E2326; font-size: 12px; font-weight: 600"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"></circle><path d="M4 21v-1a6 6 0 0 1 6-6h4a6 6 0 0 1 6 6v1"></path></svg>Profil<span style="width: 4px; height: 4px; border-radius: 2px; background: {{accent}}"></span></button>
+  </nav>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"accent":{"editor":"color","default":"#3F6B58","options":["#3F6B58","#3E5F8A","#7A5C8E","#8A6A3F"]},"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const accent = this.props.accent ?? '#3F6B58';
+    return { accent, tint: accent + '1F' };
+  }
+}
+</script>
+</body>
+</html>
